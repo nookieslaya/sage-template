@@ -1,0 +1,465 @@
+<?php
+
+/**
+ * Theme setup.
+ */
+
+namespace App;
+
+use Illuminate\Support\Facades\Vite;
+
+/**
+ * Inject styles into the block editor.
+ *
+ * @return array
+ */
+add_filter('block_editor_settings_all', function ($settings) {
+    $style = Vite::asset('resources/css/editor.css');
+
+    $settings['styles'][] = [
+        'css' => "@import url('{$style}')",
+    ];
+
+    return $settings;
+});
+
+/**
+ * Inject scripts into the block editor.
+ *
+ * @return void
+ */
+add_filter('admin_head', function () {
+    if (! get_current_screen()?->is_block_editor()) {
+        return;
+    }
+
+    $dependencies = json_decode(Vite::content('editor.deps.json'));
+
+    foreach ($dependencies as $dependency) {
+        if (! wp_script_is($dependency)) {
+            wp_enqueue_script($dependency);
+        }
+    }
+
+    echo Vite::withEntryPoints([
+        'resources/js/editor.js',
+    ])->toHtml();
+});
+
+/**
+ * Use the generated theme.json file.
+ *
+ * @return string
+ */
+add_filter('theme_file_path', function ($path, $file) {
+    return $file === 'theme.json'
+        ? public_path('build/assets/theme.json')
+        : $path;
+}, 10, 2);
+
+/**
+ * Register the initial theme setup.
+ *
+ * @return void
+ */
+add_action('after_setup_theme', function () {
+    /**
+     * Disable full-site editing support.
+     *
+     * @link https://wptavern.com/gutenberg-10-5-embeds-pdfs-adds-verse-block-color-options-and-introduces-new-patterns
+     */
+    remove_theme_support('block-templates');
+
+    /**
+     * Register the navigation menus.
+     *
+     * @link https://developer.wordpress.org/reference/functions/register_nav_menus/
+     */
+    register_nav_menus([
+        'primary_navigation' => __('Primary Navigation', 'sage'),
+    ]);
+
+    /**
+     * Disable the default block patterns.
+     *
+     * @link https://developer.wordpress.org/block-editor/developers/themes/theme-support/#disabling-the-default-block-patterns
+     */
+    remove_theme_support('core-block-patterns');
+
+    /**
+     * Enable plugins to manage the document title.
+     *
+     * @link https://developer.wordpress.org/reference/functions/add_theme_support/#title-tag
+     */
+    add_theme_support('title-tag');
+
+    /**
+     * Enable post thumbnail support.
+     *
+     * @link https://developer.wordpress.org/themes/functionality/featured-images-post-thumbnails/
+     */
+    add_theme_support('post-thumbnails');
+
+    /**
+     * Enable responsive embed support.
+     *
+     * @link https://developer.wordpress.org/block-editor/how-to-guides/themes/theme-support/#responsive-embedded-content
+     */
+    add_theme_support('responsive-embeds');
+
+    /**
+     * Enable HTML5 markup support.
+     *
+     * @link https://developer.wordpress.org/reference/functions/add_theme_support/#html5
+     */
+    add_theme_support('html5', [
+        'caption',
+        'comment-form',
+        'comment-list',
+        'gallery',
+        'search-form',
+        'script',
+        'style',
+    ]);
+
+    /**
+     * Enable selective refresh for widgets in customizer.
+     *
+     * @link https://developer.wordpress.org/reference/functions/add_theme_support/#customize-selective-refresh-widgets
+     */
+    add_theme_support('customize-selective-refresh-widgets');
+}, 20);
+
+/**
+ * Register the theme sidebars.
+ *
+ * @return void
+ */
+add_action('widgets_init', function () {
+    $config = [
+        'before_widget' => '<section class="widget %1$s %2$s">',
+        'after_widget' => '</section>',
+        'before_title' => '<h3>',
+        'after_title' => '</h3>',
+    ];
+
+    register_sidebar([
+        'name' => __('Primary', 'sage'),
+        'id' => 'sidebar-primary',
+    ] + $config);
+
+    register_sidebar([
+        'name' => __('Footer', 'sage'),
+        'id' => 'sidebar-footer',
+    ] + $config);
+});
+
+/**
+ * Get global theme settings.
+ */
+function twst_get_theme_options(): array
+{
+    $defaults = [
+        'show_side_nav_frontpage' => 1,
+        'accent_color' => '#2f6fff',
+    ];
+
+    $options = get_option('twst_theme_settings', []);
+
+    if (! is_array($options)) {
+        $options = [];
+    }
+
+    return wp_parse_args($options, $defaults);
+}
+
+/**
+ * Get social settings.
+ */
+function twst_get_social_options(): array
+{
+    $defaults = [
+        'github_label' => 'GH',
+        'github_url' => 'https://github.com',
+        'linkedin_label' => 'IN',
+        'linkedin_url' => 'https://linkedin.com',
+        'x_label' => 'X',
+        'x_url' => 'https://x.com',
+        'email_label' => '@',
+        'email_url' => 'mailto:hello@example.com',
+    ];
+
+    $options = get_option('twst_social_settings', []);
+
+    if (! is_array($options)) {
+        $options = [];
+    }
+
+    return wp_parse_args($options, $defaults);
+}
+
+/**
+ * Sanitize global theme settings.
+ */
+function twst_sanitize_theme_settings($input): array
+{
+    $input = is_array($input) ? $input : [];
+
+    return [
+        'show_side_nav_frontpage' => empty($input['show_side_nav_frontpage']) ? 0 : 1,
+        'accent_color' => sanitize_hex_color($input['accent_color'] ?? '') ?: '#2f6fff',
+    ];
+}
+
+/**
+ * Sanitize social settings.
+ */
+function twst_sanitize_social_settings($input): array
+{
+    $input = is_array($input) ? $input : [];
+
+    return [
+        'github_label' => sanitize_text_field($input['github_label'] ?? 'GH'),
+        'github_url' => esc_url_raw($input['github_url'] ?? ''),
+        'linkedin_label' => sanitize_text_field($input['linkedin_label'] ?? 'IN'),
+        'linkedin_url' => esc_url_raw($input['linkedin_url'] ?? ''),
+        'x_label' => sanitize_text_field($input['x_label'] ?? 'X'),
+        'x_url' => esc_url_raw($input['x_url'] ?? ''),
+        'email_label' => sanitize_text_field($input['email_label'] ?? '@'),
+        'email_url' => sanitize_text_field($input['email_url'] ?? ''),
+    ];
+}
+
+/**
+ * Render text input field.
+ */
+function twst_render_text_field(array $args): void
+{
+    $option_name = $args['option_name'] ?? '';
+    $field_key = $args['field_key'] ?? '';
+    $label = $args['label'] ?? '';
+    $type = $args['type'] ?? 'text';
+    $placeholder = $args['placeholder'] ?? '';
+
+    $values = get_option($option_name, []);
+    $value = is_array($values) ? ($values[$field_key] ?? '') : '';
+    ?>
+    <input
+      type="<?php echo esc_attr($type); ?>"
+      id="<?php echo esc_attr($field_key); ?>"
+      name="<?php echo esc_attr($option_name); ?>[<?php echo esc_attr($field_key); ?>]"
+      value="<?php echo esc_attr((string) $value); ?>"
+      class="regular-text"
+      placeholder="<?php echo esc_attr($placeholder); ?>"
+    />
+    <?php if (! empty($label)) : ?>
+      <p class="description"><?php echo esc_html($label); ?></p>
+    <?php endif; ?>
+    <?php
+}
+
+/**
+ * Render checkbox field.
+ */
+function twst_render_checkbox_field(array $args): void
+{
+    $option_name = $args['option_name'] ?? '';
+    $field_key = $args['field_key'] ?? '';
+    $label = $args['label'] ?? '';
+
+    $values = get_option($option_name, []);
+    $value = is_array($values) ? (int) ($values[$field_key] ?? 0) : 0;
+    ?>
+    <label for="<?php echo esc_attr($field_key); ?>">
+      <input
+        type="checkbox"
+        id="<?php echo esc_attr($field_key); ?>"
+        name="<?php echo esc_attr($option_name); ?>[<?php echo esc_attr($field_key); ?>]"
+        value="1"
+        <?php checked($value, 1); ?>
+      />
+      <?php echo esc_html($label); ?>
+    </label>
+    <?php
+}
+
+/**
+ * Render global settings page.
+ */
+function twst_render_general_settings_page(): void
+{
+    ?>
+    <div class="wrap">
+      <h1><?php esc_html_e('TWST Theme Settings', 'sage'); ?></h1>
+      <form method="post" action="options.php">
+        <?php
+        settings_fields('twst_theme_settings_group');
+        do_settings_sections('twst-theme-settings');
+        submit_button();
+        ?>
+      </form>
+    </div>
+    <?php
+}
+
+/**
+ * Render social settings page.
+ */
+function twst_render_social_settings_page(): void
+{
+    ?>
+    <div class="wrap">
+      <h1><?php esc_html_e('TWST Social Media Settings', 'sage'); ?></h1>
+      <form method="post" action="options.php">
+        <?php
+        settings_fields('twst_social_settings_group');
+        do_settings_sections('twst-social-settings');
+        submit_button();
+        ?>
+      </form>
+    </div>
+    <?php
+}
+
+add_action('admin_menu', function () {
+    add_menu_page(
+        __('TWST Settings', 'sage'),
+        __('TWST Settings', 'sage'),
+        'manage_options',
+        'twst-theme-settings',
+        __NAMESPACE__.'\\twst_render_general_settings_page',
+        'dashicons-admin-generic',
+        61
+    );
+
+    add_submenu_page(
+        'twst-theme-settings',
+        __('Global Settings', 'sage'),
+        __('Global Settings', 'sage'),
+        'manage_options',
+        'twst-theme-settings',
+        __NAMESPACE__.'\\twst_render_general_settings_page'
+    );
+
+    add_submenu_page(
+        'twst-theme-settings',
+        __('Social Media', 'sage'),
+        __('Social Media', 'sage'),
+        'manage_options',
+        'twst-social-settings',
+        __NAMESPACE__.'\\twst_render_social_settings_page'
+    );
+});
+
+add_action('admin_init', function () {
+    register_setting(
+        'twst_theme_settings_group',
+        'twst_theme_settings',
+        [
+            'type' => 'array',
+            'sanitize_callback' => __NAMESPACE__.'\\twst_sanitize_theme_settings',
+            'default' => [],
+        ]
+    );
+
+    add_settings_section(
+        'twst_theme_main_section',
+        __('Global', 'sage'),
+        '__return_null',
+        'twst-theme-settings'
+    );
+
+    add_settings_field(
+        'show_side_nav_frontpage',
+        __('Show side menu on homepage', 'sage'),
+        __NAMESPACE__.'\\twst_render_checkbox_field',
+        'twst-theme-settings',
+        'twst_theme_main_section',
+        [
+            'option_name' => 'twst_theme_settings',
+            'field_key' => 'show_side_nav_frontpage',
+            'label' => __('Enable side navigation widget on the homepage/landing page.', 'sage'),
+        ]
+    );
+
+    add_settings_field(
+        'accent_color',
+        __('Accent color', 'sage'),
+        __NAMESPACE__.'\\twst_render_text_field',
+        'twst-theme-settings',
+        'twst_theme_main_section',
+        [
+            'option_name' => 'twst_theme_settings',
+            'field_key' => 'accent_color',
+            'label' => __('Used as global accent color (buttons, links, active states).', 'sage'),
+            'type' => 'text',
+            'placeholder' => '#2f6fff',
+        ]
+    );
+
+    register_setting(
+        'twst_social_settings_group',
+        'twst_social_settings',
+        [
+            'type' => 'array',
+            'sanitize_callback' => __NAMESPACE__.'\\twst_sanitize_social_settings',
+            'default' => [],
+        ]
+    );
+
+    add_settings_section(
+        'twst_social_main_section',
+        __('Social Profiles', 'sage'),
+        '__return_null',
+        'twst-social-settings'
+    );
+
+    $social_fields = [
+        'github',
+        'linkedin',
+        'x',
+        'email',
+    ];
+
+    foreach ($social_fields as $social) {
+        add_settings_field(
+            "{$social}_label",
+            sprintf(__('%s label', 'sage'), strtoupper($social)),
+            __NAMESPACE__.'\\twst_render_text_field',
+            'twst-social-settings',
+            'twst_social_main_section',
+            [
+                'option_name' => 'twst_social_settings',
+                'field_key' => "{$social}_label",
+                'label' => __('Text shown inside social icon button.', 'sage'),
+            ]
+        );
+
+        add_settings_field(
+            "{$social}_url",
+            sprintf(__('%s URL', 'sage'), strtoupper($social)),
+            __NAMESPACE__.'\\twst_render_text_field',
+            'twst-social-settings',
+            'twst_social_main_section',
+            [
+                'option_name' => 'twst_social_settings',
+                'field_key' => "{$social}_url",
+                'label' => $social === 'email'
+                    ? __('Use mailto: for email, e.g. mailto:hello@example.com', 'sage')
+                    : __('Full URL to your profile.', 'sage'),
+            ]
+        );
+    }
+});
+
+add_action('wp_head', function () {
+    $settings = twst_get_theme_options();
+    $accent = sanitize_hex_color($settings['accent_color'] ?? '');
+
+    if (! $accent) {
+        return;
+    }
+    ?>
+    <style id="twst-theme-accent-color">:root{--twst-accent:<?php echo esc_html($accent); ?>;}</style>
+    <?php
+}, 20);

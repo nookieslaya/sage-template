@@ -1,0 +1,27 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "twst/about",
+  "title": "TWST About / Bio",
+  "category": "design",
+  "icon": "id",
+  "description": "About section with image.",
+  "textdomain": "sage",
+  "supports": {
+    "anchor": true,
+    "html": false
+  },
+  "attributes": {
+    "eyebrow": { "type": "string", "default": "ABOUT" },
+    "headline": { "type": "string", "default": "Technology Partner for Modern Businesses" },
+    "body": { "type": "string", "default": "With over 10 years of experience in enterprise software development, I specialize in building scalable solutions for B2B companies." },
+    "imageUrl": { "type": "string", "default": "" },
+    "imageAlt": { "type": "string", "default": "Portrait" },
+    "eyebrowEn": { "type": "string" },
+    "eyebrowPl": { "type": "string" },
+    "headlineEn": { "type": "string" },
+    "headlinePl": { "type": "string" },
+    "bodyEn": { "type": "string" },
+    "bodyPl": { "type": "string" }
+  }
+}

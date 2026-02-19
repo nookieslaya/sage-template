@@ -1,0 +1,30 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "twst/hero",
+  "title": "TWST Hero",
+  "category": "design",
+  "icon": "cover-image",
+  "description": "Hero section with CTA buttons.",
+  "textdomain": "sage",
+  "supports": {
+    "anchor": true,
+    "html": false
+  },
+  "attributes": {
+    "headline": { "type": "string", "default": "Building Enterprise Solutions That Scale" },
+    "description": { "type": "string", "default": "I partner with B2B companies to design and develop robust technology solutions that drive business growth." },
+    "primaryLabel": { "type": "string", "default": "Start a Project" },
+    "primaryUrl": { "type": "string", "default": "#contact" },
+    "secondaryLabel": { "type": "string", "default": "View My Work" },
+    "secondaryUrl": { "type": "string", "default": "#work" },
+    "headlineEn": { "type": "string" },
+    "headlinePl": { "type": "string" },
+    "descriptionEn": { "type": "string" },
+    "descriptionPl": { "type": "string" },
+    "primaryLabelEn": { "type": "string" },
+    "primaryLabelPl": { "type": "string" },
+    "secondaryLabelEn": { "type": "string" },
+    "secondaryLabelPl": { "type": "string" }
+  }
+}

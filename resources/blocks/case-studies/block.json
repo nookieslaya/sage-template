@@ -1,0 +1,30 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "twst/case-studies",
+  "title": "TWST Case Studies",
+  "category": "design",
+  "icon": "portfolio",
+  "description": "Projects section with editable cards.",
+  "textdomain": "sage",
+  "supports": {
+    "anchor": true,
+    "html": false
+  },
+  "attributes": {
+    "eyebrow": { "type": "string", "default": "CASE STUDIES" },
+    "headline": { "type": "string", "default": "Featured Projects" },
+    "items": {
+      "type": "array",
+      "default": [
+        { "imageUrl": "", "tags": "Cloud Infrastructure, React", "title": "Enterprise Analytics Platform", "desc": "Built a real-time analytics dashboard for a Fortune 500 company.", "linkLabel": "View Case Study", "linkUrl": "#" },
+        { "imageUrl": "", "tags": "Security, API Design", "title": "FinTech Payment Gateway", "desc": "Developed a secure payment processing platform.", "linkLabel": "View Case Study", "linkUrl": "#" },
+        { "imageUrl": "", "tags": "SaaS, TypeScript, AWS", "title": "SaaS Management Platform", "desc": "Created a B2B SaaS platform with advanced role management.", "linkLabel": "View Case Study", "linkUrl": "#" }
+      ]
+    },
+    "eyebrowEn": { "type": "string" },
+    "eyebrowPl": { "type": "string" },
+    "headlineEn": { "type": "string" },
+    "headlinePl": { "type": "string" }
+  }
+}

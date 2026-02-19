@@ -1,0 +1,273 @@
+@import "tailwindcss" theme(static);
+@custom-variant dark (&:where(.dark, .dark *));
+@source "../views/";
+@source "../blocks/";
+@source "../js/";
+@source "../../app/";
+
+@layer base {
+  :root {
+    --twst-accent: #2f6fff;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer components {
+
+  .twst-btn-accent {
+    @apply inline-flex items-center justify-center rounded-2xl px-8 py-4 text-base font-semibold text-white no-underline transition;
+    background: var(--twst-accent);
+  }
+
+  .twst-btn-accent:hover {
+    background: color-mix(in oklab, var(--twst-accent) 88%, #000000);
+  }
+
+  .twst-btn-accent:focus-visible {
+    outline: 2px solid color-mix(in oklab, var(--twst-accent) 55%, #ffffff);
+    outline-offset: 2px;
+  }
+
+  .dark .twst-btn-accent {
+    color: #050505;
+    background: color-mix(in oklab, var(--twst-accent) 72%, #ffffff);
+  }
+
+  .dark .twst-btn-accent:hover {
+    background: color-mix(in oklab, var(--twst-accent) 82%, #ffffff);
+  }
+
+  .twst-link-accent {
+    color: color-mix(in oklab, var(--twst-accent) 78%, #1f2937);
+  }
+
+  .twst-link-accent:hover {
+    color: color-mix(in oklab, var(--twst-accent) 92%, #111827);
+  }
+
+  #site-nav nav ul,
+  #site-nav .twst-nav-desktop>ul,
+  #site-nav nav .menu>ul,
+  #site-nav .twst-nav-desktop {
+    @apply m-0 list-none p-0;
+  }
+
+  #site-nav .twst-nav-desktop,
+  #site-nav .twst-nav-desktop>ul,
+  #site-nav nav .menu>ul {
+    @apply flex flex-col gap-3 text-lg font-semibold text-zinc-500 dark:text-zinc-400;
+  }
+
+  #site-nav nav li,
+  #site-nav nav .page_item {
+    @apply m-0 list-none;
+  }
+
+  #site-nav nav a {
+    @apply inline-flex rounded-lg px-1 py-1 no-underline transition hover:text-zinc-900 dark:hover:text-zinc-100;
+  }
+
+  #site-nav nav a:hover {
+    color: color-mix(in oklab, var(--twst-accent) 78%, #111827);
+  }
+
+  .twst-lang-switcher {
+    @apply inline-flex rounded-2xl bg-zinc-200 p-1 dark:bg-zinc-800;
+  }
+
+  .twst-lang-link {
+    @apply rounded-xl px-4 py-2 text-sm font-semibold text-zinc-500 no-underline transition hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-100;
+  }
+
+  .twst-lang-link.is-active {
+    @apply text-zinc-900 dark:text-zinc-100;
+    background: color-mix(in oklab, var(--twst-accent) 18%, #ffffff);
+  }
+
+  .dark .twst-lang-link.is-active {
+    background: color-mix(in oklab, var(--twst-accent) 26%, #18181b);
+  }
+
+  #site-nav nav .current-menu-item>a,
+  #site-nav nav .current_page_item>a {
+    color: color-mix(in oklab, var(--twst-accent) 84%, #111827);
+  }
+
+  [data-mobile-menu-panel] nav ul,
+  [data-mobile-menu-panel] .twst-nav-mobile>ul,
+  [data-mobile-menu-panel] nav .menu>ul,
+  [data-mobile-menu-panel] .twst-nav-mobile {
+    @apply m-0 grid list-none gap-3 p-0 text-lg font-semibold text-zinc-600 dark:text-zinc-300;
+  }
+
+  [data-mobile-menu-panel] nav a {
+    @apply inline-flex rounded-xl px-3 py-2 no-underline transition hover:bg-zinc-200 hover:text-zinc-900 dark:hover:bg-zinc-800 dark:hover:text-zinc-100;
+  }
+
+  .twst-footer-menu,
+  .twst-footer-menu ul,
+  nav .twst-footer-menu {
+    @apply m-0 list-none p-0;
+  }
+
+  .twst-footer-menu li {
+    @apply mb-3;
+  }
+
+  .twst-footer-menu a {
+    @apply text-3xl font-semibold text-zinc-500 no-underline transition hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100;
+  }
+
+  .twst-footer-menu a:hover,
+  .twst-footer-menu .current-menu-item>a,
+  .twst-footer-menu .current_page_item>a {
+    color: color-mix(in oklab, var(--twst-accent) 84%, #111827);
+  }
+
+  .twst-social-link:hover {
+    background: color-mix(in oklab, var(--twst-accent) 28%, #ffffff);
+    color: color-mix(in oklab, var(--twst-accent) 88%, #111827);
+  }
+
+  .dark .twst-social-link:hover {
+    background: color-mix(in oklab, var(--twst-accent) 34%, #18181b);
+    color: color-mix(in oklab, var(--twst-accent) 74%, #f4f4f5);
+  }
+
+  .twst-side-nav {
+    @apply fixed left-0 top-1/2 z-40 hidden -translate-y-1/2 rounded-r-2xl border border-l-0 border-zinc-200 bg-zinc-100/90 p-2 shadow-sm backdrop-blur transition-transform duration-300 dark:border-zinc-800 dark:bg-zinc-900/90 lg:flex lg:flex-col lg:gap-2;
+  }
+
+  .twst-side-toggle {
+    @apply mx-auto inline-flex h-8 w-8 items-center justify-center rounded-full no-underline shadow-md transition hover:-translate-y-0.5 hover:bg-zinc-200 hover:text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-zinc-100;
+  }
+
+  .twst-side-arrow {
+    @apply text-2xl leading-none;
+  }
+
+  .twst-side-links {
+    @apply flex flex-col gap-1;
+  }
+
+  .twst-side-link {
+    @apply inline-flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold text-zinc-500 no-underline transition hover:bg-zinc-200 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100 !no-underline;
+  }
+
+  .twst-side-dot {
+    @apply h-2 w-2 rounded-full bg-zinc-400 transition dark:bg-zinc-500 hidden;
+  }
+
+  .twst-side-link[data-active='true'] {
+    @apply !no-underline;
+    color: color-mix(in oklab, var(--twst-accent) 84%, #111827);
+    background: color-mix(in oklab, var(--twst-accent) 14%, #ffffff);
+  }
+
+  .dark .twst-side-link[data-active='true'] {
+    background: color-mix(in oklab, var(--twst-accent) 20%, #18181b);
+  }
+
+  .twst-side-link[data-active='true'] .twst-side-dot {
+    @apply h-2.5 w-2.5 !no-underline;
+    background: color-mix(in oklab, var(--twst-accent) 86%, #ffffff);
+  }
+
+  .twst-side-nav[data-collapsed='true'] {
+    transform: translate(calc(-100% + 3.5rem), -50%);
+  }
+
+  .twst-side-nav[data-collapsed='false'] {
+    transform: translate(0, -50%);
+  }
+
+  .twst-hero {
+    background: radial-gradient(circle at 10% 10%, color-mix(in oklab, var(--twst-accent) 12%, #ffffff) 0%, transparent 45%), linear-gradient(180deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.35));
+  }
+
+  .dark .twst-hero {
+    background: radial-gradient(circle at 10% 10%, color-mix(in oklab, var(--twst-accent) 18%, #0a0a0a) 0%, transparent 45%), linear-gradient(180deg, rgba(16, 16, 16, 0.8), rgba(16, 16, 16, 0.45));
+  }
+
+  .twst-hero-bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .twst-hero-blob {
+    position: absolute;
+    display: block;
+    border-radius: 9999px;
+    filter: blur(34px);
+    opacity: 0.25;
+    background: color-mix(in oklab, var(--twst-accent) 65%, #ffffff);
+    animation: twst-float 15s ease-in-out infinite;
+  }
+
+  .dark .twst-hero-blob {
+    opacity: 0.2;
+    background: color-mix(in oklab, var(--twst-accent) 65%, #101010);
+  }
+
+  .twst-hero-blob-a {
+    width: 18rem;
+    height: 18rem;
+    top: -4rem;
+    left: -2rem;
+  }
+
+  .twst-hero-blob-b {
+    width: 16rem;
+    height: 16rem;
+    right: -3rem;
+    top: 30%;
+    animation-delay: -6s;
+  }
+
+  .twst-hero-blob-c {
+    width: 14rem;
+    height: 14rem;
+    left: 40%;
+    bottom: -6rem;
+    animation-delay: -10s;
+  }
+
+  .twst-hero-grid {
+    position: absolute;
+    inset: 0;
+    display: block;
+    background-image:
+      linear-gradient(to right, rgba(100, 116, 139, 0.08) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(100, 116, 139, 0.08) 1px, transparent 1px);
+    background-size: 36px 36px;
+    mask-image: radial-gradient(circle at center, #000 40%, transparent 85%);
+  }
+}
+
+@media (min-width: 1024px) {
+
+  #site-nav .twst-nav-desktop,
+  #site-nav .twst-nav-desktop>ul,
+  #site-nav nav .menu>ul {
+    flex-direction: row;
+    gap: 2.5rem;
+    align-items: center;
+  }
+}
+
+@keyframes twst-float {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(1.5rem, -1rem, 0) scale(1.08);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}

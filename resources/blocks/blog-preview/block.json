@@ -1,0 +1,29 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "twst/blog-preview",
+  "title": "TWST Blog Preview",
+  "category": "design",
+  "icon": "welcome-write-blog",
+  "description": "Blog cards section with latest posts.",
+  "textdomain": "sage",
+  "render": "file:./render.php",
+  "supports": {
+    "anchor": true,
+    "html": false
+  },
+  "attributes": {
+    "eyebrow": { "type": "string", "default": "BLOG" },
+    "headline": { "type": "string", "default": "Latest Insights" },
+    "postLinkLabel": { "type": "string", "default": "Read more" },
+    "viewMoreLabel": { "type": "string", "default": "View more" },
+    "eyebrowEn": { "type": "string" },
+    "eyebrowPl": { "type": "string" },
+    "headlineEn": { "type": "string" },
+    "headlinePl": { "type": "string" },
+    "postLinkLabelEn": { "type": "string" },
+    "postLinkLabelPl": { "type": "string" },
+    "viewMoreLabelEn": { "type": "string" },
+    "viewMoreLabelPl": { "type": "string" }
+  }
+}

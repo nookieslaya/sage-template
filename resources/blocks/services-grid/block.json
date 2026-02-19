@@ -1,0 +1,30 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "twst/services-grid",
+  "title": "TWST Services Grid",
+  "category": "design",
+  "icon": "grid-view",
+  "description": "Services section with editable cards.",
+  "textdomain": "sage",
+  "supports": {
+    "anchor": true,
+    "html": false
+  },
+  "attributes": {
+    "headline": { "type": "string", "default": "Comprehensive Technology Solutions" },
+    "items": {
+      "type": "array",
+      "default": [
+        { "icon": "Cloud", "title": "Cloud Architecture", "desc": "Scalable cloud infrastructure design and migration." },
+        { "icon": "Code", "title": "Full-Stack Development", "desc": "End-to-end application development with modern frameworks." },
+        { "icon": "DB", "title": "Database Design", "desc": "High-performance database architecture and optimization." },
+        { "icon": "API", "title": "API Development", "desc": "REST and GraphQL API design with documentation." },
+        { "icon": "Flow", "title": "System Integration", "desc": "Connect systems and third-party services into one workflow." },
+        { "icon": "Shield", "title": "Security & Compliance", "desc": "Security best practices, audits and compliance support." }
+      ]
+    },
+    "headlineEn": { "type": "string" },
+    "headlinePl": { "type": "string" }
+  }
+}

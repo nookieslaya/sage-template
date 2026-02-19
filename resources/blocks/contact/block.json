@@ -1,0 +1,28 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "twst/contact",
+  "title": "TWST Contact",
+  "category": "design",
+  "icon": "email",
+  "description": "Contact section with call to action and contact details.",
+  "textdomain": "sage",
+  "supports": {
+    "anchor": true,
+    "html": false
+  },
+  "attributes": {
+    "headline": { "type": "string", "default": "Ready to build your next product?" },
+    "description": { "type": "string", "default": "Tell me about your goals and timeline. I will reply with a practical implementation plan." },
+    "ctaLabel": { "type": "string", "default": "Start a Project" },
+    "ctaUrl": { "type": "string", "default": "mailto:hello@example.com" },
+    "email": { "type": "string", "default": "hello@example.com" },
+    "phone": { "type": "string", "default": "+48 500 000 000" },
+    "headlineEn": { "type": "string" },
+    "headlinePl": { "type": "string" },
+    "descriptionEn": { "type": "string" },
+    "descriptionPl": { "type": "string" },
+    "ctaLabelEn": { "type": "string" },
+    "ctaLabelPl": { "type": "string" }
+  }
+}

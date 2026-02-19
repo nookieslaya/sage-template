@@ -1,0 +1,43 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "twst/footer",
+  "title": "TWST Footer",
+  "category": "design",
+  "icon": "editor-kitchensink",
+  "description": "Footer section with links and social profiles.",
+  "textdomain": "sage",
+  "supports": {
+    "anchor": true,
+    "html": false
+  },
+  "attributes": {
+    "brand": { "type": "string", "default": "Alex Kowalski" },
+    "tagline": { "type": "string", "default": "Building the future of B2B technology" },
+    "copyright": { "type": "string", "default": "All rights reserved." },
+    "links": {
+      "type": "array",
+      "default": [
+        { "label": "Home", "url": "#" },
+        { "label": "About", "url": "#about" },
+        { "label": "Services", "url": "#services" },
+        { "label": "Work", "url": "#work" },
+        { "label": "Blog", "url": "#blog" },
+        { "label": "Contact", "url": "#contact" }
+      ]
+    },
+    "socials": {
+      "type": "array",
+      "default": [
+        { "label": "GitHub", "url": "https://github.com" },
+        { "label": "LinkedIn", "url": "https://linkedin.com" },
+        { "label": "X", "url": "https://x.com" },
+        { "label": "Email", "url": "mailto:hello@example.com" }
+      ]
+    },
+    "taglineEn": { "type": "string" },
+    "taglinePl": { "type": "string" },
+    "copyrightEn": { "type": "string" },
+    "copyrightPl": { "type": "string" }
+  }
+}
