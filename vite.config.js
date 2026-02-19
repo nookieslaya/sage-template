@@ -6,8 +6,9 @@ import { wordpressPlugin, wordpressThemeJson } from '@roots/vite-plugin';
 export default defineConfig({
   base: '/app/themes/sage/public/build/',
   esbuild: {
-    jsx: 'automatic',
-    jsxImportSource: '@wordpress/element',
+    jsx: 'transform',
+    jsxFactory: 'wp.element.createElement',
+    jsxFragment: 'wp.element.Fragment',
   },
   plugins: [
     tailwindcss(),
