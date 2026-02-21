@@ -12,8 +12,14 @@
     "html": false
   },
   "attributes": {
-    "headline": { "type": "string", "default": "Building Enterprise Solutions That Scale" },
-    "description": { "type": "string", "default": "I partner with B2B companies to design and develop robust technology solutions that drive business growth." },
+    "headline": {
+      "type": "string",
+      "default": "Building Enterprise Solutions That Scale"
+    },
+    "description": {
+      "type": "string",
+      "default": "I partner with B2B companies to design and develop robust technology solutions that drive business growth."
+    },
     "primaryLabel": { "type": "string", "default": "Start a Project" },
     "primaryUrl": { "type": "string", "default": "#contact" },
     "secondaryLabel": { "type": "string", "default": "View My Work" },

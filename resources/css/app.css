@@ -1,4 +1,4 @@
-@import "tailwindcss" theme(static);
+@import 'tailwindcss' theme(static);
 @custom-variant dark (&:where(.dark, .dark *));
 @source "../views/";
 @source "../blocks/";
@@ -16,7 +16,6 @@
 }
 
 @layer components {
-
   .twst-btn-accent {
     @apply inline-flex items-center justify-center rounded-2xl px-8 py-4 text-base font-semibold text-white no-underline transition;
     background: var(--twst-accent);
@@ -49,16 +48,16 @@
   }
 
   #site-nav nav ul,
-  #site-nav .twst-nav-desktop>ul,
-  #site-nav nav .menu>ul,
+  #site-nav .twst-nav-desktop > ul,
+  #site-nav nav .menu > ul,
   #site-nav .twst-nav-desktop {
     @apply m-0 list-none p-0;
   }
 
   #site-nav .twst-nav-desktop,
-  #site-nav .twst-nav-desktop>ul,
-  #site-nav nav .menu>ul {
-    @apply flex flex-col gap-3 text-lg font-semibold text-zinc-500 dark:text-zinc-400;
+  #site-nav .twst-nav-desktop > ul,
+  #site-nav nav .menu > ul {
+    @apply flex flex-col gap-3 text-lg !no-underline font-semibold text-zinc-700 dark:text-zinc-200;
   }
 
   #site-nav nav li,
@@ -67,7 +66,7 @@
   }
 
   #site-nav nav a {
-    @apply inline-flex rounded-lg px-1 py-1 no-underline transition hover:text-zinc-900 dark:hover:text-zinc-100;
+    @apply inline-flex rounded-lg px-1 py-1 !no-underline transition hover:text-zinc-900 dark:hover:text-zinc-100;
   }
 
   #site-nav nav a:hover {
@@ -79,26 +78,26 @@
   }
 
   .twst-lang-link {
-    @apply rounded-xl px-4 py-2 text-sm font-semibold text-zinc-500 no-underline transition hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-100;
+    @apply rounded-xl px-4 py-2 text-sm font-semibold text-zinc-500 !no-underline transition hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-100;
   }
 
   .twst-lang-link.is-active {
     @apply text-zinc-900 dark:text-zinc-100;
-    background: color-mix(in oklab, var(--twst-accent) 18%, #ffffff);
+    background: color-mix(in oklab, var(--twst-accent) 30%, #ffffff);
   }
 
   .dark .twst-lang-link.is-active {
-    background: color-mix(in oklab, var(--twst-accent) 26%, #18181b);
+    background: color-mix(in oklab, var(--twst-accent) 50%, #18181b);
   }
 
-  #site-nav nav .current-menu-item>a,
-  #site-nav nav .current_page_item>a {
+  #site-nav nav .current-menu-item > a,
+  #site-nav nav .current_page_item > a {
     color: color-mix(in oklab, var(--twst-accent) 84%, #111827);
   }
 
   [data-mobile-menu-panel] nav ul,
-  [data-mobile-menu-panel] .twst-nav-mobile>ul,
-  [data-mobile-menu-panel] nav .menu>ul,
+  [data-mobile-menu-panel] .twst-nav-mobile > ul,
+  [data-mobile-menu-panel] nav .menu > ul,
   [data-mobile-menu-panel] .twst-nav-mobile {
     @apply m-0 grid list-none gap-3 p-0 text-lg font-semibold text-zinc-600 dark:text-zinc-300;
   }
@@ -122,8 +121,8 @@
   }
 
   .twst-footer-menu a:hover,
-  .twst-footer-menu .current-menu-item>a,
-  .twst-footer-menu .current_page_item>a {
+  .twst-footer-menu .current-menu-item > a,
+  .twst-footer-menu .current_page_item > a {
     color: color-mix(in oklab, var(--twst-accent) 84%, #111827);
   }
 
@@ -185,11 +184,27 @@
   }
 
   .twst-hero {
-    background: radial-gradient(circle at 10% 10%, color-mix(in oklab, var(--twst-accent) 12%, #ffffff) 0%, transparent 45%), linear-gradient(180deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.35));
+    background:
+      radial-gradient(
+        circle at 10% 10%,
+        color-mix(in oklab, var(--twst-accent) 12%, #ffffff) 0%,
+        transparent 45%
+      ),
+      linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.7),
+        rgba(255, 255, 255, 0.35)
+      );
   }
 
   .dark .twst-hero {
-    background: radial-gradient(circle at 10% 10%, color-mix(in oklab, var(--twst-accent) 18%, #0a0a0a) 0%, transparent 45%), linear-gradient(180deg, rgba(16, 16, 16, 0.8), rgba(16, 16, 16, 0.45));
+    background:
+      radial-gradient(
+        circle at 10% 10%,
+        color-mix(in oklab, var(--twst-accent) 18%, #0a0a0a) 0%,
+        transparent 45%
+      ),
+      linear-gradient(180deg, rgba(16, 16, 16, 0.8), rgba(16, 16, 16, 0.45));
   }
 
   .twst-hero-bg {
@@ -206,7 +221,8 @@
     filter: blur(34px);
     opacity: 0.25;
     background: color-mix(in oklab, var(--twst-accent) 65%, #ffffff);
-    animation: twst-float 15s ease-in-out infinite;
+    animation: twst-drift-right 20s linear infinite;
+    will-change: transform;
   }
 
   .dark .twst-hero-blob {
@@ -218,7 +234,8 @@
     width: 18rem;
     height: 18rem;
     top: -4rem;
-    left: -2rem;
+    left: -14rem;
+    animation-duration: 22s;
   }
 
   .twst-hero-blob-b {
@@ -226,15 +243,17 @@
     height: 16rem;
     right: -3rem;
     top: 30%;
-    animation-delay: -6s;
+    animation-duration: 26s;
+    animation-delay: -8s;
   }
 
   .twst-hero-blob-c {
     width: 14rem;
     height: 14rem;
-    left: 40%;
+    left: -10rem;
     bottom: -6rem;
-    animation-delay: -10s;
+    animation-duration: 20s;
+    animation-delay: -14s;
   }
 
   .twst-hero-grid {
@@ -246,28 +265,41 @@
       linear-gradient(to bottom, rgba(100, 116, 139, 0.08) 1px, transparent 1px);
     background-size: 36px 36px;
     mask-image: radial-gradient(circle at center, #000 40%, transparent 85%);
+    animation: twst-grid-slide-right 24s linear infinite;
   }
 }
 
 @media (min-width: 1024px) {
-
   #site-nav .twst-nav-desktop,
-  #site-nav .twst-nav-desktop>ul,
-  #site-nav nav .menu>ul {
+  #site-nav .twst-nav-desktop > ul,
+  #site-nav nav .menu > ul {
     flex-direction: row;
     gap: 2.5rem;
     align-items: center;
   }
 }
 
-@keyframes twst-float {
+@keyframes twst-drift-right {
   0% {
     transform: translate3d(0, 0, 0) scale(1);
   }
   50% {
-    transform: translate3d(1.5rem, -1rem, 0) scale(1.08);
+    transform: translate3d(58vw, -0.75rem, 0) scale(1.06);
   }
   100% {
-    transform: translate3d(0, 0, 0) scale(1);
+    transform: translate3d(116vw, 0, 0) scale(1.1);
+  }
+}
+
+@keyframes twst-grid-slide-right {
+  0% {
+    background-position:
+      0 0,
+      0 0;
+  }
+  100% {
+    background-position:
+      72px 0,
+      0 72px;
   }
 }

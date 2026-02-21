@@ -1,18 +1,14 @@
 import { registerBlockType } from '@wordpress/blocks';
 import { __ } from '@wordpress/i18n';
 import { InspectorControls, useBlockProps } from '@wordpress/block-editor';
-import { Notice, PanelBody, TextControl, TextareaControl } from '@wordpress/components';
-import { useState } from '@wordpress/element';
+import { Button, PanelBody, TextControl, TextareaControl } from '@wordpress/components';
 import metadata from './block.json';
 import {
   getLegacyLocalized,
   getItemLegacyLocalized,
-  parseArrayInput,
-  serializeArrayInput,
 } from '../shared';
 
 const normalizeItems = (items = []) => items.map((item) => ({
-  icon: item.icon || '',
   title: getItemLegacyLocalized(item, 'title'),
   desc: getItemLegacyLocalized(item, 'desc'),
 }));
@@ -28,8 +24,7 @@ const ServicesContent = ({ attributes }) => {
       <div className="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
         {normalizeItems(attributes.items).map((item, index) => (
           <article key={`service-${index}`} className="rounded-3xl border border-zinc-200 bg-zinc-50 p-8 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-            <div className="inline-flex rounded-2xl bg-zinc-200 px-4 py-2 text-sm font-semibold text-zinc-700 dark:bg-zinc-800 dark:text-zinc-200">{item.icon}</div>
-            <h3 className="mt-6 text-2xl font-semibold text-zinc-900 dark:text-zinc-100">{item.title}</h3>
+            <h3 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">{item.title}</h3>
             <p className="mt-4 text-lg leading-relaxed text-zinc-500 dark:text-zinc-400">{item.desc}</p>
           </article>
         ))}
@@ -41,8 +36,51 @@ const ServicesContent = ({ attributes }) => {
 registerBlockType(metadata.name, {
   ...metadata,
   edit({ attributes, setAttributes }) {
-    const [jsonError, setJsonError] = useState('');
     const blockProps = useBlockProps({ className: 'bg-zinc-100 dark:bg-zinc-950' });
+    const items = normalizeItems(attributes.items);
+
+    const setItems = (nextItems) => {
+      setAttributes({ items: nextItems });
+    };
+
+    const updateItem = (index, key, value) => {
+      const nextItems = items.map((item, itemIndex) => (
+        itemIndex === index ? { ...item, [key]: value } : item
+      ));
+      setItems(nextItems);
+    };
+
+    const addItem = () => {
+      setItems([
+        ...items,
+        {
+          title: '',
+          desc: '',
+        },
+      ]);
+    };
+
+    const removeItem = (index) => {
+      if (items.length <= 1) {
+        return;
+      }
+
+      setItems(items.filter((_, itemIndex) => itemIndex !== index));
+    };
+
+    const moveItem = (index, direction) => {
+      const targetIndex = index + direction;
+
+      if (targetIndex < 0 || targetIndex >= items.length) {
+        return;
+      }
+
+      const nextItems = [...items];
+      const currentItem = nextItems[index];
+      nextItems[index] = nextItems[targetIndex];
+      nextItems[targetIndex] = currentItem;
+      setItems(nextItems);
+    };
 
     return (
       <>
@@ -53,21 +91,59 @@ registerBlockType(metadata.name, {
               value={getLegacyLocalized(attributes, 'headline')}
               onChange={(headline) => setAttributes({ headline })}
             />
-            <TextareaControl
-              label={__('Cards JSON', 'sage')}
-              help={__('Array format: icon, title, desc.', 'sage')}
-              value={serializeArrayInput(normalizeItems(attributes.items))}
-              onChange={(rawValue) => {
-                const parsedValue = parseArrayInput(rawValue, null);
-                if (!parsedValue) {
-                  setJsonError(__('Invalid JSON. Changes were not applied.', 'sage'));
-                  return;
-                }
-                setJsonError('');
-                setAttributes({ items: parsedValue });
-              }}
-            />
-            {jsonError ? <Notice status="error" isDismissible={false}>{jsonError}</Notice> : null}
+
+            {items.map((item, index) => (
+              <div key={`service-control-${index}`} className="mt-6 rounded border border-zinc-300 p-4">
+                <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-zinc-500">
+                  {`${__('Card', 'sage')} ${index + 1}`}
+                </p>
+
+                <TextControl
+                  label={__('Title', 'sage')}
+                  value={item.title}
+                  onChange={(value) => updateItem(index, 'title', value)}
+                />
+
+                <TextareaControl
+                  label={__('Description', 'sage')}
+                  value={item.desc}
+                  onChange={(value) => updateItem(index, 'desc', value)}
+                />
+
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <Button
+                    variant="secondary"
+                    onClick={() => moveItem(index, -1)}
+                    disabled={index === 0}
+                  >
+                    {__('Move up', 'sage')}
+                  </Button>
+
+                  <Button
+                    variant="secondary"
+                    onClick={() => moveItem(index, 1)}
+                    disabled={index === items.length - 1}
+                  >
+                    {__('Move down', 'sage')}
+                  </Button>
+
+                  <Button
+                    variant="secondary"
+                    isDestructive
+                    onClick={() => removeItem(index)}
+                    disabled={items.length <= 1}
+                  >
+                    {__('Remove', 'sage')}
+                  </Button>
+                </div>
+              </div>
+            ))}
+
+            <div className="mt-4">
+              <Button variant="primary" onClick={addItem}>
+                {__('Add card', 'sage')}
+              </Button>
+            </div>
           </PanelBody>
         </InspectorControls>
 

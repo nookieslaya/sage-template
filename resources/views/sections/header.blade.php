@@ -1,4 +1,6 @@
-<header class="sticky top-0 z-50 border-b border-zinc-200/70 bg-zinc-100/90 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/85">
+
+
+<header class="sticky top-0 z-50 border-b border-zinc-200/70 bg-zinc-100/90 backdrop-blur dark:border-zinc-800 dark:bg-black/90">
   @php
     $pll_languages = function_exists('pll_the_languages')
         ? pll_the_languages([
