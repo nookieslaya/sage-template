@@ -24,6 +24,7 @@
     "primaryUrl": { "type": "string", "default": "#contact" },
     "secondaryLabel": { "type": "string", "default": "View My Work" },
     "secondaryUrl": { "type": "string", "default": "#work" },
+    "backgroundAnimation": { "type": "string", "default": "shader" },
     "headlineEn": { "type": "string" },
     "headlinePl": { "type": "string" },
     "descriptionEn": { "type": "string" },

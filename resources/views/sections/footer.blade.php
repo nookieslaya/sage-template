@@ -1,5 +1,10 @@
 <footer class="border-t border-zinc-200 bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-950">
   @php
+    $twstThemeSettings = function_exists('\App\twst_get_theme_options')
+        ? \App\twst_get_theme_options()
+        : [];
+    $footerLogoUrl = $twstThemeSettings['footer_logo_url'] ?? '';
+
     $twstSocialSettings = function_exists('\App\twst_get_social_options')
         ? \App\twst_get_social_options()
         : [];
@@ -31,7 +36,11 @@
   <div class="mx-auto max-w-[1700px] px-6 py-16 lg:px-12 lg:py-20">
     <div class="grid gap-14 md:grid-cols-3">
       <section>
-        <h2 class="text-5xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">{{ $siteName }}</h2>
+        @if (! empty($footerLogoUrl))
+          <img src="{{ esc_url($footerLogoUrl) }}" alt="{{ esc_attr($siteName) }}" class="h-14 w-auto object-contain" />
+        @else
+          <h2 class="text-5xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">{{ $siteName }}</h2>
+        @endif
         <p class="mt-4 text-3xl text-zinc-500 dark:text-zinc-400">
           <span data-lang="en">Building the future of B2B technology</span>
           <span data-lang="pl" class="hidden">Buduje przyszlosc technologii B2B</span>

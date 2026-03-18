@@ -74,7 +74,7 @@ $query = new WP_Query([
               <a href="<?php the_permalink(); ?>" class="twst-link-accent no-underline transition"><?php the_title(); ?></a>
             </h3>
             <p class="mt-4 text-xl leading-relaxed text-zinc-500 dark:text-zinc-400"><?php echo esc_html(get_the_excerpt()); ?></p>
-            <a class="twst-link-accent mt-6 inline-flex items-center text-lg font-semibold no-underline" href="<?php the_permalink(); ?>"><?php echo esc_html($post_link_label); ?> →</a>
+            <a class="twst-link-accent mt-6 inline-flex items-center text-lg font-semibold no-underline" href="<?php the_permalink(); ?>"><?php echo esc_html($post_link_label); ?></a>
           </div>
         </article>
       <?php endwhile; ?>

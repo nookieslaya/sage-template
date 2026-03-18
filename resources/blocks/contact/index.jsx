@@ -16,11 +16,11 @@ const ContactContent = ({ attributes }) => {
 
   return (
     <section className="mx-auto max-w-7xl scroll-mt-32 px-6 py-20 md:py-24" id="contact">
-      <div className="rounded-3xl bg-zinc-900 p-10 text-zinc-100 dark:bg-zinc-100 dark:text-zinc-900 md:p-16">
+      <div className="twst-contact-panel rounded-3xl p-10 text-zinc-900 dark:text-zinc-100 md:p-16">
         <h2 className="text-balance text-4xl font-semibold tracking-tight md:text-6xl">{headline}</h2>
         <p className="mt-6 max-w-3xl text-xl leading-relaxed opacity-80">{description}</p>
         <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <a className="twst-btn-accent w-fit" href={attributes.ctaUrl || '#'}>{ctaLabel}</a>
+          <a className="twst-hero-btn-primary w-fit" href={attributes.ctaUrl || '#'}>{ctaLabel}</a>
           <div className="text-sm opacity-80">
             <p>{attributes.email || ''}</p>
             <p>{attributes.phone || ''}</p>

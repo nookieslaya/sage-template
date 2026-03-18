@@ -26,10 +26,9 @@
       @php(the_excerpt())
     </div>
 
-    <a href="{{ get_permalink() }}" class="mt-6 inline-flex items-center text-lg font-semibold text-zinc-900 hover:underline dark:text-zinc-100">
+    <a href="{{ get_permalink() }}" class="mt-6 inline-flex items-center text-lg font-semibold text-zinc-900 no-underline dark:text-zinc-100">
       <span data-lang="en">Read more</span>
       <span data-lang="pl" class="hidden">Czytaj dalej</span>
-      <span class="ml-2">→</span>
     </a>
   </div>
 </article>

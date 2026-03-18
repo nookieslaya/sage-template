@@ -6,7 +6,45 @@
 
 namespace App;
 
-use Illuminate\Support\Facades\Vite;
+/**
+ * Get Vite manifest as array.
+ *
+ * @return array<string, array<string, mixed>>
+ */
+function twst_get_manifest(): array
+{
+    static $manifest = null;
+
+    if ($manifest !== null) {
+        return $manifest;
+    }
+
+    $manifest_path = get_theme_file_path('public/build/manifest.json');
+    if (! file_exists($manifest_path)) {
+        $manifest = [];
+
+        return $manifest;
+    }
+
+    $decoded = json_decode((string) file_get_contents($manifest_path), true);
+    $manifest = is_array($decoded) ? $decoded : [];
+
+    return $manifest;
+}
+
+/**
+ * Resolve manifest file path for an entry.
+ *
+ * @param string $entry
+ * @return string
+ */
+function twst_manifest_file(string $entry): string
+{
+    $manifest = twst_get_manifest();
+    $file = $manifest[$entry]['file'] ?? '';
+
+    return is_string($file) ? $file : '';
+}
 
 /**
  * Inject styles into the block editor.
@@ -14,37 +52,106 @@ use Illuminate\Support\Facades\Vite;
  * @return array
  */
 add_filter('block_editor_settings_all', function ($settings) {
-    $style = Vite::asset('resources/css/editor.css');
+    $editor_css = twst_manifest_file('resources/css/editor.css');
+    if ($editor_css === '') {
+        return $settings;
+    }
 
     $settings['styles'][] = [
-        'css' => "@import url('{$style}')",
+        'css' => "@import url('".esc_url(get_theme_file_uri('public/build/'.$editor_css))."')",
     ];
 
     return $settings;
 });
 
 /**
- * Inject scripts into the block editor.
+ * Enqueue frontend assets from manifest.
  *
  * @return void
  */
-add_filter('admin_head', function () {
-    if (! get_current_screen()?->is_block_editor()) {
+add_action('wp_enqueue_scripts', function () {
+    $app_css = twst_manifest_file('resources/css/app.css');
+    if ($app_css !== '') {
+        wp_enqueue_style(
+            'test-theme-app',
+            get_theme_file_uri('public/build/'.$app_css),
+            [],
+            null
+        );
+    }
+
+    $app_js = twst_manifest_file('resources/js/app.js');
+    if ($app_js !== '') {
+        wp_enqueue_script(
+            'test-theme-app',
+            get_theme_file_uri('public/build/'.$app_js),
+            [],
+            null,
+            true
+        );
+
+        wp_script_add_data('test-theme-app', 'type', 'module');
+    }
+});
+
+/**
+ * Enqueue block editor script.
+ *
+ * @return void
+ */
+add_action('enqueue_block_editor_assets', function () {
+    $editor_file = twst_manifest_file('resources/js/editor.js');
+    if ($editor_file === '') {
         return;
     }
 
-    $dependencies = json_decode(Vite::content('editor.deps.json'));
-
-    foreach ($dependencies as $dependency) {
-        if (! wp_script_is($dependency)) {
-            wp_enqueue_script($dependency);
+    $dependencies = [];
+    $manifest = twst_get_manifest();
+    $deps_file = $manifest['editor.deps.json']['file'] ?? null;
+    if (is_string($deps_file) && $deps_file !== '') {
+        $deps_path = get_theme_file_path('public/build/'.$deps_file);
+        if (file_exists($deps_path)) {
+            $decoded_deps = json_decode((string) file_get_contents($deps_path), true);
+            if (is_array($decoded_deps)) {
+                $dependencies = $decoded_deps;
+            }
         }
     }
 
-    echo Vite::withEntryPoints([
-        'resources/js/editor.js',
-    ])->toHtml();
+    $dependencies = array_values(array_filter($dependencies, static fn ($dependency) => is_string($dependency) && wp_script_is($dependency, 'registered')));
+
+    wp_enqueue_script(
+        'test-theme-editor',
+        get_theme_file_uri('public/build/'.$editor_file),
+        $dependencies,
+        null,
+        true
+    );
+
+    wp_script_add_data('test-theme-editor', 'type', 'module');
 });
+
+/**
+ * Force module type for editor bundle (some optimizers strip script data).
+ *
+ * @param string $tag
+ * @param string $handle
+ * @param string $src
+ * @return string
+ */
+add_filter('script_loader_tag', function ($tag, $handle, $src) {
+    $module_handles = ['test-theme-app', 'test-theme-editor'];
+
+    if (! in_array($handle, $module_handles, true)) {
+        return $tag;
+    }
+
+    return sprintf(
+        '<script type="module" src="%s" id="%s-js"></script>',
+        esc_url($src),
+        esc_attr($handle)
+    );
+}, 10, 3);
 
 /**
  * Use the generated theme.json file.
@@ -162,6 +269,8 @@ function twst_get_theme_options(): array
     $defaults = [
         'show_side_nav_frontpage' => 1,
         'accent_color' => '#2f6fff',
+        'navbar_logo_url' => '',
+        'footer_logo_url' => '',
     ];
 
     $options = get_option('twst_theme_settings', []);
@@ -208,6 +317,8 @@ function twst_sanitize_theme_settings($input): array
     return [
         'show_side_nav_frontpage' => empty($input['show_side_nav_frontpage']) ? 0 : 1,
         'accent_color' => sanitize_hex_color($input['accent_color'] ?? '') ?: '#2f6fff',
+        'navbar_logo_url' => esc_url_raw($input['navbar_logo_url'] ?? ''),
+        'footer_logo_url' => esc_url_raw($input['footer_logo_url'] ?? ''),
     ];
 }
 
@@ -284,13 +395,48 @@ function twst_render_checkbox_field(array $args): void
 }
 
 /**
+ * Render media field (image URL + media button).
+ */
+function twst_render_media_field(array $args): void
+{
+    $option_name = $args['option_name'] ?? '';
+    $field_key = $args['field_key'] ?? '';
+    $label = $args['label'] ?? '';
+
+    $values = get_option($option_name, []);
+    $value = is_array($values) ? ($values[$field_key] ?? '') : '';
+    ?>
+    <div class="twst-media-field">
+      <input
+        type="text"
+        id="<?php echo esc_attr($field_key); ?>"
+        name="<?php echo esc_attr($option_name); ?>[<?php echo esc_attr($field_key); ?>]"
+        value="<?php echo esc_attr((string) $value); ?>"
+        class="regular-text twst-media-url"
+        placeholder="<?php esc_attr_e('Select image from Media Library', 'sage'); ?>"
+      />
+      <button
+        type="button"
+        class="button twst-media-select-button"
+        data-target-id="<?php echo esc_attr($field_key); ?>"
+      >
+        <?php esc_html_e('Choose image', 'sage'); ?>
+      </button>
+    </div>
+    <?php if (! empty($label)) : ?>
+      <p class="description"><?php echo esc_html($label); ?></p>
+    <?php endif; ?>
+    <?php
+}
+
+/**
  * Render global settings page.
  */
 function twst_render_general_settings_page(): void
 {
     ?>
     <div class="wrap">
-      <h1><?php esc_html_e('TWST Theme Settings', 'sage'); ?></h1>
+      <h1><?php esc_html_e('Global Settings', 'sage'); ?></h1>
       <form method="post" action="options.php">
         <?php
         settings_fields('twst_theme_settings_group');
@@ -323,8 +469,8 @@ function twst_render_social_settings_page(): void
 
 add_action('admin_menu', function () {
     add_menu_page(
-        __('TWST Settings', 'sage'),
-        __('TWST Settings', 'sage'),
+        __('Global Settings', 'sage'),
+        __('Global Settings', 'sage'),
         'manage_options',
         'twst-theme-settings',
         __NAMESPACE__.'\\twst_render_general_settings_page',
@@ -397,6 +543,32 @@ add_action('admin_init', function () {
         ]
     );
 
+    add_settings_field(
+        'navbar_logo_url',
+        __('Navbar logo', 'sage'),
+        __NAMESPACE__.'\\twst_render_media_field',
+        'twst-theme-settings',
+        'twst_theme_main_section',
+        [
+            'option_name' => 'twst_theme_settings',
+            'field_key' => 'navbar_logo_url',
+            'label' => __('Used in header. Leave empty to display site name text.', 'sage'),
+        ]
+    );
+
+    add_settings_field(
+        'footer_logo_url',
+        __('Footer logo', 'sage'),
+        __NAMESPACE__.'\\twst_render_media_field',
+        'twst-theme-settings',
+        'twst_theme_main_section',
+        [
+            'option_name' => 'twst_theme_settings',
+            'field_key' => 'footer_logo_url',
+            'label' => __('Used in footer. Leave empty to display site name text.', 'sage'),
+        ]
+    );
+
     register_setting(
         'twst_social_settings_group',
         'twst_social_settings',
@@ -463,3 +635,41 @@ add_action('wp_head', function () {
     <style id="twst-theme-accent-color">:root{--twst-accent:<?php echo esc_html($accent); ?>;}</style>
     <?php
 }, 20);
+
+add_action('admin_enqueue_scripts', function ($hook) {
+    if ($hook !== 'toplevel_page_twst-theme-settings') {
+        return;
+    }
+
+    wp_enqueue_media();
+    wp_add_inline_script('media-editor', "
+      (function() {
+        if (typeof wp === 'undefined' || !wp.media) {
+          return;
+        }
+        document.addEventListener('click', function(event) {
+          var button = event.target.closest('.twst-media-select-button');
+          if (!button) {
+            return;
+          }
+          var targetId = button.getAttribute('data-target-id');
+          var targetInput = document.getElementById(targetId);
+          if (!targetInput) {
+            return;
+          }
+          var frame = wp.media({
+            title: 'Select image',
+            button: { text: 'Use this image' },
+            multiple: false,
+            library: { type: 'image' }
+          });
+          frame.on('select', function() {
+            var attachment = frame.state().get('selection').first().toJSON();
+            targetInput.value = attachment.url || '';
+            targetInput.dispatchEvent(new Event('change', { bubbles: true }));
+          });
+          frame.open();
+        });
+      })();
+    ");
+});

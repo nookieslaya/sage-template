@@ -5,7 +5,12 @@ import {
   URLInputButton,
   useBlockProps,
 } from '@wordpress/block-editor';
-import { PanelBody, TextControl, TextareaControl } from '@wordpress/components';
+import {
+  PanelBody,
+  SelectControl,
+  TextControl,
+  TextareaControl,
+} from '@wordpress/components';
 import metadata from './block.json';
 import { getLegacyLocalized } from '../shared';
 
@@ -34,31 +39,32 @@ const HeroContent = ({ attributes }) => {
   return (
     <header
       id="home"
-      className="twst-hero relative w-full scroll-mt-32 overflow-hidden px-6 py-20 md:py-60"
+      className={`twst-hero relative h-screen w-full scroll-mt-32 overflow-hidden px-6 py-12 md:py-16 ${
+        (attributes.backgroundAnimation || 'shader') === 'tubes' ? 'twst-hero--tubes' : 'twst-hero--shader'
+      }`}
+      data-hero-shader
+      data-hero-animation-type={attributes.backgroundAnimation || 'shader'}
     >
-      <div className="twst-hero-bg" aria-hidden="true">
-        <span className="twst-hero-blob twst-hero-blob-a" />
-        <span className="twst-hero-blob twst-hero-blob-b" />
-        <span className="twst-hero-blob twst-hero-blob-c" />
-        <span className="twst-hero-grid" />
-      </div>
-      <div className="relative z-10 mx-auto max-w-6xl text-center">
-        <h1 className="mx-auto max-w-5xl text-balance text-4xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100 md:text-7xl">
+      <div className="twst-hero-canvas" data-hero-shader-canvas aria-hidden="true" />
+      <div className="relative z-10 mx-auto flex h-screen max-w-6xl items-center pt-20 text-center md:pt-24">
+        <div className="w-full">
+          <h1 className="mx-auto max-w-5xl text-balance text-4xl font-semibold tracking-tight text-zinc-100 md:text-7xl">
           {headline}
-        </h1>
-        <p className="mx-auto mt-8 max-w-4xl text-pretty text-lg leading-relaxed text-zinc-500 dark:text-zinc-400 md:text-2xl">
+          </h1>
+          <p className="mx-auto mt-8 max-w-4xl text-pretty text-lg leading-relaxed text-zinc-300 md:text-2xl">
           {description}
-        </p>
-        <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-          <a className="twst-btn-accent" href={attributes.primaryUrl || '#'}>
+          </p>
+          <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+            <a className="twst-hero-btn-primary" href={attributes.primaryUrl || '#'}>
             {primaryLabel}
-          </a>
-          <a
-            className="inline-flex items-center justify-center rounded-2xl bg-zinc-200 px-8 py-4 text-base font-semibold text-zinc-900 transition hover:bg-zinc-300 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700"
-            href={attributes.secondaryUrl || '#'}
-          >
+            </a>
+            <a
+              className="twst-hero-btn-secondary"
+              href={attributes.secondaryUrl || '#'}
+            >
             {secondaryLabel}
-          </a>
+            </a>
+          </div>
         </div>
       </div>
     </header>
@@ -69,7 +75,7 @@ registerBlockType(metadata.name, {
   ...metadata,
   edit({ attributes, setAttributes }) {
     const blockProps = useBlockProps({
-      className: 'bg-zinc-100 dark:bg-zinc-950',
+      className: 'bg-zinc-950',
     });
 
     return (
@@ -110,6 +116,15 @@ registerBlockType(metadata.name, {
               url={attributes.secondaryUrl}
               onChange={(secondaryUrl) => setAttributes({ secondaryUrl })}
             />
+            <SelectControl
+              label={__('Background animation', 'sage')}
+              value={attributes.backgroundAnimation || 'shader'}
+              options={[
+                { label: __('Shader', 'sage'), value: 'shader' },
+                { label: __('Tubes', 'sage'), value: 'tubes' },
+              ]}
+              onChange={(backgroundAnimation) => setAttributes({ backgroundAnimation })}
+            />
           </PanelBody>
         </InspectorControls>
 
@@ -121,7 +136,7 @@ registerBlockType(metadata.name, {
   },
   save({ attributes }) {
     const blockProps = useBlockProps.save({
-      className: 'bg-zinc-100 dark:bg-zinc-950',
+      className: 'bg-zinc-950',
     });
 
     return (

@@ -3,10 +3,18 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script>
+      (function () {
+        try {
+          var root = document.documentElement;
+          var stored = localStorage.getItem('twst-theme');
+          var isDark = stored ? stored === 'dark' : true;
+          root.classList.toggle('dark', isDark);
+        } catch (e) {}
+      })();
+    </script>
     @php do_action('get_header'); @endphp
     @php wp_head(); @endphp
-
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
   </head>
 
   <body class="{{ esc_attr(implode(' ', get_body_class())) }}">
@@ -45,5 +53,31 @@
 
     @php do_action('get_footer'); @endphp
     @php wp_footer(); @endphp
+    <script>
+      (function () {
+        var applyTheme = function (isDark) {
+          var root = document.documentElement;
+          root.classList.toggle('dark', isDark);
+          if (document.body) {
+            document.body.classList.toggle('dark', isDark);
+          }
+          try {
+            localStorage.setItem('twst-theme', isDark ? 'dark' : 'light');
+          } catch (e) {}
+        };
+
+        document.addEventListener('click', function (event) {
+          if (window.__twstThemeReady) return;
+          var button = event.target.closest('[data-theme-toggle]');
+          if (!button) return;
+          event.preventDefault();
+          applyTheme(!document.documentElement.classList.contains('dark'));
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+          applyTheme(document.documentElement.classList.contains('dark'));
+        });
+      })();
+    </script>
   </body>
 </html>

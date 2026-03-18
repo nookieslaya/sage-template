@@ -1,7 +1,12 @@
 
 
-<header class="sticky top-0 z-50 border-b border-zinc-200/70 bg-zinc-100/90 backdrop-blur dark:border-zinc-800 dark:bg-black/90">
+<header class="twst-site-header fixed inset-x-0 top-0 z-50 border-b backdrop-blur">
   @php
+    $twstThemeSettings = function_exists('\App\twst_get_theme_options')
+        ? \App\twst_get_theme_options()
+        : [];
+    $navbarLogoUrl = $twstThemeSettings['navbar_logo_url'] ?? '';
+
     $pll_languages = function_exists('pll_the_languages')
         ? pll_the_languages([
             'raw' => 1,
@@ -13,7 +18,11 @@
 
   <div class="mx-auto flex w-full max-w-[1700px] items-center justify-between gap-4 px-6 py-5 lg:px-12">
     <a href="{{ home_url('/') }}" class="text-3xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
-      {{ $siteName }}
+      @if (! empty($navbarLogoUrl))
+        <img src="{{ esc_url($navbarLogoUrl) }}" alt="{{ esc_attr($siteName) }}" class="h-10 w-auto object-contain" />
+      @else
+        {{ $siteName }}
+      @endif
     </a>
 
     <button
@@ -24,7 +33,11 @@
       data-mobile-menu-toggle
     >
       <span class="sr-only">{{ __('Toggle menu', 'sage') }}</span>
-      <span class="text-xl">☰</span>
+      <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M4 7h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        <path d="M4 12h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        <path d="M4 17h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+      </svg>
     </button>
 
     <div id="site-nav" class="hidden w-full items-center justify-between gap-6 lg:flex lg:w-auto" data-mobile-menu>
@@ -55,7 +68,10 @@
           aria-label="{{ __('Toggle dark mode', 'sage') }}"
           data-theme-toggle
         >
-          <span class="text-lg">◐</span>
+          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle cx="12" cy="12" r="7.5" stroke="currentColor" stroke-width="1.8" />
+            <path d="M12 4.5a7.5 7.5 0 0 1 0 15V4.5Z" fill="currentColor" />
+          </svg>
         </button>
       </div>
     </div>
@@ -89,7 +105,10 @@
         aria-label="{{ __('Toggle dark mode', 'sage') }}"
         data-theme-toggle
       >
-        <span class="text-lg">◐</span>
+        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle cx="12" cy="12" r="7.5" stroke="currentColor" stroke-width="1.8" />
+          <path d="M12 4.5a7.5 7.5 0 0 1 0 15V4.5Z" fill="currentColor" />
+        </svg>
       </button>
     </div>
   </div>
