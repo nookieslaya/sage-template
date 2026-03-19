@@ -71,10 +71,18 @@ $query = new WP_Query([
           <div class="p-8">
             <p class="text-lg text-zinc-500 dark:text-zinc-400"><?php echo esc_html(get_the_date()); ?> · <?php echo esc_html($read_time); ?></p>
             <h3 class="mt-4 text-4xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
-              <a href="<?php the_permalink(); ?>" class="twst-link-accent no-underline transition"><?php the_title(); ?></a>
+              <a href="<?php the_permalink(); ?>" class="twst-link-accent no-underline transition" style="text-decoration:none;"><?php the_title(); ?></a>
             </h3>
             <p class="mt-4 text-xl leading-relaxed text-zinc-500 dark:text-zinc-400"><?php echo esc_html(get_the_excerpt()); ?></p>
-            <a class="twst-link-accent mt-6 inline-flex items-center text-lg font-semibold no-underline" href="<?php the_permalink(); ?>"><?php echo esc_html($post_link_label); ?></a>
+            <a class="twst-arrow-link twst-link-accent mt-6 inline-flex items-center text-lg font-semibold no-underline" href="<?php the_permalink(); ?>">
+              <span><?php echo esc_html($post_link_label); ?></span>
+              <span class="twst-arrow" aria-hidden="true">
+                <svg viewBox="0 0 16 16" fill="none">
+                  <path d="M2 8h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                  <path d="M8 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </span>
+            </a>
           </div>
         </article>
       <?php endwhile; ?>

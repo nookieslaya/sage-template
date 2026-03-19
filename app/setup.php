@@ -165,6 +165,57 @@ add_filter('theme_file_path', function ($path, $file) {
 }, 10, 2);
 
 /**
+ * Default strings managed by Polylang.
+ *
+ * @return array<string, string>
+ */
+function twst_polylang_strings(): array
+{
+    return [
+        'footer_tagline' => 'Building the future of B2B technology',
+        'footer_copyright_suffix' => 'All rights reserved.',
+        'back_to_blog' => 'Back to blog',
+        'footer_quick_links' => 'Quick Links',
+        'footer_connect' => 'Connect',
+        'blog_archive_eyebrow' => 'Blog',
+        'blog_archive_headline' => 'Latest Insights',
+        'read_more' => 'Read more',
+    ];
+}
+
+/**
+ * Get translated theme string with Polylang fallback.
+ *
+ * @param string $key
+ * @return string
+ */
+function twst_get_translated_string(string $key): string
+{
+    $strings = twst_polylang_strings();
+    $default = $strings[$key] ?? '';
+
+    if ($default === '') {
+        return '';
+    }
+
+    if (function_exists('pll__')) {
+        return (string) pll__($default);
+    }
+
+    return $default;
+}
+
+add_action('init', function () {
+    if (! function_exists('pll_register_string')) {
+        return;
+    }
+
+    foreach (twst_polylang_strings() as $key => $value) {
+        pll_register_string($key, $value, 'Theme');
+    }
+});
+
+/**
  * Register the initial theme setup.
  *
  * @return void
@@ -267,8 +318,6 @@ add_action('widgets_init', function () {
 function twst_get_theme_options(): array
 {
     $defaults = [
-        'show_side_nav_frontpage' => 1,
-        'accent_color' => '#2f6fff',
         'navbar_logo_url' => '',
         'footer_logo_url' => '',
     ];
@@ -365,8 +414,6 @@ function twst_sanitize_theme_settings($input): array
     $input = is_array($input) ? $input : [];
 
     return [
-        'show_side_nav_frontpage' => empty($input['show_side_nav_frontpage']) ? 0 : 1,
-        'accent_color' => sanitize_hex_color($input['accent_color'] ?? '') ?: '#2f6fff',
         'navbar_logo_url' => esc_url_raw($input['navbar_logo_url'] ?? ''),
         'footer_logo_url' => esc_url_raw($input['footer_logo_url'] ?? ''),
     ];
@@ -735,34 +782,6 @@ add_action('admin_init', function () {
     );
 
     add_settings_field(
-        'show_side_nav_frontpage',
-        __('Show side menu on homepage', 'sage'),
-        __NAMESPACE__.'\\twst_render_checkbox_field',
-        'twst-theme-settings',
-        'twst_theme_main_section',
-        [
-            'option_name' => 'twst_theme_settings',
-            'field_key' => 'show_side_nav_frontpage',
-            'label' => __('Enable side navigation widget on the homepage/landing page.', 'sage'),
-        ]
-    );
-
-    add_settings_field(
-        'accent_color',
-        __('Accent color', 'sage'),
-        __NAMESPACE__.'\\twst_render_text_field',
-        'twst-theme-settings',
-        'twst_theme_main_section',
-        [
-            'option_name' => 'twst_theme_settings',
-            'field_key' => 'accent_color',
-            'label' => __('Used as global accent color (buttons, links, active states).', 'sage'),
-            'type' => 'text',
-            'placeholder' => '#2f6fff',
-        ]
-    );
-
-    add_settings_field(
         'navbar_logo_url',
         __('Navbar logo', 'sage'),
         __NAMESPACE__.'\\twst_render_media_field',
@@ -817,18 +836,6 @@ add_action('admin_init', function () {
             'label' => __('Add any number of social profiles. Each row contains name, icon and link.', 'sage'),
         ]
     );
-});
-
-add_action('wp_head', function () {
-    $settings = twst_get_theme_options();
-    $accent = sanitize_hex_color($settings['accent_color'] ?? '');
-
-    if (! $accent) {
-        return;
-    }
-    ?>
-    <style id="twst-theme-accent-color">:root{--twst-accent:<?php echo esc_html($accent); ?>;}</style>
-    <?php
 }, 20);
 
 add_action('admin_enqueue_scripts', function ($hook) {

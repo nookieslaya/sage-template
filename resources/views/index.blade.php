@@ -1,15 +1,19 @@
 @extends('layouts.app')
 
 @section('content')
+  @php
+    $blogArchiveEyebrow = function_exists('\App\twst_get_translated_string')
+        ? \App\twst_get_translated_string('blog_archive_eyebrow')
+        : 'Blog';
+    $blogArchiveHeadline = function_exists('\App\twst_get_translated_string')
+        ? \App\twst_get_translated_string('blog_archive_headline')
+        : 'Latest Insights';
+  @endphp
   <section id="blog" class="mx-auto max-w-7xl px-6 py-20 md:py-24">
     <header class="text-center">
-      <p class="text-sm font-semibold uppercase tracking-[0.24em] text-zinc-500 dark:text-zinc-400">
-        <span data-lang="en">Blog</span>
-        <span data-lang="pl" class="hidden">Blog</span>
-      </p>
+      <p class="text-sm font-semibold uppercase tracking-[0.24em] text-zinc-500 dark:text-zinc-400">{{ esc_html($blogArchiveEyebrow) }}</p>
       <h1 class="mt-4 text-balance text-4xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100 md:text-6xl">
-        <span data-lang="en">Latest Insights</span>
-        <span data-lang="pl" class="hidden">Najnowsze artykuly</span>
+        {{ esc_html($blogArchiveHeadline) }}
       </h1>
     </header>
 

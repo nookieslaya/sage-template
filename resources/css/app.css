@@ -106,6 +106,36 @@
     transform: translateX(4px);
   }
 
+  .twst-arrow-link--back {
+    color: #f9735b;
+    text-decoration: none !important;
+  }
+
+  .twst-arrow-link--back:hover,
+  .twst-arrow-link--back:focus-visible {
+    color: #e45f48;
+    text-decoration: none !important;
+  }
+
+  .dark .twst-arrow-link--back {
+    color: #ff8f78;
+  }
+
+  .dark .twst-arrow-link--back:hover,
+  .dark .twst-arrow-link--back:focus-visible {
+    color: #ffb199;
+  }
+
+  .twst-arrow-link--back .twst-arrow {
+    margin-left: 0;
+    margin-right: 0.5rem;
+  }
+
+  .twst-arrow-link--back:hover .twst-arrow,
+  .twst-arrow-link--back:focus-visible .twst-arrow {
+    transform: translateX(-4px);
+  }
+
   html:not(.dark) #blog h3 > a,
   html:not(.dark) #blog .twst-link-accent {
     color: #f9735b;
@@ -137,6 +167,13 @@
   .dark #blog h3 > a:hover,
   .dark #blog .twst-link-accent:hover {
     color: #ff8f78;
+    text-decoration: none !important;
+  }
+
+  #blog h3 > a,
+  #blog h3 > a:hover,
+  #blog h3 > a:focus,
+  #blog h3 > a:visited {
     text-decoration: none !important;
   }
 
@@ -274,7 +311,7 @@
   }
 
   .dark .twst-site-header [data-mobile-menu-panel] nav a:hover {
-    color: #fafafa;
+    color: #ff8f78;
   }
 
   #site-nav nav ul,
@@ -301,6 +338,10 @@
 
   #site-nav nav a:hover {
     color: color-mix(in oklab, var(--twst-accent) 78%, #111827);
+  }
+
+  .dark #site-nav nav a:hover {
+    color: #ff8f78;
   }
 
   .twst-lang-switcher {
@@ -360,6 +401,11 @@
     color: color-mix(in oklab, var(--twst-accent) 84%, #111827);
   }
 
+  .dark #site-nav nav .current-menu-item > a,
+  .dark #site-nav nav .current_page_item > a {
+    color: #ff8f78;
+  }
+
   [data-mobile-menu-panel] nav ul,
   [data-mobile-menu-panel] .twst-nav-mobile > ul,
   [data-mobile-menu-panel] nav .menu > ul,
@@ -369,6 +415,11 @@
 
   [data-mobile-menu-panel] nav a {
     @apply inline-flex rounded-xl px-3 py-2 no-underline transition hover:bg-zinc-200 hover:text-zinc-900 dark:hover:bg-zinc-800 dark:hover:text-zinc-100;
+  }
+
+  .dark [data-mobile-menu-panel] nav .current-menu-item > a,
+  .dark [data-mobile-menu-panel] nav .current_page_item > a {
+    color: #ff8f78;
   }
 
   .twst-site-header [data-mobile-menu-panel] nav a,
@@ -455,53 +506,6 @@
   .dark .twst-social-link:hover {
     background: color-mix(in oklab, var(--twst-accent) 34%, #18181b);
     color: #ff8f78;
-  }
-
-  .twst-side-nav {
-    @apply fixed left-0 top-1/2 z-40 hidden -translate-y-1/2 rounded-r-2xl border border-l-0 border-zinc-200 bg-zinc-100/90 p-2 shadow-sm backdrop-blur transition-transform duration-300 dark:border-zinc-800 dark:bg-zinc-900/90 lg:flex lg:flex-col lg:gap-2;
-  }
-
-  .twst-side-toggle {
-    @apply mx-auto inline-flex h-8 w-8 items-center justify-center rounded-full no-underline shadow-md transition hover:-translate-y-0.5 hover:bg-zinc-200 hover:text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-zinc-100;
-  }
-
-  .twst-side-arrow {
-    @apply text-2xl leading-none;
-  }
-
-  .twst-side-links {
-    @apply flex flex-col gap-1;
-  }
-
-  .twst-side-link {
-    @apply inline-flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold text-zinc-500 no-underline transition hover:bg-zinc-200 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100 !no-underline;
-  }
-
-  .twst-side-dot {
-    @apply h-2 w-2 rounded-full bg-zinc-400 transition dark:bg-zinc-500 hidden;
-  }
-
-  .twst-side-link[data-active='true'] {
-    @apply !no-underline;
-    color: color-mix(in oklab, var(--twst-accent) 84%, #111827);
-    background: color-mix(in oklab, var(--twst-accent) 14%, #ffffff);
-  }
-
-  .dark .twst-side-link[data-active='true'] {
-    background: color-mix(in oklab, var(--twst-accent) 20%, #18181b);
-  }
-
-  .twst-side-link[data-active='true'] .twst-side-dot {
-    @apply h-2.5 w-2.5 !no-underline;
-    background: color-mix(in oklab, var(--twst-accent) 86%, #ffffff);
-  }
-
-  .twst-side-nav[data-collapsed='true'] {
-    transform: translate(calc(-100% + 3.5rem), -50%);
-  }
-
-  .twst-side-nav[data-collapsed='false'] {
-    transform: translate(0, -50%);
   }
 
   .twst-hero {

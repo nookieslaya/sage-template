@@ -1,4 +1,10 @@
-<article @php(post_class('overflow-hidden rounded-3xl border border-zinc-200 bg-zinc-50 shadow-sm dark:border-zinc-800 dark:bg-zinc-900'))>
+@php
+  $postClasses = implode(' ', get_post_class('overflow-hidden rounded-3xl border border-zinc-200 bg-zinc-50 shadow-sm dark:border-zinc-800 dark:bg-zinc-900'));
+  $readMoreLabel = function_exists('\App\twst_get_translated_string')
+      ? \App\twst_get_translated_string('read_more')
+      : 'Read more';
+@endphp
+<article class="{{ esc_attr($postClasses) }}">
   <a href="{{ get_permalink() }}" class="block">
     @if (has_post_thumbnail())
       {!! get_the_post_thumbnail(get_the_ID(), 'large', ['class' => 'h-64 w-full object-cover']) !!}
@@ -17,7 +23,7 @@
     </p>
 
     <h2 class="mt-4 text-4xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
-      <a href="{{ get_permalink() }}" class="transition hover:text-zinc-600 dark:hover:text-zinc-200">
+      <a href="{{ get_permalink() }}" class="twst-link-accent no-underline transition" style="text-decoration:none;">
         {!! $title !!}
       </a>
     </h2>
@@ -26,9 +32,14 @@
       @php(the_excerpt())
     </div>
 
-    <a href="{{ get_permalink() }}" class="mt-6 inline-flex items-center text-lg font-semibold text-zinc-900 no-underline dark:text-zinc-100">
-      <span data-lang="en">Read more</span>
-      <span data-lang="pl" class="hidden">Czytaj dalej</span>
+    <a href="{{ get_permalink() }}" class="twst-arrow-link twst-link-accent mt-6 inline-flex items-center text-lg font-semibold no-underline">
+      <span>{{ esc_html($readMoreLabel) }}</span>
+      <span class="twst-arrow" aria-hidden="true">
+        <svg viewBox="0 0 16 16" fill="none">
+          <path d="M2 8h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M8 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </span>
     </a>
   </div>
 </article>

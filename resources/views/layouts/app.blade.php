@@ -27,17 +27,6 @@
 
       @include('sections.header')
 
-      @php
-        $twstThemeSettings = function_exists('\App\twst_get_theme_options')
-            ? \App\twst_get_theme_options()
-            : ['show_side_nav_frontpage' => 1];
-        $showSideNav = ! empty($twstThemeSettings['show_side_nav_frontpage']);
-      @endphp
-
-      @if ($showSideNav && (is_front_page() || is_page_template('template-landing.php')))
-        @include('sections.side-nav')
-      @endif
-
       <main id="main" class="main bg-zinc-100 dark:bg-zinc-950">
         @yield('content')
       </main>

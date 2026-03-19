@@ -10,6 +10,19 @@
         : [];
 
     $socialLinks = array_values(array_filter($twstSocialSettings['socials'] ?? [], fn ($item) => ! empty($item['url'])));
+    $footerTagline = function_exists('\App\twst_get_translated_string')
+        ? \App\twst_get_translated_string('footer_tagline')
+        : 'Building the future of B2B technology';
+    $footerCopyrightSuffix = function_exists('\App\twst_get_translated_string')
+        ? \App\twst_get_translated_string('footer_copyright_suffix')
+        : 'All rights reserved.';
+    $footerQuickLinksLabel = function_exists('\App\twst_get_translated_string')
+        ? \App\twst_get_translated_string('footer_quick_links')
+        : 'Quick Links';
+    $footerConnectLabel = function_exists('\App\twst_get_translated_string')
+        ? \App\twst_get_translated_string('footer_connect')
+        : 'Connect';
+    $footerCopyrightYear = wp_date('Y');
   @endphp
 
   <div class="mx-auto max-w-[1700px] px-6 py-16 lg:px-12 lg:py-20">
@@ -21,15 +34,13 @@
           <h2 class="text-4xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100 lg:text-5xl">{{ $siteName }}</h2>
         @endif
         <p class="mt-4 text-xl text-zinc-500 dark:text-zinc-400 lg:text-2xl">
-          <span data-lang="en">Building the future of B2B technology</span>
-          <span data-lang="pl" class="hidden">Buduje przyszlosc technologii B2B</span>
+          {{ esc_html($footerTagline) }}
         </p>
       </section>
 
       <nav aria-label="{{ __('Footer quick links', 'sage') }}">
         <h3 class="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100 lg:text-3xl">
-          <span data-lang="en">Quick Links</span>
-          <span data-lang="pl" class="hidden">Szybkie linki</span>
+          {{ esc_html($footerQuickLinksLabel) }}
         </h3>
 
         {!! wp_nav_menu([
@@ -43,8 +54,7 @@
 
       <section>
         <h3 class="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100 lg:text-3xl">
-          <span data-lang="en">Connect</span>
-          <span data-lang="pl" class="hidden">Kontakt</span>
+          {{ esc_html($footerConnectLabel) }}
         </h3>
         <div class="mt-5 flex flex-row flex-wrap items-center gap-3">
           @foreach ($socialLinks as $social)
@@ -66,8 +76,7 @@
     </div>
 
     <div class="mt-14 border-t border-zinc-200 pt-8 text-center text-base text-zinc-500 dark:border-zinc-800 dark:text-zinc-400 lg:text-lg">
-      <span data-lang="en">© 2026 {{ $siteName }}. All rights reserved.</span>
-      <span data-lang="pl" class="hidden">© 2026 {{ $siteName }}. Wszelkie prawa zastrzezone.</span>
+      {{ esc_html(sprintf('© %s %s. %s', $footerCopyrightYear, $siteName, $footerCopyrightSuffix)) }}
     </div>
   </div>
 </footer>
