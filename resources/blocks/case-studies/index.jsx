@@ -58,11 +58,11 @@ const CaseStudiesContent = ({ attributes }) => {
           return (
             <article
               key={`case-study-${index}`}
-              className="overflow-hidden rounded-3xl border border-zinc-200 bg-zinc-50 shadow-sm dark:border-zinc-800 dark:bg-zinc-900"
+              className="twst-elevated-card overflow-hidden rounded-3xl border border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900"
             >
               {item.imageUrl ? (
                 <img
-                  className="h-64 w-full object-cover"
+                  className="h-64 w-full object-contain"
                   src={item.imageUrl}
                   alt={item.title}
                 />

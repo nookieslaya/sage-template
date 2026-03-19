@@ -288,14 +288,7 @@ function twst_get_theme_options(): array
 function twst_get_social_options(): array
 {
     $defaults = [
-        'github_label' => 'GH',
-        'github_url' => 'https://github.com',
-        'linkedin_label' => 'IN',
-        'linkedin_url' => 'https://linkedin.com',
-        'x_label' => 'X',
-        'x_url' => 'https://x.com',
-        'email_label' => '@',
-        'email_url' => 'mailto:hello@example.com',
+        'socials' => [],
     ];
 
     $options = get_option('twst_social_settings', []);
@@ -304,7 +297,64 @@ function twst_get_social_options(): array
         $options = [];
     }
 
-    return wp_parse_args($options, $defaults);
+    if (empty($options['socials']) && array_intersect_key($options, array_flip([
+        'github_label',
+        'github_url',
+        'linkedin_label',
+        'linkedin_url',
+        'x_label',
+        'x_url',
+        'email_label',
+        'email_url',
+    ]))) {
+        $legacy_socials = [
+            [
+                'name' => sanitize_text_field($options['github_label'] ?? 'GitHub'),
+                'icon_url' => '',
+                'url' => sanitize_text_field($options['github_url'] ?? ''),
+            ],
+            [
+                'name' => sanitize_text_field($options['linkedin_label'] ?? 'LinkedIn'),
+                'icon_url' => '',
+                'url' => sanitize_text_field($options['linkedin_url'] ?? ''),
+            ],
+            [
+                'name' => sanitize_text_field($options['x_label'] ?? 'X'),
+                'icon_url' => '',
+                'url' => sanitize_text_field($options['x_url'] ?? ''),
+            ],
+            [
+                'name' => sanitize_text_field($options['email_label'] ?? 'Email'),
+                'icon_url' => '',
+                'url' => sanitize_text_field($options['email_url'] ?? ''),
+            ],
+        ];
+
+        $options['socials'] = array_values(array_filter($legacy_socials, fn ($item) => ! empty($item['url'])));
+    }
+
+    $options = wp_parse_args($options, $defaults);
+    $options['socials'] = is_array($options['socials'] ?? null) ? array_values(array_filter(array_map(function ($item) {
+        if (! is_array($item)) {
+            return null;
+        }
+
+        $name = sanitize_text_field($item['name'] ?? '');
+        $icon_url = esc_url_raw($item['icon_url'] ?? '');
+        $url = sanitize_text_field($item['url'] ?? '');
+
+        if ($url === '') {
+            return null;
+        }
+
+        return [
+            'name' => $name,
+            'icon_url' => $icon_url,
+            'url' => $url,
+        ];
+    }, $options['socials']))) : [];
+
+    return $options;
 }
 
 /**
@@ -328,16 +378,31 @@ function twst_sanitize_theme_settings($input): array
 function twst_sanitize_social_settings($input): array
 {
     $input = is_array($input) ? $input : [];
+    $socials = is_array($input['socials'] ?? null) ? $input['socials'] : [];
+    $sanitized_socials = [];
+
+    foreach ($socials as $social) {
+        if (! is_array($social)) {
+            continue;
+        }
+
+        $name = sanitize_text_field($social['name'] ?? '');
+        $icon_url = esc_url_raw($social['icon_url'] ?? '');
+        $url = sanitize_text_field($social['url'] ?? '');
+
+        if ($url === '') {
+            continue;
+        }
+
+        $sanitized_socials[] = [
+            'name' => $name,
+            'icon_url' => $icon_url,
+            'url' => $url,
+        ];
+    }
 
     return [
-        'github_label' => sanitize_text_field($input['github_label'] ?? 'GH'),
-        'github_url' => esc_url_raw($input['github_url'] ?? ''),
-        'linkedin_label' => sanitize_text_field($input['linkedin_label'] ?? 'IN'),
-        'linkedin_url' => esc_url_raw($input['linkedin_url'] ?? ''),
-        'x_label' => sanitize_text_field($input['x_label'] ?? 'X'),
-        'x_url' => esc_url_raw($input['x_url'] ?? ''),
-        'email_label' => sanitize_text_field($input['email_label'] ?? '@'),
-        'email_url' => sanitize_text_field($input['email_url'] ?? ''),
+        'socials' => $sanitized_socials,
     ];
 }
 
@@ -422,6 +487,160 @@ function twst_render_media_field(array $args): void
       >
         <?php esc_html_e('Choose image', 'sage'); ?>
       </button>
+    </div>
+    <?php if (! empty($label)) : ?>
+      <p class="description"><?php echo esc_html($label); ?></p>
+    <?php endif; ?>
+    <?php
+}
+
+/**
+ * Render repeater field for social links.
+ */
+function twst_render_social_repeater_field(array $args): void
+{
+    $option_name = $args['option_name'] ?? '';
+    $field_key = $args['field_key'] ?? '';
+    $label = $args['label'] ?? '';
+
+    $values = get_option($option_name, []);
+    $rows = is_array($values) && is_array($values[$field_key] ?? null) ? $values[$field_key] : [];
+
+    if ($rows === []) {
+        $rows = [
+            [
+                'name' => '',
+                'icon_url' => '',
+                'url' => '',
+            ],
+        ];
+    }
+    ?>
+    <div
+      class="twst-social-repeater"
+      data-option-name="<?php echo esc_attr($option_name); ?>"
+      data-field-key="<?php echo esc_attr($field_key); ?>"
+    >
+      <div class="twst-social-repeater-rows">
+        <?php foreach ($rows as $index => $row) : ?>
+          <?php $row = is_array($row) ? $row : []; ?>
+          <div class="twst-social-repeater-row" data-index="<?php echo esc_attr((string) $index); ?>">
+            <div style="display:grid;gap:12px;max-width:720px;padding:16px;border:1px solid #dcdcde;border-radius:8px;margin-bottom:12px;">
+              <div>
+                <label style="display:block;font-weight:600;margin-bottom:4px;">
+                  <?php esc_html_e('Name', 'sage'); ?>
+                </label>
+                <input
+                  type="text"
+                  name="<?php echo esc_attr($option_name); ?>[<?php echo esc_attr($field_key); ?>][<?php echo esc_attr((string) $index); ?>][name]"
+                  value="<?php echo esc_attr((string) ($row['name'] ?? '')); ?>"
+                  class="regular-text"
+                  placeholder="<?php esc_attr_e('YouTube', 'sage'); ?>"
+                />
+              </div>
+
+              <div>
+                <label style="display:block;font-weight:600;margin-bottom:4px;">
+                  <?php esc_html_e('Icon', 'sage'); ?>
+                </label>
+                <div class="twst-media-field">
+                  <input
+                    type="text"
+                    name="<?php echo esc_attr($option_name); ?>[<?php echo esc_attr($field_key); ?>][<?php echo esc_attr((string) $index); ?>][icon_url]"
+                    value="<?php echo esc_attr((string) ($row['icon_url'] ?? '')); ?>"
+                    class="regular-text twst-media-url"
+                    placeholder="<?php esc_attr_e('Select image from Media Library', 'sage'); ?>"
+                  />
+                  <button type="button" class="button twst-media-select-button">
+                    <?php esc_html_e('Choose image', 'sage'); ?>
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label style="display:block;font-weight:600;margin-bottom:4px;">
+                  <?php esc_html_e('Link', 'sage'); ?>
+                </label>
+                <input
+                  type="text"
+                  name="<?php echo esc_attr($option_name); ?>[<?php echo esc_attr($field_key); ?>][<?php echo esc_attr((string) $index); ?>][url]"
+                  value="<?php echo esc_attr((string) ($row['url'] ?? '')); ?>"
+                  class="regular-text"
+                  placeholder="https://youtube.com/@your-channel"
+                />
+              </div>
+
+              <div>
+                <button type="button" class="button-link-delete twst-social-remove-row">
+                  <?php esc_html_e('Remove', 'sage'); ?>
+                </button>
+              </div>
+            </div>
+          </div>
+        <?php endforeach; ?>
+      </div>
+
+      <p>
+        <button type="button" class="button button-secondary twst-social-add-row">
+          <?php esc_html_e('Add social media', 'sage'); ?>
+        </button>
+      </p>
+
+      <template class="twst-social-row-template">
+        <div class="twst-social-repeater-row" data-index="__INDEX__">
+          <div style="display:grid;gap:12px;max-width:720px;padding:16px;border:1px solid #dcdcde;border-radius:8px;margin-bottom:12px;">
+            <div>
+              <label style="display:block;font-weight:600;margin-bottom:4px;">
+                <?php esc_html_e('Name', 'sage'); ?>
+              </label>
+              <input
+                type="text"
+                name="<?php echo esc_attr($option_name); ?>[<?php echo esc_attr($field_key); ?>][__INDEX__][name]"
+                value=""
+                class="regular-text"
+                placeholder="<?php esc_attr_e('YouTube', 'sage'); ?>"
+              />
+            </div>
+
+            <div>
+              <label style="display:block;font-weight:600;margin-bottom:4px;">
+                <?php esc_html_e('Icon', 'sage'); ?>
+              </label>
+              <div class="twst-media-field">
+                <input
+                  type="text"
+                  name="<?php echo esc_attr($option_name); ?>[<?php echo esc_attr($field_key); ?>][__INDEX__][icon_url]"
+                  value=""
+                  class="regular-text twst-media-url"
+                  placeholder="<?php esc_attr_e('Select image from Media Library', 'sage'); ?>"
+                />
+                <button type="button" class="button twst-media-select-button">
+                  <?php esc_html_e('Choose image', 'sage'); ?>
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label style="display:block;font-weight:600;margin-bottom:4px;">
+                <?php esc_html_e('Link', 'sage'); ?>
+              </label>
+              <input
+                type="text"
+                name="<?php echo esc_attr($option_name); ?>[<?php echo esc_attr($field_key); ?>][__INDEX__][url]"
+                value=""
+                class="regular-text"
+                placeholder="https://youtube.com/@your-channel"
+              />
+            </div>
+
+            <div>
+              <button type="button" class="button-link-delete twst-social-remove-row">
+                <?php esc_html_e('Remove', 'sage'); ?>
+              </button>
+            </div>
+          </div>
+        </div>
+      </template>
     </div>
     <?php if (! empty($label)) : ?>
       <p class="description"><?php echo esc_html($label); ?></p>
@@ -586,42 +805,18 @@ add_action('admin_init', function () {
         'twst-social-settings'
     );
 
-    $social_fields = [
-        'github',
-        'linkedin',
-        'x',
-        'email',
-    ];
-
-    foreach ($social_fields as $social) {
-        add_settings_field(
-            "{$social}_label",
-            sprintf(__('%s label', 'sage'), strtoupper($social)),
-            __NAMESPACE__.'\\twst_render_text_field',
-            'twst-social-settings',
-            'twst_social_main_section',
-            [
-                'option_name' => 'twst_social_settings',
-                'field_key' => "{$social}_label",
-                'label' => __('Text shown inside social icon button.', 'sage'),
-            ]
-        );
-
-        add_settings_field(
-            "{$social}_url",
-            sprintf(__('%s URL', 'sage'), strtoupper($social)),
-            __NAMESPACE__.'\\twst_render_text_field',
-            'twst-social-settings',
-            'twst_social_main_section',
-            [
-                'option_name' => 'twst_social_settings',
-                'field_key' => "{$social}_url",
-                'label' => $social === 'email'
-                    ? __('Use mailto: for email, e.g. mailto:hello@example.com', 'sage')
-                    : __('Full URL to your profile.', 'sage'),
-            ]
-        );
-    }
+    add_settings_field(
+        'socials',
+        __('Social media items', 'sage'),
+        __NAMESPACE__.'\\twst_render_social_repeater_field',
+        'twst-social-settings',
+        'twst_social_main_section',
+        [
+            'option_name' => 'twst_social_settings',
+            'field_key' => 'socials',
+            'label' => __('Add any number of social profiles. Each row contains name, icon and link.', 'sage'),
+        ]
+    );
 });
 
 add_action('wp_head', function () {
@@ -637,7 +832,7 @@ add_action('wp_head', function () {
 }, 20);
 
 add_action('admin_enqueue_scripts', function ($hook) {
-    if ($hook !== 'toplevel_page_twst-theme-settings') {
+    if (! str_contains((string) $hook, 'twst-theme-settings') && ! str_contains((string) $hook, 'twst-social-settings')) {
         return;
     }
 
@@ -647,28 +842,61 @@ add_action('admin_enqueue_scripts', function ($hook) {
         if (typeof wp === 'undefined' || !wp.media) {
           return;
         }
-        document.addEventListener('click', function(event) {
-          var button = event.target.closest('.twst-media-select-button');
-          if (!button) {
-            return;
-          }
-          var targetId = button.getAttribute('data-target-id');
-          var targetInput = document.getElementById(targetId);
+
+        function openMediaFrame(targetInput) {
           if (!targetInput) {
             return;
           }
+
           var frame = wp.media({
             title: 'Select image',
             button: { text: 'Use this image' },
             multiple: false,
             library: { type: 'image' }
           });
+
           frame.on('select', function() {
             var attachment = frame.state().get('selection').first().toJSON();
             targetInput.value = attachment.url || '';
             targetInput.dispatchEvent(new Event('change', { bubbles: true }));
           });
+
           frame.open();
+        }
+
+        document.addEventListener('click', function(event) {
+          var mediaButton = event.target.closest('.twst-media-select-button');
+          if (mediaButton) {
+            var targetId = mediaButton.getAttribute('data-target-id');
+            var targetInput = targetId ? document.getElementById(targetId) : mediaButton.parentElement.querySelector('.twst-media-url');
+            openMediaFrame(targetInput);
+            return;
+          }
+
+          var addButton = event.target.closest('.twst-social-add-row');
+          if (addButton) {
+            var repeater = addButton.closest('.twst-social-repeater');
+            var rowsContainer = repeater.querySelector('.twst-social-repeater-rows');
+            var template = repeater.querySelector('.twst-social-row-template');
+            var nextIndex = rowsContainer.querySelectorAll('.twst-social-repeater-row').length;
+            var markup = template.innerHTML.replace(/__INDEX__/g, String(nextIndex));
+            rowsContainer.insertAdjacentHTML('beforeend', markup);
+            return;
+          }
+
+          var removeButton = event.target.closest('.twst-social-remove-row');
+          if (removeButton) {
+            var row = removeButton.closest('.twst-social-repeater-row');
+            var repeater = removeButton.closest('.twst-social-repeater');
+            var rowsContainer = repeater.querySelector('.twst-social-repeater-rows');
+            if (rowsContainer.querySelectorAll('.twst-social-repeater-row').length <= 1) {
+              row.querySelectorAll('input').forEach(function(input) {
+                input.value = '';
+              });
+              return;
+            }
+            row.remove();
+          }
         });
       })();
     ");

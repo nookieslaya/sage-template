@@ -59,7 +59,7 @@ $query = new WP_Query([
             ? sprintf('%d min czytania', $minutes)
             : sprintf('%d min read', $minutes);
         ?>
-        <article <?php post_class('overflow-hidden rounded-3xl border border-zinc-200 bg-zinc-50 shadow-sm dark:border-zinc-800 dark:bg-zinc-900'); ?>>
+        <article <?php post_class('twst-elevated-card overflow-hidden rounded-3xl border border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900'); ?>>
           <a href="<?php the_permalink(); ?>" class="block">
             <?php if (has_post_thumbnail()) : ?>
               <?php the_post_thumbnail('large', ['class' => 'h-64 w-full object-cover']); ?>
