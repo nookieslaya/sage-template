@@ -1,4 +1,6 @@
-@php(the_content())
+<div class="twst-content">
+  @php(the_content())
+</div>
 
 @if ($pagination())
   <nav class="page-nav" aria-label="Page">

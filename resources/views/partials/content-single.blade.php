@@ -32,7 +32,7 @@
     </figure>
   @endif
 
-  <div class="e-content prose prose-zinc mt-10 max-w-none text-zinc-800 prose-headings:tracking-tight prose-a:text-zinc-900 prose-strong:text-zinc-900 prose-li:text-zinc-800 prose-blockquote:text-zinc-700 dark:prose-invert dark:text-zinc-200 dark:prose-headings:text-zinc-100 dark:prose-p:text-zinc-200 dark:prose-li:text-zinc-200 dark:prose-strong:text-zinc-100 dark:prose-blockquote:text-zinc-300 dark:prose-a:text-zinc-100">
+  <div class="e-content twst-content mt-10 max-w-none">
     @php(the_content())
   </div>
 
