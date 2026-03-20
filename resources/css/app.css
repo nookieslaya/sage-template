@@ -537,6 +537,7 @@
     @apply block h-full w-full;
     pointer-events: none;
   }
+
 }
 
 @media (min-width: 1024px) {
