@@ -11,6 +11,7 @@ import {
   Button,
   PanelBody,
   RangeControl,
+  SelectControl,
   TextControl,
   TextareaControl,
   ToggleControl,
@@ -24,6 +25,9 @@ const normalizeItems = (items = []) =>
     title: getItemLegacyLocalized(item, 'title'),
     description: getItemLegacyLocalized(item, 'description'),
     imageUrl: item.imageUrl || '',
+    imageFit: item.imageFit || 'cover',
+    imagePositionX: Number.isFinite(Number(item.imagePositionX)) ? Number(item.imagePositionX) : 50,
+    imagePositionY: Number.isFinite(Number(item.imagePositionY)) ? Number(item.imagePositionY) : 50,
     linkLabel: getItemLegacyLocalized(item, 'linkLabel') || 'View project',
     linkUrl: item.linkUrl || '#',
   }));
@@ -44,6 +48,7 @@ const HeroShowcaseContent = ({ attributes, isEditor = false }) => {
   const sectionClassName = isEditor
     ? 'twst-hero-showcase relative overflow-hidden px-6 py-12 md:px-8'
     : 'twst-hero-showcase relative overflow-hidden px-6 pb-20 pt-36 md:pb-28 md:pt-44';
+  const mediaHeightClass = imagesOnly ? 'h-[26rem] md:h-[30rem]' : 'h-56';
 
   return (
     <section className={sectionClassName}>
@@ -88,15 +93,22 @@ const HeroShowcaseContent = ({ attributes, isEditor = false }) => {
                   className="twst-showcase-card relative min-w-full shrink-0 overflow-hidden rounded-[1.75rem] bg-zinc-950 text-zinc-100 dark:bg-black"
                   data-showcase-slide={!isEditor ? 'true' : undefined}
                 >
-                  <div className="overflow-hidden bg-zinc-900">
+                  <div className={`overflow-hidden bg-zinc-900 ${mediaHeightClass}`}>
                     {item.imageUrl ? (
-                      <img
-                        src={item.imageUrl}
-                        alt={item.title || ''}
-                        className={`block w-full object-cover ${imagesOnly ? 'h-[26rem] md:h-[30rem]' : 'h-56'}`}
+                      <div
+                        key={`hero-showcase-image-${index}-${item.imageFit}-${item.imagePositionX}-${item.imagePositionY}`}
+                        role="img"
+                        aria-label={item.title || ''}
+                        className="h-full w-full bg-zinc-900"
+                        style={{
+                          backgroundImage: `url(${item.imageUrl})`,
+                          backgroundSize: item.imageFit || 'cover',
+                          backgroundPosition: `${item.imagePositionX}% ${item.imagePositionY}%`,
+                          backgroundRepeat: 'no-repeat',
+                        }}
                       />
                     ) : (
-                      <div className={`flex items-center justify-center bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 text-sm uppercase tracking-[0.18em] text-zinc-500 ${imagesOnly ? 'h-[26rem] md:h-[30rem]' : 'h-56'}`}>
+                      <div className="flex h-full items-center justify-center bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 text-sm uppercase tracking-[0.18em] text-zinc-500">
                         {__('Add image', 'sage')}
                       </div>
                     )}
@@ -185,6 +197,9 @@ registerBlockType(metadata.name, {
           title: '',
           description: '',
           imageUrl: '',
+          imageFit: 'cover',
+          imagePositionX: 50,
+          imagePositionY: 50,
           linkLabel: 'View project',
           linkUrl: '#',
         },
@@ -323,8 +338,39 @@ registerBlockType(metadata.name, {
                   />
                 </MediaUploadCheck>
                 {item.imageUrl ? (
-                  <img src={item.imageUrl} alt="" className="mt-3 h-24 w-full rounded object-cover" />
+                  <div
+                    className="mt-3 h-24 w-full rounded bg-zinc-900"
+                    style={{
+                      backgroundImage: `url(${item.imageUrl})`,
+                      backgroundSize: item.imageFit || 'cover',
+                      backgroundPosition: `${item.imagePositionX}% ${item.imagePositionY}%`,
+                      backgroundRepeat: 'no-repeat',
+                    }}
+                  />
                 ) : null}
+                <SelectControl
+                  label={__('Image fit', 'sage')}
+                  value={item.imageFit || 'cover'}
+                  options={[
+                    { label: __('Cover', 'sage'), value: 'cover' },
+                    { label: __('Contain', 'sage'), value: 'contain' },
+                  ]}
+                  onChange={(value) => updateItem(index, 'imageFit', value)}
+                />
+                <RangeControl
+                  label={__('Image position X', 'sage')}
+                  value={Number(item.imagePositionX ?? 50)}
+                  onChange={(value) => updateItem(index, 'imagePositionX', value ?? 50)}
+                  min={0}
+                  max={100}
+                />
+                <RangeControl
+                  label={__('Image position Y', 'sage')}
+                  value={Number(item.imagePositionY ?? 50)}
+                  onChange={(value) => updateItem(index, 'imagePositionY', value ?? 50)}
+                  min={0}
+                  max={100}
+                />
                 {!attributes.imagesOnly ? (
                   <>
                     <TextControl
