@@ -1,10 +1,41 @@
 import.meta.glob(['../images/**', '../fonts/**']);
-import * as THREE from 'three';
 
 window.__twstThemeReady = false;
 
 const heroAnimationCleanups = new WeakMap();
 const heroAnimationStates = new WeakMap();
+const HERO_INTERACTION_IDLE_MS = 1400;
+
+let threeLoader = null;
+let tubesLoader = null;
+
+const loadThree = async () => {
+  if (!threeLoader) {
+    threeLoader = import('three')
+      .then((module) => module)
+      .catch((error) => {
+        threeLoader = null;
+        throw error;
+      });
+  }
+
+  return threeLoader;
+};
+
+const prefersReducedMotion = () =>
+  window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const isLiteHeroDevice = () =>
+  window.matchMedia('(max-width: 920px)').matches ||
+  window.matchMedia('(pointer: coarse)').matches;
+
+const getHeroPerformanceMode = () => {
+  if (prefersReducedMotion()) {
+    return 'off';
+  }
+
+  return isLiteHeroDevice() ? 'lite' : 'full';
+};
 
 const clearHeroAnimation = (hero, canvasHost) => {
   const cleanup = heroAnimationCleanups.get(hero);
@@ -26,8 +57,6 @@ const getHeroAnimationState = (hero) => {
   return state;
 };
 
-let tubesLoader = null;
-
 const loadTubesEngine = async () => {
   if (!tubesLoader) {
     tubesLoader = import('./hex-tubes.js')
@@ -41,7 +70,8 @@ const loadTubesEngine = async () => {
   return tubesLoader;
 };
 
-const mountShaderHero = (hero, canvasHost) => {
+const mountShaderHero = async (hero, canvasHost, performanceMode = 'full') => {
+  const THREE = await loadThree();
   const scene = new THREE.Scene();
   const clock = new THREE.Clock();
   const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 10);
@@ -170,12 +200,32 @@ const mountShaderHero = (hero, canvasHost) => {
   const mouse = new THREE.Vector2(0.5, 0.5);
   const targetMouse = new THREE.Vector2(0.5, 0.5);
   let frameId = 0;
+  let lastRenderMs = 0;
+  let interactionTimeout = 0;
+  let isInteracting = false;
+
+  const getTargetFps = () => {
+    if (performanceMode === 'lite') {
+      return isInteracting ? 24 : 16;
+    }
+
+    return isInteracting ? 30 : 20;
+  };
+
+  const markInteraction = () => {
+    isInteracting = true;
+    window.clearTimeout(interactionTimeout);
+    interactionTimeout = window.setTimeout(() => {
+      isInteracting = false;
+    }, HERO_INTERACTION_IDLE_MS);
+  };
 
   const onPointerMove = (clientX, clientY) => {
     const rect = hero.getBoundingClientRect();
     if (!rect.width || !rect.height) return;
     targetMouse.x = (clientX - rect.left) / rect.width;
     targetMouse.y = 1 - (clientY - rect.top) / rect.height;
+    markInteraction();
   };
 
   const onMouseMove = (event) => onPointerMove(event.clientX, event.clientY);
@@ -193,12 +243,22 @@ const mountShaderHero = (hero, canvasHost) => {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   };
 
-  const animate = () => {
+  const animate = (now = 0) => {
+    frameId = requestAnimationFrame(animate);
+    if (document.hidden) {
+      return;
+    }
+
+    const minFrameDuration = 1000 / getTargetFps();
+    if (now - lastRenderMs < minFrameDuration) {
+      return;
+    }
+    lastRenderMs = now;
+
     uniforms.t.value = clock.getElapsedTime();
     mouse.lerp(targetMouse, 0.06);
     uniforms.mouse.value.copy(mouse);
     renderer.render(scene, camera);
-    frameId = requestAnimationFrame(animate);
   };
 
   hero.addEventListener('mousemove', onMouseMove, { passive: true });
@@ -210,6 +270,7 @@ const mountShaderHero = (hero, canvasHost) => {
 
   return () => {
     cancelAnimationFrame(frameId);
+    window.clearTimeout(interactionTimeout);
     hero.removeEventListener('mousemove', onMouseMove);
     hero.removeEventListener('touchmove', onTouchMove);
     window.removeEventListener('resize', setSize);
@@ -220,7 +281,7 @@ const mountShaderHero = (hero, canvasHost) => {
   };
 };
 
-const mountTubesHero = async (hero, canvasHost) => {
+const mountTubesHero = async (hero, canvasHost, performanceMode = 'full') => {
   const createTubes = await loadTubesEngine();
   if (typeof createTubes !== 'function') {
     throw new Error('Invalid tubes engine export');
@@ -231,26 +292,32 @@ const mountTubesHero = async (hero, canvasHost) => {
   canvasHost.appendChild(canvas);
   hero.classList.add('is-tubes');
 
+  const isLiteMode = performanceMode === 'lite';
   const app = createTubes(canvas, {
     interactionTarget: hero,
     colors: ['#f967fb', '#53bc28', '#6958d5'],
     lights: {
-      intensity: 200,
+      intensity: isLiteMode ? 140 : 200,
       colors: ['#83f36e', '#fe8a2e', '#ff008a', '#60aed5'],
     },
-    hexSize: 13,
-    chainCount: 3,
-    chainLength: 32,
-    pointStep: 6,
-    orbitRadius: 96,
+    hexSize: isLiteMode ? 11 : 13,
+    chainCount: isLiteMode ? 2 : 3,
+    chainLength: isLiteMode ? 18 : 32,
+    pointStep: isLiteMode ? 8 : 6,
+    orbitRadius: isLiteMode ? 72 : 96,
     follow: 0.08,
-    wobble: 52,
-    blobScale: 0.42,
+    wobble: isLiteMode ? 34 : 52,
+    blobScale: isLiteMode ? 0.34 : 0.42,
     fadeAlpha: 0.135,
+    gridHexSize: isLiteMode ? 42 : 32,
+    gridGlowAlpha: isLiteMode ? 0.34 : 0.5,
+    gridInfluenceRadius: isLiteMode ? 56 : 68,
     sleepRadiusX: 300,
     sleepRadiusY: 150,
     sleepTimeScale1: 1,
     sleepTimeScale2: 2,
+    fps: isLiteMode ? 24 : 30,
+    idleFps: isLiteMode ? 16 : 20,
   });
 
   return () => {
@@ -274,19 +341,24 @@ const mountHeroAnimation = async (hero, expectedVersion = null) => {
   clearHeroAnimation(hero, canvasHost);
 
   const type = (hero.dataset.heroAnimationType || 'shader').toLowerCase();
+  const performanceMode = getHeroPerformanceMode();
   let cleanup = null;
+
+  if (performanceMode === 'off') {
+    return;
+  }
 
   try {
     cleanup =
       type === 'tubes'
-        ? await mountTubesHero(hero, canvasHost)
-        : mountShaderHero(hero, canvasHost);
+        ? await mountTubesHero(hero, canvasHost, performanceMode)
+        : await mountShaderHero(hero, canvasHost, performanceMode);
   } catch (error) {
     console.error(
       '[TWST Hero] animation mount failed, falling back to shader',
       error,
     );
-    cleanup = mountShaderHero(hero, canvasHost);
+    cleanup = await mountShaderHero(hero, canvasHost, performanceMode);
   }
 
   const staleMount =
@@ -309,7 +381,7 @@ const mountHeroAnimation = async (hero, expectedVersion = null) => {
 
 const initHeroShader = () => {
   const heroSections = Array.from(
-    document.querySelectorAll('[data-hero-shader], .twst-hero'),
+    document.querySelectorAll('[data-hero-shader="true"]'),
   );
 
   heroSections.forEach((hero) => {

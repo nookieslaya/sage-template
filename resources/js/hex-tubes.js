@@ -23,6 +23,8 @@ const DEFAULTS = {
   sleepRadiusY: 150,
   sleepTimeScale1: 1,
   sleepTimeScale2: 2,
+  fps: 30,
+  idleFps: 20,
 };
 
 const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
@@ -62,6 +64,7 @@ class HexTubes {
     this.raf = 0;
     this.start = performance.now();
     this.last = this.start;
+    this.lastRender = 0;
     this.hovering = false;
     this.gridCells = [];
 
@@ -300,6 +303,19 @@ class HexTubes {
   }
 
   animate(ms) {
+    this.raf = requestAnimationFrame(this.animate);
+
+    if (document.hidden) {
+      return;
+    }
+
+    const targetFps = this.hovering ? this.options.fps : this.options.idleFps;
+    const minFrameDuration = 1000 / Math.max(targetFps, 1);
+    if (ms - this.lastRender < minFrameDuration) {
+      return;
+    }
+    this.lastRender = ms;
+
     const elapsed = ms - this.start;
     const dt = Math.min(48, ms - this.last || 16.67);
     this.last = ms;
@@ -330,8 +346,6 @@ class HexTubes {
     this.chains.forEach((chain) => this.drawChain(chain, elapsed, dtScale));
     this.ctx.globalCompositeOperation = 'source-over';
     this.ctx.shadowBlur = 0;
-
-    this.raf = requestAnimationFrame(this.animate);
   }
 }
 
