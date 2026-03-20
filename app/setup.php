@@ -180,6 +180,20 @@ function twst_polylang_strings(): array
         'blog_archive_eyebrow' => 'Blog',
         'blog_archive_headline' => 'Latest Insights',
         'read_more' => 'Read more',
+        '404_badge' => 'Error 404',
+        '404_title' => 'This page took a wrong turn.',
+        '404_description' => 'The link may be outdated, the page may have moved, or the URL may have a typo. Let’s get you back to something useful.',
+        '404_back_home' => 'Back to homepage',
+        '404_start_project' => 'Start a project',
+        '404_portfolio' => 'Portfolio',
+        '404_about' => 'About',
+        '404_insights' => 'Insights',
+        '404_panel_title' => 'Page not found',
+        '404_panel_description' => 'Jump back to the homepage or use one of the quick links to continue browsing.',
+        '404_quick_recovery' => 'Quick recovery',
+        '404_tip_check_url' => 'Check the URL for typos',
+        '404_tip_use_navigation' => 'Use the navigation to jump back into the site',
+        '404_tip_contact' => 'Reach out if you expected something to be here',
     ];
 }
 

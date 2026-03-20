@@ -475,6 +475,95 @@ const initThemeAndLanguage = () => {
   window.__twstThemeReady = true;
 };
 
+const initShowcaseCarousels = () => {
+  document.querySelectorAll('.twst-hero-showcase').forEach((section) => {
+    const track = section.querySelector('[data-showcase-track="true"]');
+    const slides = Array.from(section.querySelectorAll('[data-showcase-slide="true"]'));
+    const dots = Array.from(section.querySelectorAll('[data-showcase-dot]'));
+    const autoplayEnabled = track?.dataset.autoplay === 'true';
+    const autoplaySpeed = Math.max(
+      2000,
+      Number.parseInt(track?.dataset.autoplaySpeed || '4500', 10) || 4500,
+    );
+    let autoplayTimer = 0;
+
+    if (!track || !slides.length || !dots.length) {
+      return;
+    }
+
+    const getStep = () => {
+      const firstCard = slides[0];
+      const cardRect = firstCard.getBoundingClientRect();
+      const trackStyles = window.getComputedStyle(track);
+      const gap = Number.parseFloat(trackStyles.columnGap || trackStyles.gap || '0') || 0;
+      return cardRect.width + gap;
+    };
+
+    const setActiveDot = () => {
+      const step = Math.max(getStep(), 1);
+      const activeIndex = Math.min(
+        dots.length - 1,
+        Math.max(0, Math.round(track.scrollLeft / step)),
+      );
+
+      dots.forEach((dot, index) => {
+        dot.classList.toggle('is-active', index === activeIndex);
+      });
+    };
+
+    const goToSlide = (index) => {
+      track.scrollTo({
+        left: getStep() * index,
+        behavior: 'smooth',
+      });
+    };
+
+    const clearAutoplay = () => {
+      window.clearInterval(autoplayTimer);
+    };
+
+    const startAutoplay = () => {
+      if (!autoplayEnabled || slides.length < 2) {
+        return;
+      }
+
+      clearAutoplay();
+      autoplayTimer = window.setInterval(() => {
+        if (document.hidden) {
+          return;
+        }
+
+        const step = Math.max(getStep(), 1);
+        const currentIndex = Math.min(
+          slides.length - 1,
+          Math.max(0, Math.round(track.scrollLeft / step)),
+        );
+        const nextIndex = (currentIndex + 1) % slides.length;
+        goToSlide(nextIndex);
+      }, autoplaySpeed);
+    };
+
+    dots.forEach((dot, index) => {
+      dot.addEventListener('click', () => {
+        goToSlide(index);
+        startAutoplay();
+      });
+    });
+
+    track.addEventListener('scroll', () => {
+      setActiveDot();
+    }, { passive: true });
+
+    track.addEventListener('pointerenter', clearAutoplay);
+    track.addEventListener('pointerleave', startAutoplay);
+    track.addEventListener('touchstart', clearAutoplay, { passive: true });
+    track.addEventListener('touchend', startAutoplay, { passive: true });
+
+    setActiveDot();
+    startAutoplay();
+  });
+};
+
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
     try {
@@ -488,6 +577,12 @@ if (document.readyState === 'loading') {
     } catch (error) {
       console.error('[TWST Hero] init failed', error);
     }
+
+    try {
+      initShowcaseCarousels();
+    } catch (error) {
+      console.error('[TWST Showcase] init failed', error);
+    }
   });
 } else {
   try {
@@ -500,5 +595,11 @@ if (document.readyState === 'loading') {
     initHeroShader();
   } catch (error) {
     console.error('[TWST Hero] init failed', error);
+  }
+
+  try {
+    initShowcaseCarousels();
+  } catch (error) {
+    console.error('[TWST Showcase] init failed', error);
   }
 }

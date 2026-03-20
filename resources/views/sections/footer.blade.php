@@ -25,7 +25,7 @@
     $footerCopyrightYear = wp_date('Y');
   @endphp
 
-  <div class="mx-auto max-w-[1700px] px-6 py-16 lg:px-12 lg:py-20">
+  <div class="mx-auto max-w-7xl px-6 py-16 lg:py-20">
     <div class="grid gap-14 md:grid-cols-3">
       <section>
         @if (! empty($footerLogoUrl))

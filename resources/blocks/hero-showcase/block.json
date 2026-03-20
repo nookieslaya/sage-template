@@ -1,0 +1,63 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "twst/hero-showcase",
+  "title": "TWST Hero Showcase",
+  "category": "design",
+  "icon": "slides",
+  "description": "Alternative hero block with editorial layout and showcase carousel.",
+  "textdomain": "sage",
+  "supports": {
+    "anchor": true,
+    "html": false
+  },
+  "attributes": {
+    "eyebrow": {
+      "type": "string",
+      "default": "Featured Direction"
+    },
+    "headline": {
+      "type": "string",
+      "default": "A hero that feels more editorial and more alive."
+    },
+    "description": {
+      "type": "string",
+      "default": "Use this block when you want the page to open with a stronger story: a bold message on the left and a compact visual showcase on the right."
+    },
+    "primaryLabel": { "type": "string", "default": "Start a Project" },
+    "primaryUrl": { "type": "string", "default": "#contact" },
+    "secondaryLabel": { "type": "string", "default": "See My Work" },
+    "secondaryUrl": { "type": "string", "default": "#work" },
+    "autoplay": { "type": "boolean", "default": false },
+    "autoplaySpeed": { "type": "number", "default": 4500 },
+    "items": {
+      "type": "array",
+      "default": [
+        {
+          "eyebrow": "Launch Systems",
+          "title": "Premium landing systems for expert brands",
+          "description": "Structured for clarity, speed and a sharper first impression.",
+          "imageUrl": "",
+          "linkLabel": "View project",
+          "linkUrl": "#work"
+        },
+        {
+          "eyebrow": "Product Storytelling",
+          "title": "Narratives that make complex offers feel clear",
+          "description": "A compact gallery with room for motion, detail and confidence.",
+          "imageUrl": "",
+          "linkLabel": "See details",
+          "linkUrl": "#about"
+        },
+        {
+          "eyebrow": "Scalable Delivery",
+          "title": "Built to look polished without slowing the site down",
+          "description": "A visual hero pattern that can flex between cases, offers and campaigns.",
+          "imageUrl": "",
+          "linkLabel": "Let’s talk",
+          "linkUrl": "#contact"
+        }
+      ]
+    }
+  }
+}

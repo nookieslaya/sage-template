@@ -9,6 +9,7 @@ namespace App;
 add_action('init', function () {
     $blocks = [
         'hero',
+        'hero-showcase',
         'about',
         'services-grid',
         'case-studies',

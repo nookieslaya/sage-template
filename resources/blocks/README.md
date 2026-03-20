@@ -3,6 +3,7 @@
 ## Included blocks
 
 - `twst/hero`
+- `twst/hero-showcase`
 - `twst/about`
 - `twst/services-grid`
 - `twst/case-studies`
