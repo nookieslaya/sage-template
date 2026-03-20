@@ -28,6 +28,7 @@
     "primaryUrl": { "type": "string", "default": "#contact" },
     "secondaryLabel": { "type": "string", "default": "See My Work" },
     "secondaryUrl": { "type": "string", "default": "#work" },
+    "imagesOnly": { "type": "boolean", "default": false },
     "autoplay": { "type": "boolean", "default": false },
     "autoplaySpeed": { "type": "number", "default": 4500 },
     "items": {

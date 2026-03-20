@@ -40,6 +40,7 @@ const HeroShowcaseContent = ({ attributes, isEditor = false }) => {
     'Use this block when you want the page to open with a stronger story: a bold message on the left and a compact visual showcase on the right.',
   );
   const items = normalizeItems(attributes.items);
+  const imagesOnly = Boolean(attributes.imagesOnly);
   const sectionClassName = isEditor
     ? 'twst-hero-showcase relative overflow-hidden px-6 py-12 md:px-8'
     : 'twst-hero-showcase relative overflow-hidden px-6 pb-20 pt-36 md:pb-28 md:pt-44';
@@ -92,32 +93,34 @@ const HeroShowcaseContent = ({ attributes, isEditor = false }) => {
                       <img
                         src={item.imageUrl}
                         alt={item.title || ''}
-                        className="block h-56 w-full object-cover"
+                        className={`block w-full object-cover ${imagesOnly ? 'h-[26rem] md:h-[30rem]' : 'h-56'}`}
                       />
                     ) : (
-                      <div className="flex h-56 items-center justify-center bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 text-sm uppercase tracking-[0.18em] text-zinc-500">
+                      <div className={`flex items-center justify-center bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 text-sm uppercase tracking-[0.18em] text-zinc-500 ${imagesOnly ? 'h-[26rem] md:h-[30rem]' : 'h-56'}`}>
                         {__('Add image', 'sage')}
                       </div>
                     )}
                   </div>
 
-                  <div className="p-5">
-                    <p className="text-xs font-semibold uppercase tracking-[0.22em] text-zinc-400">
-                      {item.eyebrow}
-                    </p>
-                    <h3 className="mt-3 text-2xl font-semibold tracking-tight text-white/95">
-                      {item.title}
-                    </h3>
-                    <p className="mt-3 text-base leading-relaxed text-zinc-400">
-                      {item.description}
-                    </p>
-                    <a
-                      href={item.linkUrl}
-                      className="mt-5 inline-flex items-center text-sm font-semibold uppercase tracking-[0.18em] text-orange-300 no-underline hover:no-underline focus:no-underline visited:text-orange-300"
-                    >
-                      {item.linkLabel}
-                    </a>
-                  </div>
+                  {!imagesOnly ? (
+                    <div className="p-5">
+                      <p className="text-xs font-semibold uppercase tracking-[0.22em] text-zinc-400">
+                        {item.eyebrow}
+                      </p>
+                      <h3 className="mt-3 text-2xl font-semibold tracking-tight text-white/95">
+                        {item.title}
+                      </h3>
+                      <p className="mt-3 text-base leading-relaxed text-zinc-400">
+                        {item.description}
+                      </p>
+                      <a
+                        href={item.linkUrl}
+                        className="mt-5 inline-flex items-center text-sm font-semibold uppercase tracking-[0.18em] text-orange-300 no-underline hover:no-underline focus:no-underline visited:text-orange-300"
+                      >
+                        {item.linkLabel}
+                      </a>
+                    </div>
+                  ) : null}
                 </article>
               ))}
             </div>
@@ -251,6 +254,11 @@ registerBlockType(metadata.name, {
                 />
               </div>
               <ToggleControl
+                label={__('Images only in carousel', 'sage')}
+                checked={Boolean(attributes.imagesOnly)}
+                onChange={(imagesOnly) => setAttributes({ imagesOnly })}
+              />
+              <ToggleControl
                 label={__('Autoplay carousel', 'sage')}
                 checked={Boolean(attributes.autoplay)}
                 onChange={(autoplay) => setAttributes({ autoplay })}
@@ -272,21 +280,25 @@ registerBlockType(metadata.name, {
                   {`${__('Slide', 'sage')} ${index + 1}`}
                 </p>
 
-                <TextControl
-                  label={__('Eyebrow', 'sage')}
-                  value={item.eyebrow}
-                  onChange={(value) => updateItem(index, 'eyebrow', value)}
-                />
-                <TextControl
-                  label={__('Title', 'sage')}
-                  value={item.title}
-                  onChange={(value) => updateItem(index, 'title', value)}
-                />
-                <TextareaControl
-                  label={__('Description', 'sage')}
-                  value={item.description}
-                  onChange={(value) => updateItem(index, 'description', value)}
-                />
+                {!attributes.imagesOnly ? (
+                  <>
+                    <TextControl
+                      label={__('Eyebrow', 'sage')}
+                      value={item.eyebrow}
+                      onChange={(value) => updateItem(index, 'eyebrow', value)}
+                    />
+                    <TextControl
+                      label={__('Title', 'sage')}
+                      value={item.title}
+                      onChange={(value) => updateItem(index, 'title', value)}
+                    />
+                    <TextareaControl
+                      label={__('Description', 'sage')}
+                      value={item.description}
+                      onChange={(value) => updateItem(index, 'description', value)}
+                    />
+                  </>
+                ) : null}
                 <MediaUploadCheck>
                   <MediaUpload
                     onSelect={(media) => updateItem(index, 'imageUrl', media?.url || '')}
@@ -313,20 +325,24 @@ registerBlockType(metadata.name, {
                 {item.imageUrl ? (
                   <img src={item.imageUrl} alt="" className="mt-3 h-24 w-full rounded object-cover" />
                 ) : null}
-                <TextControl
-                  label={__('Link label', 'sage')}
-                  value={item.linkLabel}
-                  onChange={(value) => updateItem(index, 'linkLabel', value)}
-                />
-                <div className="space-y-2">
-                  <p className="components-base-control__label !mb-0">
-                    {__('Link URL', 'sage')}
-                  </p>
-                  <URLInputButton
-                    url={item.linkUrl}
-                    onChange={(value) => updateItem(index, 'linkUrl', value)}
-                  />
-                </div>
+                {!attributes.imagesOnly ? (
+                  <>
+                    <TextControl
+                      label={__('Link label', 'sage')}
+                      value={item.linkLabel}
+                      onChange={(value) => updateItem(index, 'linkLabel', value)}
+                    />
+                    <div className="space-y-2">
+                      <p className="components-base-control__label !mb-0">
+                        {__('Link URL', 'sage')}
+                      </p>
+                      <URLInputButton
+                        url={item.linkUrl}
+                        onChange={(value) => updateItem(index, 'linkUrl', value)}
+                      />
+                    </div>
+                  </>
+                ) : null}
                 <div className="mt-3 flex flex-wrap gap-2">
                   <Button
                     variant="secondary"
