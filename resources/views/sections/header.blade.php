@@ -5,7 +5,13 @@
     $twstThemeSettings = function_exists('\App\twst_get_theme_options')
         ? \App\twst_get_theme_options()
         : [];
-    $navbarLogoUrl = $twstThemeSettings['navbar_logo_url'] ?? '';
+    $hideLanguageSwitcher = ! empty($twstThemeSettings['hide_language_switcher']);
+    $navbarLogoMarkup = function_exists('\App\twst_get_logo_markup')
+        ? \App\twst_get_logo_markup('navbar', $siteName, [
+            'image_class' => 'h-10 w-auto object-contain',
+            'text_class' => 'font-semibold tracking-tight text-zinc-900 dark:text-zinc-100',
+          ])
+        : e($siteName);
 
     $pll_languages = function_exists('pll_the_languages')
         ? pll_the_languages([
@@ -18,11 +24,7 @@
 
   <div class="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-6 py-5">
     <a href="{{ home_url('/') }}" class="text-3xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
-      @if (! empty($navbarLogoUrl))
-        <img src="{{ esc_url($navbarLogoUrl) }}" alt="{{ esc_attr($siteName) }}" class="h-10 w-auto object-contain" />
-      @else
-        {{ $siteName }}
-      @endif
+      {!! $navbarLogoMarkup !!}
     </a>
 
     <button
@@ -52,7 +54,7 @@
       </nav>
 
       <div class="flex items-center gap-3">
-        @if (! empty($pll_languages))
+        @if (! $hideLanguageSwitcher && ! empty($pll_languages))
           <div class="twst-lang-switcher" role="group" aria-label="Language switcher">
             @foreach ($pll_languages as $lang)
               <a href="{{ esc_url($lang['url']) }}" class="twst-lang-link {{ ! empty($lang['current_lang']) ? 'is-active' : '' }}">
@@ -89,7 +91,7 @@
     </nav>
 
     <div class="mt-4 flex items-center justify-between border-t border-zinc-200 pt-4 dark:border-zinc-800">
-      @if (! empty($pll_languages))
+      @if (! $hideLanguageSwitcher && ! empty($pll_languages))
         <div class="twst-lang-switcher" role="group" aria-label="Language switcher mobile">
           @foreach ($pll_languages as $lang)
             <a href="{{ esc_url($lang['url']) }}" class="twst-lang-link {{ ! empty($lang['current_lang']) ? 'is-active' : '' }}">

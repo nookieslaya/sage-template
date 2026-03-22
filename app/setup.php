@@ -332,8 +332,15 @@ add_action('widgets_init', function () {
 function twst_get_theme_options(): array
 {
     $defaults = [
+        'navbar_logo_mode' => 'image',
         'navbar_logo_url' => '',
+        'navbar_logo_text' => '',
+        'navbar_logo_text_size' => 32,
+        'footer_logo_mode' => 'image',
         'footer_logo_url' => '',
+        'footer_logo_text' => '',
+        'footer_logo_text_size' => 48,
+        'hide_language_switcher' => 0,
     ];
 
     $options = get_option('twst_theme_settings', []);
@@ -343,6 +350,28 @@ function twst_get_theme_options(): array
     }
 
     return wp_parse_args($options, $defaults);
+}
+
+/**
+ * Normalize logo mode setting.
+ */
+function twst_normalize_logo_mode($value): string
+{
+    $value = is_string($value) ? $value : '';
+
+    return in_array($value, ['image', 'text', 'site_name'], true) ? $value : 'image';
+}
+
+/**
+ * Sanitize plain logo text while preserving visible characters like < and >.
+ */
+function twst_sanitize_logo_text($value): string
+{
+    $value = is_scalar($value) ? (string) $value : '';
+    $value = wp_unslash($value);
+    $value = preg_replace('/[\x00-\x1F\x7F]/u', '', $value) ?? '';
+
+    return trim(mb_substr($value, 0, 24));
 }
 
 /**
@@ -428,8 +457,15 @@ function twst_sanitize_theme_settings($input): array
     $input = is_array($input) ? $input : [];
 
     return [
+        'navbar_logo_mode' => twst_normalize_logo_mode($input['navbar_logo_mode'] ?? 'image'),
         'navbar_logo_url' => esc_url_raw($input['navbar_logo_url'] ?? ''),
+        'navbar_logo_text' => twst_sanitize_logo_text($input['navbar_logo_text'] ?? ''),
+        'navbar_logo_text_size' => max(16, min(96, (int) ($input['navbar_logo_text_size'] ?? 32))),
+        'footer_logo_mode' => twst_normalize_logo_mode($input['footer_logo_mode'] ?? 'image'),
         'footer_logo_url' => esc_url_raw($input['footer_logo_url'] ?? ''),
+        'footer_logo_text' => twst_sanitize_logo_text($input['footer_logo_text'] ?? ''),
+        'footer_logo_text_size' => max(20, min(120, (int) ($input['footer_logo_text_size'] ?? 48))),
+        'hide_language_switcher' => empty($input['hide_language_switcher']) ? 0 : 1,
     ];
 }
 
@@ -553,6 +589,155 @@ function twst_render_media_field(array $args): void
       <p class="description"><?php echo esc_html($label); ?></p>
     <?php endif; ?>
     <?php
+}
+
+/**
+ * Render a combined logo settings field.
+ */
+function twst_render_logo_settings_field(array $args): void
+{
+    $option_name = $args['option_name'] ?? '';
+    $location = $args['location'] ?? 'navbar';
+    $label = $args['label'] ?? '';
+
+    $values = get_option($option_name, []);
+    $values = is_array($values) ? $values : [];
+
+    $mode_key = "{$location}_logo_mode";
+    $url_key = "{$location}_logo_url";
+    $text_key = "{$location}_logo_text";
+    $size_key = "{$location}_logo_text_size";
+
+    $mode = twst_normalize_logo_mode($values[$mode_key] ?? 'image');
+    $image_url = (string) ($values[$url_key] ?? '');
+    $text = (string) ($values[$text_key] ?? '');
+    $size = (int) ($values[$size_key] ?? ($location === 'footer' ? 48 : 32));
+    ?>
+    <div style="display:grid;gap:16px;max-width:880px;">
+      <div style="display:grid;gap:8px;max-width:320px;">
+        <label for="<?php echo esc_attr($mode_key); ?>" style="font-weight:600;">
+          <?php esc_html_e('Logo type', 'sage'); ?>
+        </label>
+        <select
+          id="<?php echo esc_attr($mode_key); ?>"
+          name="<?php echo esc_attr($option_name); ?>[<?php echo esc_attr($mode_key); ?>]"
+        >
+          <option value="image" <?php selected($mode, 'image'); ?>>
+            <?php esc_html_e('Image', 'sage'); ?>
+          </option>
+          <option value="text" <?php selected($mode, 'text'); ?>>
+            <?php esc_html_e('Custom text', 'sage'); ?>
+          </option>
+          <option value="site_name" <?php selected($mode, 'site_name'); ?>>
+            <?php esc_html_e('Site name fallback', 'sage'); ?>
+          </option>
+        </select>
+      </div>
+
+      <div style="display:grid;gap:8px;">
+        <label for="<?php echo esc_attr($url_key); ?>" style="font-weight:600;">
+          <?php esc_html_e('Image logo', 'sage'); ?>
+        </label>
+        <div class="twst-media-field">
+          <input
+            type="text"
+            id="<?php echo esc_attr($url_key); ?>"
+            name="<?php echo esc_attr($option_name); ?>[<?php echo esc_attr($url_key); ?>]"
+            value="<?php echo esc_attr($image_url); ?>"
+            class="regular-text twst-media-url"
+            placeholder="<?php esc_attr_e('Select image from Media Library', 'sage'); ?>"
+          />
+          <button
+            type="button"
+            class="button twst-media-select-button"
+            data-target-id="<?php echo esc_attr($url_key); ?>"
+          >
+            <?php esc_html_e('Choose image', 'sage'); ?>
+          </button>
+        </div>
+      </div>
+
+      <div style="display:grid;gap:8px;max-width:420px;">
+        <label for="<?php echo esc_attr($text_key); ?>" style="font-weight:600;">
+          <?php esc_html_e('Text logo', 'sage'); ?>
+        </label>
+        <input
+          type="text"
+          id="<?php echo esc_attr($text_key); ?>"
+          name="<?php echo esc_attr($option_name); ?>[<?php echo esc_attr($text_key); ?>]"
+          value="<?php echo esc_attr($text); ?>"
+          class="regular-text"
+          placeholder="&lt;TWST/&gt;"
+        />
+        <p class="description">
+          <?php esc_html_e('You can use characters like < and > here. They will be displayed as plain text in the logo.', 'sage'); ?>
+        </p>
+      </div>
+
+      <div style="display:grid;gap:8px;max-width:220px;">
+        <label for="<?php echo esc_attr($size_key); ?>" style="font-weight:600;">
+          <?php esc_html_e('Text size (px)', 'sage'); ?>
+        </label>
+        <input
+          type="number"
+          id="<?php echo esc_attr($size_key); ?>"
+          name="<?php echo esc_attr($option_name); ?>[<?php echo esc_attr($size_key); ?>]"
+          value="<?php echo esc_attr((string) $size); ?>"
+          min="16"
+          max="120"
+          step="1"
+          class="small-text"
+        />
+      </div>
+
+      <?php if (! empty($label)) : ?>
+        <p class="description"><?php echo esc_html($label); ?></p>
+      <?php endif; ?>
+    </div>
+    <?php
+}
+
+/**
+ * Build logo markup for header/footer.
+ */
+function twst_get_logo_markup(string $location, string $site_name, array $args = []): string
+{
+    $settings = twst_get_theme_options();
+    $mode = twst_normalize_logo_mode($settings["{$location}_logo_mode"] ?? 'image');
+    $logo_url = (string) ($settings["{$location}_logo_url"] ?? '');
+    $text_logo = twst_sanitize_logo_text($settings["{$location}_logo_text"] ?? '');
+    $text_size = (int) ($settings["{$location}_logo_text_size"] ?? ($location === 'footer' ? 48 : 32));
+    $image_class = (string) ($args['image_class'] ?? 'h-10 w-auto object-contain');
+    $text_class = (string) ($args['text_class'] ?? 'font-semibold tracking-tight text-zinc-900 dark:text-zinc-100');
+
+    if ($mode === 'image' && $logo_url !== '') {
+        return sprintf(
+            '<img src="%s" alt="%s" class="%s" />',
+            esc_url($logo_url),
+            esc_attr($site_name),
+            esc_attr($image_class)
+        );
+    }
+
+    $text_value = $mode === 'text' && $text_logo !== '' ? $text_logo : $site_name;
+    $characters = preg_split('//u', $text_value, -1, PREG_SPLIT_NO_EMPTY);
+
+    if (! is_array($characters) || $characters === []) {
+        $characters = [$site_name];
+    }
+
+    $character_markup = array_map(static function ($character) {
+        $content = $character === ' ' ? '&nbsp;' : esc_html($character);
+
+        return '<span>'.$content.'</span>';
+    }, $characters);
+
+    return sprintf(
+        '<span class="%s" style="font-size:%dpx;line-height:1;display:inline-flex;align-items:center;flex-wrap:wrap;gap:0.02em;">%s</span>',
+        esc_attr($text_class),
+        $text_size,
+        implode('', $character_markup)
+    );
 }
 
 /**
@@ -796,28 +981,41 @@ add_action('admin_init', function () {
     );
 
     add_settings_field(
-        'navbar_logo_url',
+        'navbar_logo_settings',
         __('Navbar logo', 'sage'),
-        __NAMESPACE__.'\\twst_render_media_field',
+        __NAMESPACE__.'\\twst_render_logo_settings_field',
         'twst-theme-settings',
         'twst_theme_main_section',
         [
             'option_name' => 'twst_theme_settings',
-            'field_key' => 'navbar_logo_url',
-            'label' => __('Used in header. Leave empty to display site name text.', 'sage'),
+            'location' => 'navbar',
+            'label' => __('Choose image or custom text for the header logo.', 'sage'),
         ]
     );
 
     add_settings_field(
-        'footer_logo_url',
+        'footer_logo_settings',
         __('Footer logo', 'sage'),
-        __NAMESPACE__.'\\twst_render_media_field',
+        __NAMESPACE__.'\\twst_render_logo_settings_field',
         'twst-theme-settings',
         'twst_theme_main_section',
         [
             'option_name' => 'twst_theme_settings',
-            'field_key' => 'footer_logo_url',
-            'label' => __('Used in footer. Leave empty to display site name text.', 'sage'),
+            'location' => 'footer',
+            'label' => __('Choose image or custom text for the footer logo.', 'sage'),
+        ]
+    );
+
+    add_settings_field(
+        'hide_language_switcher',
+        __('Language switcher', 'sage'),
+        __NAMESPACE__.'\\twst_render_checkbox_field',
+        'twst-theme-settings',
+        'twst_theme_main_section',
+        [
+            'option_name' => 'twst_theme_settings',
+            'field_key' => 'hide_language_switcher',
+            'label' => __('Hide language switcher in the header.', 'sage'),
         ]
     );
 

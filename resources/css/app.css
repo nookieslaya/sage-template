@@ -580,12 +580,12 @@
 
   .twst-showcase-dot.is-active {
     width: 1.9rem;
-    background: #f9735b;
+    background: var(--twst-showcase-light-color, #f9735b);
   }
 
   .twst-showcase-dot:hover {
     transform: translateY(-1px);
-    background: rgba(249, 115, 91, 0.68);
+    background: color-mix(in srgb, var(--twst-showcase-light-color, #f9735b) 68%, transparent);
   }
 
   .dark .twst-showcase-dot {
@@ -601,6 +601,46 @@
   .twst-showcase-card a:focus,
   .twst-showcase-card a:visited {
     text-decoration: none;
+  }
+
+  .twst-words-rotator {
+    box-shadow: none;
+  }
+
+  .twst-word-viewport {
+    mask-image: linear-gradient(to bottom, transparent 0%, black 18%, black 82%, transparent 100%);
+  }
+
+  .twst-word-item {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-inline: 1.5rem;
+    text-align: center;
+    font-size: clamp(2.5rem, 7vw, 5.5rem);
+    font-weight: 600;
+    letter-spacing: -0.04em;
+    color: var(--twst-showcase-light-color, #18181b);
+    opacity: 0;
+    transform: translateY(120%);
+    transition: transform 420ms ease, opacity 320ms ease;
+    will-change: transform, opacity;
+  }
+
+  .dark .twst-word-item {
+    color: rgba(255, 255, 255, 0.92);
+  }
+
+  .twst-word-item.is-before {
+    opacity: 0;
+    transform: translateY(-120%);
+  }
+
+  .twst-word-item.is-active {
+    opacity: 1;
+    transform: translateY(0);
   }
 
 }

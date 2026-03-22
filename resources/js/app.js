@@ -564,6 +564,64 @@ const initShowcaseCarousels = () => {
   });
 };
 
+const initWordRotators = () => {
+  document.querySelectorAll('[data-words-rotator="true"]').forEach((rotator) => {
+    const items = Array.from(rotator.querySelectorAll('[data-word-item="true"]'));
+    const autoplayEnabled = rotator.dataset.autoplay === 'true';
+    const autoplaySpeed = Math.max(
+      2000,
+      Number.parseInt(rotator.dataset.autoplaySpeed || '4500', 10) || 4500,
+    );
+    let activeIndex = 0;
+    let timer = 0;
+
+    if (items.length <= 1) {
+      return;
+    }
+
+    const setActive = (nextIndex) => {
+      const previousIndex = activeIndex;
+      activeIndex = ((nextIndex % items.length) + items.length) % items.length;
+
+      items.forEach((item, index) => {
+        item.classList.toggle('is-active', index === activeIndex);
+        item.classList.toggle('is-before', index === previousIndex && previousIndex !== activeIndex);
+      });
+    };
+
+    const clearRotation = () => {
+      window.clearInterval(timer);
+    };
+
+    const startRotation = () => {
+      if (!autoplayEnabled) {
+        return;
+      }
+
+      clearRotation();
+      timer = window.setInterval(() => {
+        if (document.hidden) {
+          return;
+        }
+
+        setActive((activeIndex + 1) % items.length);
+      }, autoplaySpeed);
+    };
+
+    rotator.addEventListener('pointerenter', clearRotation);
+    rotator.addEventListener('pointerleave', startRotation);
+    rotator.addEventListener('touchstart', clearRotation, { passive: true });
+    rotator.addEventListener('touchend', startRotation, { passive: true });
+
+    items.forEach((item, index) => {
+      item.classList.toggle('is-active', index === 0);
+      item.classList.remove('is-before');
+    });
+    setActive(0);
+    startRotation();
+  });
+};
+
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
     try {
@@ -583,6 +641,12 @@ if (document.readyState === 'loading') {
     } catch (error) {
       console.error('[TWST Showcase] init failed', error);
     }
+
+    try {
+      initWordRotators();
+    } catch (error) {
+      console.error('[TWST Words] init failed', error);
+    }
   });
 } else {
   try {
@@ -601,5 +665,11 @@ if (document.readyState === 'loading') {
     initShowcaseCarousels();
   } catch (error) {
     console.error('[TWST Showcase] init failed', error);
+  }
+
+  try {
+    initWordRotators();
+  } catch (error) {
+    console.error('[TWST Words] init failed', error);
   }
 }

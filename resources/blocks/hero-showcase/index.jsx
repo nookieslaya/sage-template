@@ -32,6 +32,12 @@ const normalizeItems = (items = []) =>
     linkUrl: item.linkUrl || '#',
   }));
 
+const parseWords = (value = '') =>
+  String(value)
+    .split('\n')
+    .map((item) => item.trim())
+    .filter(Boolean);
+
 const HeroShowcaseContent = ({ attributes, isEditor = false }) => {
   const headline = getLegacyLocalized(
     attributes,
@@ -44,30 +50,44 @@ const HeroShowcaseContent = ({ attributes, isEditor = false }) => {
     'Use this block when you want the page to open with a stronger story: a bold message on the left and a compact visual showcase on the right.',
   );
   const items = normalizeItems(attributes.items);
+  const showcaseMode = attributes.showcaseMode || 'images';
+  const isWordsMode = showcaseMode === 'words';
+  const words = parseWords(
+    attributes.wordsText ||
+      'Websites\nWordPress\nCustom Code\nPerformance\nSEO\nConversions\nAutomation\nE-commerce\nSpeed\nScalability',
+  );
   const imagesOnly = Boolean(attributes.imagesOnly);
+  const lightModeColor = attributes.lightModeColor || '#18181b';
   const sectionClassName = isEditor
     ? 'twst-hero-showcase relative overflow-hidden px-6 py-12 md:px-8'
-    : 'twst-hero-showcase relative overflow-hidden px-6 pb-20 pt-36 md:pb-28 md:pt-44';
-  const mediaHeightClass = imagesOnly ? 'h-[26rem] md:h-[30rem]' : 'h-56';
+    : 'twst-hero-showcase relative overflow-hidden px-6 pb-14 pt-24 md:pb-28 md:pt-44';
+  const mediaHeightClass = imagesOnly ? 'h-[18rem] md:h-[30rem]' : 'h-44 md:h-56';
 
   return (
-    <section className={sectionClassName}>
+    <section
+      className={sectionClassName}
+      style={{
+        '--twst-showcase-light-color': lightModeColor,
+      }}
+    >
       <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
         <div className="absolute left-1/2 top-24 h-72 w-72 -translate-x-[118%] rounded-full bg-orange-400/18 blur-3xl dark:bg-orange-500/18" />
         <div className="absolute right-0 top-0 h-[26rem] w-[26rem] translate-x-1/3 -translate-y-1/4 rounded-full bg-sky-400/18 blur-3xl dark:bg-sky-500/18" />
       </div>
 
       <div className="relative mx-auto max-w-7xl">
-        <div className="grid gap-10 lg:grid-cols-[1.02fr_0.98fr] lg:items-stretch">
+        <div className="grid gap-8 md:gap-10 lg:grid-cols-[1.02fr_0.98fr] lg:items-stretch">
           <div className="flex h-full flex-col justify-center">
-            <h2 className="max-w-4xl text-balance text-5xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100 md:text-7xl">
+            <h2 className="max-w-4xl text-balance text-4xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100 md:text-7xl">
               {headline}
             </h2>
-            <p className="mt-6 max-w-2xl text-lg leading-relaxed text-zinc-600 dark:text-zinc-400 md:text-2xl">
+            <p className="mt-4 max-w-2xl text-base leading-relaxed text-zinc-600 dark:text-zinc-400 md:mt-6 md:text-2xl">
               {description}
             </p>
 
-            <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:flex-wrap">
+            <div
+              className={`mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap md:mt-10 md:gap-4 ${isWordsMode ? 'hidden md:flex' : ''}`}
+            >
               <a href={attributes.primaryUrl || '#'} className="twst-hero-btn-primary">
                 {getLegacyLocalized(attributes, 'primaryLabel', 'Start a Project')}
               </a>
@@ -81,89 +101,127 @@ const HeroShowcaseContent = ({ attributes, isEditor = false }) => {
           </div>
 
           <aside className="flex h-full flex-col bg-transparent p-0 md:pt-2">
-            <div
-              className="twst-showcase-track flex gap-4 overflow-x-auto rounded-[1.75rem] bg-transparent"
-              data-showcase-track={!isEditor ? 'true' : undefined}
-              data-autoplay={!isEditor && attributes.autoplay ? 'true' : undefined}
-              data-autoplay-speed={!isEditor ? String(Number(attributes.autoplaySpeed || 4500)) : undefined}
-            >
-              {items.map((item, index) => (
-                <article
-                  key={`hero-showcase-${index}`}
-                  className="twst-showcase-card relative min-w-full shrink-0 overflow-hidden rounded-[1.75rem] bg-zinc-950 text-zinc-100 dark:bg-black"
-                  data-showcase-slide={!isEditor ? 'true' : undefined}
-                >
-                  <div className={`overflow-hidden bg-zinc-900 ${mediaHeightClass}`}>
-                    {item.imageUrl ? (
-                      <div
-                        key={`hero-showcase-image-${index}-${item.imageFit}-${item.imagePositionX}-${item.imagePositionY}`}
-                        role="img"
-                        aria-label={item.title || ''}
-                        className="h-full w-full bg-zinc-900"
-                        style={{
-                          backgroundImage: `url(${item.imageUrl})`,
-                          backgroundSize: item.imageFit || 'cover',
-                          backgroundPosition: `${item.imagePositionX}% ${item.imagePositionY}%`,
-                          backgroundRepeat: 'no-repeat',
-                        }}
-                      />
-                    ) : (
-                      <div className="flex h-full items-center justify-center bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 text-sm uppercase tracking-[0.18em] text-zinc-500">
-                        {__('Add image', 'sage')}
-                      </div>
-                    )}
-                  </div>
-
-                  {!imagesOnly ? (
-                    <div className="p-5">
-                      <p className="text-xs font-semibold uppercase tracking-[0.22em] text-zinc-400">
-                        {item.eyebrow}
-                      </p>
-                      <h3 className="mt-3 text-2xl font-semibold tracking-tight text-white/95">
-                        {item.title}
-                      </h3>
-                      <p className="mt-3 text-base leading-relaxed text-zinc-400">
-                        {item.description}
-                      </p>
-                      <a
-                        href={item.linkUrl}
-                        className="mt-5 inline-flex items-center text-sm font-semibold uppercase tracking-[0.18em] text-orange-300 no-underline hover:no-underline focus:no-underline visited:text-orange-300"
-                      >
-                        {item.linkLabel}
-                      </a>
-                    </div>
-                  ) : null}
-                </article>
-              ))}
-            </div>
-            {!isEditor ? (
-              <div className="mt-5 flex items-center justify-center gap-2" data-showcase-dots="true">
-                {items.map((item, index) => (
-                  <button
-                    key={`hero-showcase-dot-${index}`}
-                    type="button"
-                    className="twst-showcase-dot"
-                    data-showcase-dot={String(index)}
-                    aria-label={`${__('Go to slide', 'sage')} ${index + 1}`}
-                  >
-                    <span className="sr-only">
-                      {item.title || `${__('Slide', 'sage')} ${index + 1}`}
+            {isWordsMode ? (
+              <div
+                className="twst-words-rotator relative flex min-h-[14rem] items-center justify-center overflow-hidden rounded-[1.75rem] bg-transparent text-zinc-100 md:min-h-[30rem]"
+                data-words-rotator={!isEditor ? 'true' : undefined}
+                data-autoplay={!isEditor && attributes.autoplay ? 'true' : undefined}
+                data-autoplay-speed={!isEditor ? String(Number(attributes.autoplaySpeed || 4500)) : undefined}
+              >
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(249,115,91,0.12),transparent_55%)]" aria-hidden="true" />
+                <div className="twst-word-viewport relative h-20 w-full overflow-hidden md:h-28">
+                  {words.map((word, index) => (
+                    <span
+                      key={`hero-word-${index}`}
+                      className={`twst-word-item ${index === 0 ? 'is-active' : ''}`}
+                      data-word-item={!isEditor ? 'true' : undefined}
+                    >
+                      {word}
                     </span>
-                  </button>
-                ))}
+                  ))}
+                </div>
               </div>
             ) : (
-              <div className="mt-5 flex items-center justify-center gap-2">
-                {items.map((_, index) => (
-                  <span
-                    key={`hero-showcase-dot-preview-${index}`}
-                    className={`twst-showcase-dot ${index === 0 ? 'is-active' : ''}`}
-                    aria-hidden="true"
-                  />
-                ))}
-              </div>
+              <>
+                <div
+                  className="twst-showcase-track flex gap-4 overflow-x-auto rounded-[1.75rem] bg-transparent"
+                  data-showcase-track={!isEditor ? 'true' : undefined}
+                  data-autoplay={!isEditor && attributes.autoplay ? 'true' : undefined}
+                  data-autoplay-speed={!isEditor ? String(Number(attributes.autoplaySpeed || 4500)) : undefined}
+                >
+                  {items.map((item, index) => (
+                    <article
+                      key={`hero-showcase-${index}`}
+                      className="twst-showcase-card relative min-w-full shrink-0 overflow-hidden rounded-[1.75rem] bg-zinc-950 text-zinc-100 dark:bg-black"
+                      data-showcase-slide={!isEditor ? 'true' : undefined}
+                    >
+                      <div className={`overflow-hidden bg-zinc-900 ${mediaHeightClass}`}>
+                        {item.imageUrl ? (
+                          <div
+                            key={`hero-showcase-image-${index}-${item.imageFit}-${item.imagePositionX}-${item.imagePositionY}`}
+                            role="img"
+                            aria-label={item.title || ''}
+                            className="h-full w-full bg-zinc-900"
+                            style={{
+                              backgroundImage: `url(${item.imageUrl})`,
+                              backgroundSize: item.imageFit || 'cover',
+                              backgroundPosition: `${item.imagePositionX}% ${item.imagePositionY}%`,
+                              backgroundRepeat: 'no-repeat',
+                            }}
+                          />
+                        ) : (
+                          <div className="flex h-full items-center justify-center bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 text-sm uppercase tracking-[0.18em] text-zinc-500">
+                            {__('Add image', 'sage')}
+                          </div>
+                        )}
+                      </div>
+
+                      {!imagesOnly ? (
+                        <div className="p-4 md:p-5">
+                          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-zinc-400">
+                            {item.eyebrow}
+                          </p>
+                          <h3 className="mt-2 text-xl font-semibold tracking-tight text-white/95 md:mt-3 md:text-2xl">
+                            {item.title}
+                          </h3>
+                          <p className="mt-2 text-sm leading-relaxed text-zinc-400 md:mt-3 md:text-base">
+                            {item.description}
+                          </p>
+                          <a
+                            href={item.linkUrl}
+                            className="mt-4 inline-flex items-center text-xs font-semibold uppercase tracking-[0.18em] text-orange-300 no-underline hover:no-underline focus:no-underline visited:text-orange-300 md:mt-5 md:text-sm"
+                          >
+                            {item.linkLabel}
+                          </a>
+                        </div>
+                      ) : null}
+                    </article>
+                  ))}
+                </div>
+                {!isEditor ? (
+                  <div className="mt-5 flex items-center justify-center gap-2" data-showcase-dots="true">
+                    {items.map((item, index) => (
+                      <button
+                        key={`hero-showcase-dot-${index}`}
+                        type="button"
+                        className="twst-showcase-dot"
+                        data-showcase-dot={String(index)}
+                        aria-label={`${__('Go to slide', 'sage')} ${index + 1}`}
+                      >
+                        <span className="sr-only">
+                          {item.title || `${__('Slide', 'sage')} ${index + 1}`}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="mt-5 flex items-center justify-center gap-2">
+                    {items.map((_, index) => (
+                      <span
+                        key={`hero-showcase-dot-preview-${index}`}
+                        className={`twst-showcase-dot ${index === 0 ? 'is-active' : ''}`}
+                        aria-hidden="true"
+                      />
+                    ))}
+                  </div>
+                )}
+              </>
             )}
           </aside>
+
+          {isWordsMode ? (
+            <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap md:hidden">
+              <a href={attributes.primaryUrl || '#'} className="twst-hero-btn-primary">
+                {getLegacyLocalized(attributes, 'primaryLabel', 'Start a Project')}
+              </a>
+              <a
+                href={attributes.secondaryUrl || '#'}
+                className="twst-hero-btn-secondary !border-zinc-300 !text-zinc-900 dark:!border-zinc-700 dark:!text-zinc-100"
+              >
+                {getLegacyLocalized(attributes, 'secondaryLabel', 'See My Work')}
+              </a>
+            </div>
+          ) : null}
         </div>
       </div>
     </section>
@@ -268,10 +326,34 @@ registerBlockType(metadata.name, {
                   onChange={(secondaryUrl) => setAttributes({ secondaryUrl })}
                 />
               </div>
+              <SelectControl
+                label={__('Showcase mode', 'sage')}
+                value={attributes.showcaseMode || 'images'}
+                options={[
+                  { label: __('Images', 'sage'), value: 'images' },
+                  { label: __('Words', 'sage'), value: 'words' },
+                ]}
+                onChange={(showcaseMode) => setAttributes({ showcaseMode })}
+              />
+              <TextControl
+                label={__('Light mode color', 'sage')}
+                help={__('Hex color used by the showcase in light mode, for example #18181b.', 'sage')}
+                value={attributes.lightModeColor || '#18181b'}
+                onChange={(lightModeColor) => setAttributes({ lightModeColor })}
+              />
+              {(attributes.showcaseMode || 'images') === 'words' ? (
+                <TextareaControl
+                  label={__('Words list', 'sage')}
+                  help={__('Enter one word per line.', 'sage')}
+                  value={attributes.wordsText || ''}
+                  onChange={(wordsText) => setAttributes({ wordsText })}
+                />
+              ) : null}
               <ToggleControl
                 label={__('Images only in carousel', 'sage')}
                 checked={Boolean(attributes.imagesOnly)}
                 onChange={(imagesOnly) => setAttributes({ imagesOnly })}
+                disabled={(attributes.showcaseMode || 'images') !== 'images'}
               />
               <ToggleControl
                 label={__('Autoplay carousel', 'sage')}
@@ -289,7 +371,7 @@ registerBlockType(metadata.name, {
               />
             </div>
 
-            {items.map((item, index) => (
+            {(attributes.showcaseMode || 'images') === 'images' ? items.map((item, index) => (
               <div key={`hero-showcase-item-${index}`} className="mt-6 rounded border border-zinc-300 p-4">
                 <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-zinc-500">
                   {`${__('Slide', 'sage')} ${index + 1}`}
@@ -414,13 +496,15 @@ registerBlockType(metadata.name, {
                   </Button>
                 </div>
               </div>
-            ))}
+            )) : null}
 
-            <div className="mt-4">
-              <Button variant="primary" onClick={addItem}>
-                {__('Add slide', 'sage')}
-              </Button>
-            </div>
+            {(attributes.showcaseMode || 'images') === 'images' ? (
+              <div className="mt-4">
+                <Button variant="primary" onClick={addItem}>
+                  {__('Add slide', 'sage')}
+                </Button>
+              </div>
+            ) : null}
           </PanelBody>
         </InspectorControls>
 

@@ -3,7 +3,12 @@
     $twstThemeSettings = function_exists('\App\twst_get_theme_options')
         ? \App\twst_get_theme_options()
         : [];
-    $footerLogoUrl = $twstThemeSettings['footer_logo_url'] ?? '';
+    $footerLogoMarkup = function_exists('\App\twst_get_logo_markup')
+        ? \App\twst_get_logo_markup('footer', $siteName, [
+            'image_class' => 'h-14 w-auto object-contain',
+            'text_class' => 'font-semibold tracking-tight text-zinc-900 dark:text-zinc-100',
+          ])
+        : e($siteName);
 
     $twstSocialSettings = function_exists('\App\twst_get_social_options')
         ? \App\twst_get_social_options()
@@ -28,11 +33,7 @@
   <div class="mx-auto max-w-7xl px-6 py-16 lg:py-20">
     <div class="grid gap-14 md:grid-cols-3">
       <section>
-        @if (! empty($footerLogoUrl))
-          <img src="{{ esc_url($footerLogoUrl) }}" alt="{{ esc_attr($siteName) }}" class="h-14 w-auto object-contain" />
-        @else
-          <h2 class="text-4xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100 lg:text-5xl">{{ $siteName }}</h2>
-        @endif
+        <div>{!! $footerLogoMarkup !!}</div>
         <p class="mt-4 text-xl text-zinc-500 dark:text-zinc-400 lg:text-2xl">
           {{ esc_html($footerTagline) }}
         </p>

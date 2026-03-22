@@ -28,6 +28,12 @@
     "primaryUrl": { "type": "string", "default": "#contact" },
     "secondaryLabel": { "type": "string", "default": "See My Work" },
     "secondaryUrl": { "type": "string", "default": "#work" },
+    "showcaseMode": { "type": "string", "default": "images" },
+    "lightModeColor": { "type": "string", "default": "#18181b" },
+    "wordsText": {
+      "type": "string",
+      "default": "Websites\nWordPress\nCustom Code\nPerformance\nSEO\nConversions\nAutomation\nE-commerce\nSpeed\nScalability"
+    },
     "imagesOnly": { "type": "boolean", "default": false },
     "autoplay": { "type": "boolean", "default": false },
     "autoplaySpeed": { "type": "number", "default": 4500 },
