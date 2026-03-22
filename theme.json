@@ -31,7 +31,19 @@
     },
     "typography": {
       "defaultFontSizes": false,
-      "customFontSize": false
+      "customFontSize": false,
+      "fontFamilies": [
+        {
+          "fontFamily": "\"Lato\", sans-serif",
+          "name": "Lato",
+          "slug": "lato"
+        }
+      ]
+    }
+  },
+  "styles": {
+    "typography": {
+      "fontFamily": "var(--wp--preset--font-family--lato)"
     }
   }
 }

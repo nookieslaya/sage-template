@@ -1,4 +1,15 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap');
 @import "tailwindcss";
 @custom-variant dark (&:where(.dark, .dark *));
 @source "../blocks/";
 @source "../js/";
+
+@layer base {
+  .editor-styles-wrapper,
+  .editor-styles-wrapper button,
+  .editor-styles-wrapper input,
+  .editor-styles-wrapper select,
+  .editor-styles-wrapper textarea {
+    font-family: 'Lato', sans-serif;
+  }
+}

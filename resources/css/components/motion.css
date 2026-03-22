@@ -1,0 +1,30 @@
+@layer components {
+  @media (prefers-reduced-motion: reduce) {
+    .twst-site-preloader,
+    .twst-site-preloader__curtain,
+    .twst-site-preloader__letter {
+      transition: none;
+    }
+
+    .twst-showcase-headline {
+      color: #f8fafc;
+    }
+
+    .twst-showcase-headline__base {
+      opacity: 1;
+    }
+
+    .twst-showcase-headline__char {
+      opacity: 1;
+      transform: none;
+    }
+
+    .twst-showcase-headline__masks {
+      display: none;
+    }
+
+    .twst-word-blob-shape {
+      animation: none;
+    }
+  }
+}

@@ -61,7 +61,7 @@ const HeroShowcaseContent = ({ attributes, isEditor = false }) => {
   const animateWordBlob = attributes.animateWordBlob !== false;
   const sectionClassName = isEditor
     ? 'twst-hero-showcase relative overflow-hidden px-6 py-12 md:px-8'
-    : 'twst-hero-showcase relative overflow-hidden px-6 pb-14 pt-24 md:pb-28 md:pt-44';
+    : 'twst-hero-showcase relative overflow-hidden px-6 pb-14 pt-24 md:flex md:min-h-screen md:items-center md:pb-20 md:pt-32';
   const mediaHeightClass = imagesOnly ? 'h-[18rem] md:h-[30rem]' : 'h-44 md:h-56';
 
   return (
@@ -76,25 +76,32 @@ const HeroShowcaseContent = ({ attributes, isEditor = false }) => {
         <div className="absolute right-0 top-0 h-[26rem] w-[26rem] translate-x-1/3 -translate-y-1/4 rounded-full bg-sky-400/18 blur-3xl dark:bg-sky-500/18" />
       </div>
 
-      <div className="relative mx-auto max-w-7xl">
+      <div className="relative mx-auto w-full max-w-[1920px]">
         <div className="grid gap-8 md:gap-10 lg:grid-cols-[1.02fr_0.98fr] lg:items-stretch">
           <div className="flex h-full flex-col justify-center">
-            <h2 className="max-w-4xl text-balance text-4xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100 md:text-7xl">
-              {headline}
+            <h2 className="twst-showcase-headline max-w-4xl text-balance text-4xl font-medium tracking-tight text-zinc-900 dark:text-zinc-100 md:text-7xl">
+              {isEditor ? (
+                headline
+              ) : (
+                <>
+                  <span className="twst-showcase-headline__base" data-showcase-headline-base>{headline}</span>
+                  <span className="twst-showcase-headline__masks" data-showcase-headline-masks aria-hidden="true" />
+                </>
+              )}
             </h2>
-            <p className="mt-4 max-w-2xl text-base leading-relaxed text-zinc-600 dark:text-zinc-400 md:mt-6 md:text-2xl">
+            <p className="mt-4 max-w-2xl text-sm leading-relaxed text-zinc-600 dark:text-zinc-400 md:mt-6 md:text-xl">
               {description}
             </p>
 
             <div
               className={`mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap md:mt-10 md:gap-4 ${isWordsMode ? 'hidden md:flex' : ''}`}
             >
-              <a href={attributes.primaryUrl || '#'} className="twst-hero-btn-primary">
+              <a href={attributes.primaryUrl || '#'} className="twst-showcase-cta-primary">
                 {getLegacyLocalized(attributes, 'primaryLabel', 'Start a Project')}
               </a>
               <a
                 href={attributes.secondaryUrl || '#'}
-                className="twst-hero-btn-secondary !border-zinc-300 !text-zinc-900 dark:!border-zinc-700 dark:!text-zinc-100"
+                className="twst-showcase-cta-secondary"
               >
                 {getLegacyLocalized(attributes, 'secondaryLabel', 'See My Work')}
               </a>
@@ -125,7 +132,9 @@ const HeroShowcaseContent = ({ attributes, isEditor = false }) => {
                       className={`twst-word-item ${index === 0 ? 'is-active' : ''}`}
                       data-word-item={!isEditor ? 'true' : undefined}
                     >
-                      {word}
+                      <span className="twst-word-item__backdrop twst-word-item__backdrop--accent" aria-hidden="true" />
+                      <span className="twst-word-item__backdrop twst-word-item__backdrop--white" aria-hidden="true" />
+                      <span className="twst-word-item__label">{word}</span>
                     </span>
                   ))}
                 </div>
@@ -220,12 +229,12 @@ const HeroShowcaseContent = ({ attributes, isEditor = false }) => {
 
           {isWordsMode ? (
             <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap md:hidden">
-              <a href={attributes.primaryUrl || '#'} className="twst-hero-btn-primary">
+              <a href={attributes.primaryUrl || '#'} className="twst-showcase-cta-primary">
                 {getLegacyLocalized(attributes, 'primaryLabel', 'Start a Project')}
               </a>
               <a
                 href={attributes.secondaryUrl || '#'}
-                className="twst-hero-btn-secondary !border-zinc-300 !text-zinc-900 dark:!border-zinc-700 dark:!text-zinc-100"
+                className="twst-showcase-cta-secondary"
               >
                 {getLegacyLocalized(attributes, 'secondaryLabel', 'See My Work')}
               </a>

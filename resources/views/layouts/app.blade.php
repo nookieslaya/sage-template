@@ -1,4 +1,7 @@
 <!doctype html>
+@php
+  $twstShowPreloader = ! is_admin();
+@endphp
 <html {!! get_language_attributes() !!}>
   <head>
     <meta charset="utf-8">
@@ -13,14 +16,30 @@
         } catch (e) {}
       })();
     </script>
+    @if ($twstShowPreloader)
+      <script>
+        document.documentElement.classList.add('twst-preload-enabled');
+      </script>
+    @endif
     @php do_action('get_header'); @endphp
     @php wp_head(); @endphp
   </head>
 
-  <body class="{{ esc_attr(implode(' ', get_body_class())) }}">
+  <body class="{{ esc_attr(implode(' ', array_merge(get_body_class(), $twstShowPreloader ? ['twst-preload-active'] : []))) }}">
     @php wp_body_open(); @endphp
 
-    <div id="app">
+    @if ($twstShowPreloader)
+      <div class="twst-site-preloader" data-site-preloader aria-hidden="true">
+        <div class="twst-site-preloader__curtain"></div>
+        <div class="twst-site-preloader__brand" aria-label="rdev.">
+          @foreach (['r', 'd', 'e', 'v', '.'] as $letter)
+            <span class="twst-site-preloader__letter" data-preload-letter>{{ $letter }}</span>
+          @endforeach
+        </div>
+      </div>
+    @endif
+
+    <div id="app" data-preload-app>
       <a class="sr-only focus:not-sr-only" href="#main">
         {{ __('Skip to content', 'sage') }}
       </a>

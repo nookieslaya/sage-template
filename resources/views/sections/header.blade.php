@@ -22,7 +22,7 @@
         : [];
   @endphp
 
-  <div class="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-6 py-5">
+  <div class="mx-auto flex w-full max-w-[1920px] items-center justify-between gap-4 px-6 py-5">
     <a href="{{ home_url('/') }}" class="text-3xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
       {!! $navbarLogoMarkup !!}
     </a>

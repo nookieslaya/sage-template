@@ -1,0 +1,21 @@
+@layer components {
+  .twst-contact-panel {
+    border: 1px solid rgba(249, 115, 91, 0.22);
+    background: linear-gradient(160deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 248, 243, 0.98) 100%);
+    box-shadow: 0 18px 46px rgba(20, 24, 33, 0.08);
+  }
+
+  .twst-elevated-card {
+    box-shadow: 0 18px 46px rgba(20, 24, 33, 0.08);
+  }
+
+  .dark .twst-contact-panel {
+    border-color: rgb(39 39 42 / 1);
+    background: rgb(24 24 27 / 1);
+    box-shadow: none;
+  }
+
+  .dark .twst-elevated-card {
+    box-shadow: none;
+  }
+}

@@ -1,0 +1,194 @@
+@layer components {
+  .twst-btn-accent {
+    @apply inline-flex items-center justify-center rounded-2xl px-8 py-4 text-base font-semibold text-white no-underline transition;
+    background: var(--twst-accent);
+  }
+
+  .twst-btn-accent:hover {
+    background: color-mix(in oklab, var(--twst-accent) 88%, #000000);
+  }
+
+  .twst-btn-accent:focus-visible {
+    outline: 2px solid color-mix(in oklab, var(--twst-accent) 55%, #ffffff);
+    outline-offset: 2px;
+  }
+
+  .dark .twst-btn-accent {
+    color: #050505;
+    background: color-mix(in oklab, var(--twst-accent) 72%, #ffffff);
+  }
+
+  .dark .twst-btn-accent:hover {
+    background: color-mix(in oklab, var(--twst-accent) 82%, #ffffff);
+  }
+
+  .twst-hero-btn-primary {
+    @apply inline-flex items-center justify-center rounded-2xl px-8 py-4 text-base font-semibold text-zinc-950 transition;
+    text-decoration: none !important;
+    color: #09090b !important;
+    background: linear-gradient(135deg, #f9b24a 0%, #f9735b 100%);
+    box-shadow: 0 12px 34px rgba(126, 39, 24, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  }
+
+  .twst-hero-btn-primary:hover {
+    transform: translateY(-1px);
+    color: #09090b !important;
+    background: linear-gradient(135deg, #ffc257 0%, #ff7d62 100%);
+    box-shadow: 0 16px 38px rgba(126, 39, 24, 0.44), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  }
+
+  .twst-hero-btn-primary:focus-visible {
+    outline: 2px solid rgba(255, 163, 94, 0.9);
+    outline-offset: 2px;
+  }
+
+  .twst-hero-btn-secondary {
+    @apply inline-flex items-center justify-center rounded-2xl border px-8 py-4 text-base font-semibold text-zinc-100 transition;
+    text-decoration: none !important;
+    border-color: rgba(255, 255, 255, 0.28);
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.04) 100%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+    backdrop-filter: blur(3px);
+  }
+
+  .twst-hero-btn-secondary:hover {
+    transform: translateY(-1px);
+    border-color: rgba(255, 255, 255, 0.42);
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.08) 100%);
+  }
+
+  .twst-hero-btn-secondary:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.36);
+    outline-offset: 2px;
+  }
+
+  .twst-link-accent {
+    color: color-mix(in oklab, var(--twst-accent) 78%, #1f2937);
+  }
+
+  .twst-link-accent:hover {
+    color: color-mix(in oklab, var(--twst-accent) 92%, #111827);
+  }
+
+  .twst-arrow-link {
+    text-decoration: none !important;
+  }
+
+  .twst-arrow-link .twst-arrow {
+    margin-left: 0.5rem;
+    display: inline-block;
+    transition: transform 180ms ease;
+  }
+
+  .twst-arrow-link .twst-arrow svg {
+    width: 0.95rem;
+    height: 0.95rem;
+    display: block;
+  }
+
+  .twst-arrow-link:hover .twst-arrow,
+  .twst-arrow-link:focus-visible .twst-arrow {
+    transform: translateX(4px);
+  }
+
+  .twst-arrow-link--back {
+    color: #f9735b;
+    text-decoration: none !important;
+  }
+
+  .twst-arrow-link--back:hover,
+  .twst-arrow-link--back:focus-visible {
+    color: #e45f48;
+    text-decoration: none !important;
+  }
+
+  .dark .twst-arrow-link--back {
+    color: #ff8f78;
+  }
+
+  .dark .twst-arrow-link--back:hover,
+  .dark .twst-arrow-link--back:focus-visible {
+    color: #ffb199;
+  }
+
+  .twst-arrow-link--back .twst-arrow {
+    margin-left: 0;
+    margin-right: 0.5rem;
+  }
+
+  .twst-arrow-link--back:hover .twst-arrow,
+  .twst-arrow-link--back:focus-visible .twst-arrow {
+    transform: translateX(-4px);
+  }
+
+  html:not(.dark) #blog h3 > a,
+  html:not(.dark) #blog .twst-link-accent {
+    color: #f9735b;
+    text-decoration: none !important;
+  }
+
+  html:not(.dark) #blog h3 > a:hover,
+  html:not(.dark) #blog .twst-link-accent:hover {
+    color: #e45f48;
+    text-decoration: none !important;
+  }
+
+  html:not(.dark) #blog .twst-btn-accent {
+    color: #ffffff;
+    background: #f9735b;
+    text-decoration: none !important;
+  }
+
+  html:not(.dark) #blog .twst-btn-accent:hover {
+    background: #e45f48;
+  }
+
+  .dark #blog h3 > a,
+  .dark #blog .twst-link-accent {
+    color: #f9735b;
+    text-decoration: none !important;
+  }
+
+  .dark #blog h3 > a:hover,
+  .dark #blog .twst-link-accent:hover {
+    color: #ff8f78;
+    text-decoration: none !important;
+  }
+
+  #blog h3 > a,
+  #blog h3 > a:hover,
+  #blog h3 > a:focus,
+  #blog h3 > a:visited {
+    text-decoration: none !important;
+  }
+
+  .dark #blog .twst-btn-accent {
+    color: #ffffff;
+    background: #f9735b;
+    text-decoration: none !important;
+  }
+
+  .dark #blog .twst-btn-accent:hover {
+    background: #ff8f78;
+  }
+
+  html:not(.dark) #work .twst-link-accent {
+    color: #f9735b;
+    text-decoration: none !important;
+  }
+
+  html:not(.dark) #work .twst-link-accent:hover {
+    color: #e45f48;
+    text-decoration: none !important;
+  }
+
+  .dark #work .twst-link-accent {
+    color: #f9735b;
+    text-decoration: none !important;
+  }
+
+  .dark #work .twst-link-accent:hover {
+    color: #ff8f78;
+    text-decoration: none !important;
+  }
+}

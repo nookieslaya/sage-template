@@ -1,0 +1,18 @@
+@layer base {
+  :root {
+    --twst-accent: #2f6fff;
+    --twst-preload-accent: #f9735b;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body,
+  button,
+  input,
+  select,
+  textarea {
+    font-family: 'Lato', sans-serif;
+  }
+}

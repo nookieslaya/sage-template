@@ -48,8 +48,8 @@ const HeroContent = ({ attributes, isEditor = false }) => {
     ? 'twst-hero relative min-h-[720px] w-full overflow-hidden px-8 py-16'
     : 'twst-hero relative h-screen w-full scroll-mt-32 overflow-hidden px-6 py-12 md:py-16';
   const contentWrapClassName = isEditor
-    ? 'relative z-10 mx-auto flex min-h-[620px] max-w-5xl items-center py-20 text-center'
-    : 'relative z-10 mx-auto flex h-screen max-w-6xl items-center pt-20 text-center md:pt-24';
+    ? 'relative z-10 mx-auto flex min-h-[620px] w-full max-w-[1920px] items-center py-20 text-center'
+    : 'relative z-10 mx-auto flex h-screen w-full max-w-[1920px] items-center pt-20 text-center md:pt-24';
   const headlineClassName = isEditor
     ? 'mx-auto max-w-4xl text-balance text-4xl font-semibold tracking-tight text-zinc-100 lg:text-6xl'
     : 'mx-auto max-w-5xl text-balance text-4xl font-semibold tracking-tight text-zinc-100 md:text-7xl';
