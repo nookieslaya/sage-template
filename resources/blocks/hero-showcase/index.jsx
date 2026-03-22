@@ -58,6 +58,7 @@ const HeroShowcaseContent = ({ attributes, isEditor = false }) => {
   );
   const imagesOnly = Boolean(attributes.imagesOnly);
   const lightModeColor = attributes.lightModeColor || '#18181b';
+  const animateWordBlob = attributes.animateWordBlob !== false;
   const sectionClassName = isEditor
     ? 'twst-hero-showcase relative overflow-hidden px-6 py-12 md:px-8'
     : 'twst-hero-showcase relative overflow-hidden px-6 pb-14 pt-24 md:pb-28 md:pt-44';
@@ -103,13 +104,21 @@ const HeroShowcaseContent = ({ attributes, isEditor = false }) => {
           <aside className="flex h-full flex-col bg-transparent p-0 md:pt-2">
             {isWordsMode ? (
               <div
-                className="twst-words-rotator relative flex min-h-[14rem] items-center justify-center overflow-hidden rounded-[1.75rem] bg-transparent text-zinc-100 md:min-h-[30rem]"
+                className="twst-words-rotator relative flex min-h-[14rem] items-center justify-center rounded-[1.75rem] bg-transparent text-zinc-100 md:min-h-[30rem]"
                 data-words-rotator={!isEditor ? 'true' : undefined}
                 data-autoplay={!isEditor && attributes.autoplay ? 'true' : undefined}
                 data-autoplay-speed={!isEditor ? String(Number(attributes.autoplaySpeed || 4500)) : undefined}
               >
                 <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(249,115,91,0.12),transparent_55%)]" aria-hidden="true" />
-                <div className="twst-word-viewport relative h-20 w-full overflow-hidden md:h-28">
+                {animateWordBlob ? (
+                  <div className="twst-word-blob absolute inset-0 flex items-center justify-center" aria-hidden="true">
+                    <div className="twst-word-blob-inner relative h-[44rem] w-[250%] md:h-[80rem] md:w-[320%]">
+                      <span className="twst-word-blob-shape twst-word-blob-shape--primary" />
+                      <span className="twst-word-blob-shape twst-word-blob-shape--secondary" />
+                    </div>
+                  </div>
+                ) : null}
+                <div className="twst-word-viewport relative z-[1] h-20 w-full overflow-hidden md:h-28">
                   {words.map((word, index) => (
                     <span
                       key={`hero-word-${index}`}
@@ -342,12 +351,19 @@ registerBlockType(metadata.name, {
                 onChange={(lightModeColor) => setAttributes({ lightModeColor })}
               />
               {(attributes.showcaseMode || 'images') === 'words' ? (
-                <TextareaControl
-                  label={__('Words list', 'sage')}
-                  help={__('Enter one word per line.', 'sage')}
-                  value={attributes.wordsText || ''}
-                  onChange={(wordsText) => setAttributes({ wordsText })}
-                />
+                <>
+                  <TextareaControl
+                    label={__('Words list', 'sage')}
+                    help={__('Enter one word per line.', 'sage')}
+                    value={attributes.wordsText || ''}
+                    onChange={(wordsText) => setAttributes({ wordsText })}
+                  />
+                  <ToggleControl
+                    label={__('Animate blob behind words', 'sage')}
+                    checked={attributes.animateWordBlob !== false}
+                    onChange={(animateWordBlob) => setAttributes({ animateWordBlob })}
+                  />
+                </>
               ) : null}
               <ToggleControl
                 label={__('Images only in carousel', 'sage')}

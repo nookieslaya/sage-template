@@ -175,6 +175,7 @@ function twst_polylang_strings(): array
         'footer_tagline' => 'Building the future of B2B technology',
         'footer_copyright_suffix' => 'All rights reserved.',
         'back_to_blog' => 'Back to blog',
+        'min_read' => 'min read',
         'footer_quick_links' => 'Quick Links',
         'footer_connect' => 'Connect',
         'blog_archive_eyebrow' => 'Blog',
@@ -341,6 +342,7 @@ function twst_get_theme_options(): array
         'footer_logo_text' => '',
         'footer_logo_text_size' => 48,
         'hide_language_switcher' => 0,
+        'hide_post_author' => 1,
     ];
 
     $options = get_option('twst_theme_settings', []);
@@ -466,6 +468,7 @@ function twst_sanitize_theme_settings($input): array
         'footer_logo_text' => twst_sanitize_logo_text($input['footer_logo_text'] ?? ''),
         'footer_logo_text_size' => max(20, min(120, (int) ($input['footer_logo_text_size'] ?? 48))),
         'hide_language_switcher' => empty($input['hide_language_switcher']) ? 0 : 1,
+        'hide_post_author' => empty($input['hide_post_author']) ? 0 : 1,
     ];
 }
 
@@ -1016,6 +1019,19 @@ add_action('admin_init', function () {
             'option_name' => 'twst_theme_settings',
             'field_key' => 'hide_language_switcher',
             'label' => __('Hide language switcher in the header.', 'sage'),
+        ]
+    );
+
+    add_settings_field(
+        'hide_post_author',
+        __('Post author', 'sage'),
+        __NAMESPACE__.'\\twst_render_checkbox_field',
+        'twst-theme-settings',
+        'twst_theme_main_section',
+        [
+            'option_name' => 'twst_theme_settings',
+            'field_key' => 'hide_post_author',
+            'label' => __('Hide author name in post meta and single post view.', 'sage'),
         ]
     );
 

@@ -605,9 +605,48 @@
 
   .twst-words-rotator {
     box-shadow: none;
+    overflow: visible;
+  }
+
+  .twst-word-blob {
+    pointer-events: none;
+    overflow: visible;
+    z-index: 0;
+  }
+
+  .twst-word-blob-inner {
+    filter: blur(24px);
+    opacity: 0.92;
+  }
+
+  .twst-word-blob-shape {
+    position: absolute;
+    inset: 0;
+    border-radius: 54% 46% 63% 37% / 36% 60% 40% 64%;
+    background:
+      radial-gradient(circle at 37% 42%, rgba(249, 115, 22, 0.46), transparent 20%),
+      radial-gradient(circle at 61% 39%, rgba(132, 204, 22, 0.38), transparent 22%),
+      radial-gradient(circle at 54% 60%, rgba(250, 204, 21, 0.2), transparent 16%),
+      radial-gradient(circle at 45% 55%, rgba(249, 115, 22, 0.12), transparent 44%);
+    animation: twst-word-blob-morph 9s ease-in-out infinite alternate;
+    transform-origin: center;
+    mix-blend-mode: multiply;
+  }
+
+  .twst-word-blob-shape--secondary {
+    inset: 12% 11%;
+    opacity: 0.68;
+    filter: blur(30px);
+    animation-duration: 12s;
+    animation-direction: alternate-reverse;
+    transform: rotate(-9deg) scale(1.14);
   }
 
   .twst-word-viewport {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
     mask-image: linear-gradient(to bottom, transparent 0%, black 18%, black 82%, transparent 100%);
   }
 
@@ -641,6 +680,43 @@
   .twst-word-item.is-active {
     opacity: 1;
     transform: translateY(0);
+  }
+
+  @keyframes twst-word-blob-morph {
+    0% {
+      transform: translate3d(-5%, -4%, 0) scale(0.92) rotate(-8deg);
+      border-radius: 54% 46% 63% 37% / 36% 60% 40% 64%;
+    }
+
+    33% {
+      transform: translate3d(5%, 3%, 0) scale(1.1) rotate(7deg);
+      border-radius: 39% 61% 33% 67% / 58% 35% 65% 42%;
+    }
+
+    66% {
+      transform: translate3d(2%, -5%, 0) scale(0.97) rotate(-13deg);
+      border-radius: 69% 31% 58% 42% / 33% 67% 35% 65%;
+    }
+
+    100% {
+      transform: translate3d(-4%, 5%, 0) scale(1.08) rotate(10deg);
+      border-radius: 42% 58% 66% 34% / 62% 39% 61% 38%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .twst-word-blob-shape {
+      animation: none;
+    }
+  }
+
+  .dark .twst-word-blob-shape {
+    mix-blend-mode: screen;
+    background:
+      radial-gradient(circle at 41% 46%, rgba(251, 146, 60, 0.3), transparent 24%),
+      radial-gradient(circle at 58% 45%, rgba(163, 230, 53, 0.22), transparent 24%),
+      radial-gradient(circle at 50% 62%, rgba(250, 204, 21, 0.12), transparent 18%),
+      radial-gradient(circle at 50% 50%, rgba(251, 146, 60, 0.1), transparent 48%);
   }
 
 }

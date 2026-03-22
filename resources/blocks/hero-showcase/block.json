@@ -30,6 +30,7 @@
     "secondaryUrl": { "type": "string", "default": "#work" },
     "showcaseMode": { "type": "string", "default": "images" },
     "lightModeColor": { "type": "string", "default": "#18181b" },
+    "animateWordBlob": { "type": "boolean", "default": true },
     "wordsText": {
       "type": "string",
       "default": "Websites\nWordPress\nCustom Code\nPerformance\nSEO\nConversions\nAutomation\nE-commerce\nSpeed\nScalability"

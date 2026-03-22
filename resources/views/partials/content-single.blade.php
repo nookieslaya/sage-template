@@ -6,6 +6,21 @@
     $backToBlogLabel = function_exists('\App\twst_get_translated_string')
         ? \App\twst_get_translated_string('back_to_blog')
         : 'Back to blog';
+    $minReadLabel = function_exists('\App\twst_get_translated_string')
+        ? \App\twst_get_translated_string('min_read')
+        : 'min read';
+    $twstThemeSettings = function_exists('\App\twst_get_theme_options')
+        ? \App\twst_get_theme_options()
+        : [];
+    $hidePostAuthor = ! empty($twstThemeSettings['hide_post_author']);
+    $singleMetaParts = [
+        sprintf('<time datetime="%s">%s</time>', esc_attr(get_post_time('c', true)), esc_html(get_the_date())),
+        esc_html(ceil(str_word_count(strip_tags(get_the_content())) / 180).' '.$minReadLabel),
+    ];
+
+    if (! $hidePostAuthor) {
+        $singleMetaParts[] = esc_html(get_the_author());
+    }
   @endphp
   <a href="{{ get_permalink(get_option('page_for_posts')) ?: home_url('/') }}" class="twst-arrow-link twst-arrow-link--back inline-flex items-center text-sm font-semibold uppercase tracking-[0.2em] no-underline transition">
     <span class="twst-arrow" aria-hidden="true">←</span>
@@ -18,11 +33,7 @@
     </h1>
 
     <p class="mt-4 text-lg text-zinc-500 dark:text-zinc-400">
-      <time datetime="{{ get_post_time('c', true) }}">{{ get_the_date() }}</time>
-      ·
-      {{ ceil(str_word_count(strip_tags(get_the_content())) / 180) }} min read
-      ·
-      {{ get_the_author() }}
+      {!! implode(' <span aria-hidden="true">·</span> ', $singleMetaParts) !!}
     </p>
   </header>
 
