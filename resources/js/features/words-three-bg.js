@@ -90,16 +90,16 @@ const mountWordsBackground = async (rotator, host) => {
       });
 
       const sprite = new THREE.Sprite(material);
-      sprite.position.set(
-        startX + column * stepX,
-        startY - row * stepY,
-        0,
-      );
+      const baseX = startX + column * stepX;
+      const baseY = startY - row * stepY;
+      sprite.position.set(baseX, baseY, 0);
 
       const scale = 13.5;
       sprite.scale.set(scale, scale, 1);
       sprite.userData = {
         baseScale: scale,
+        baseX,
+        baseY,
         phase: Math.random() * Math.PI * 2,
       };
 
@@ -114,6 +114,10 @@ const mountWordsBackground = async (rotator, host) => {
   const glowColor = new THREE.Color(0xf9735b);
   let frameId = 0;
   let isPinned = false;
+  let isPointerActive = false;
+  let impactStrength = 0;
+  const impactPoint = new THREE.Vector2(0, 0);
+  let impactRadius = 170;
 
   const updateSize = () => {
     const nextWidth = Math.max(host.clientWidth, 320);
@@ -134,6 +138,7 @@ const mountWordsBackground = async (rotator, host) => {
   };
 
   const onPointerMove = (event) => {
+    isPointerActive = true;
     setPointer(event.clientX, event.clientY);
   };
 
@@ -141,6 +146,8 @@ const mountWordsBackground = async (rotator, host) => {
     if (isPinned) {
       return;
     }
+    isPointerActive = false;
+    pointer.set(10_000, 10_000);
     targetPointer.set(10_000, 10_000);
   };
 
@@ -148,28 +155,58 @@ const mountWordsBackground = async (rotator, host) => {
     isPinned = !isPinned;
 
     if (isPinned) {
+      isPointerActive = true;
+      pointer.set(0, 0);
       targetPointer.set(0, 0);
     } else {
+      isPointerActive = false;
+      pointer.set(10_000, 10_000);
       targetPointer.set(10_000, 10_000);
     }
+  };
+
+  const onWordChange = (event) => {
+    const rect = host.getBoundingClientRect();
+    const x = (event.detail?.x ?? rect.left + rect.width / 2) - rect.left;
+    const y = (event.detail?.y ?? rect.top + rect.height / 2) - rect.top;
+    impactPoint.set(x - rect.width / 2, rect.height / 2 - y);
+    impactRadius = Math.max(
+      170,
+      ((Number(event.detail?.width) || 0) * 0.7) + ((Number(event.detail?.height) || 0) * 1.4),
+    );
+    impactStrength = 1;
   };
 
   const animate = (time = 0) => {
     frameId = window.requestAnimationFrame(animate);
     pointer.lerp(targetPointer, 0.12);
+    impactStrength += (0 - impactStrength) * 0.07;
 
     sprites.forEach((sprite) => {
-      const dx = sprite.position.x - pointer.x;
-      const dy = sprite.position.y - pointer.y;
+      const { baseX, baseY } = sprite.userData;
+      const dx = baseX - pointer.x;
+      const dy = baseY - pointer.y;
       const distance = Math.hypot(dx, dy);
-      const hoverInfluence = Math.max(0, 1 - distance / 90);
+      const hoverInfluence = isPointerActive ? Math.max(0, 1 - distance / 90) : 0;
       const influence = isPinned ? 1 : hoverInfluence;
+      const impactDx = baseX - impactPoint.x;
+      const impactDy = baseY - impactPoint.y;
+      const impactDistance = Math.hypot(impactDx, impactDy);
+      const impactInfluence = Math.max(0, 1 - impactDistance / impactRadius) * impactStrength;
       const pulse = (Math.sin(time * 0.0014 + sprite.userData.phase) + 1) * 0.5;
-      const scale = sprite.userData.baseScale * (1 + influence * 0.16 + pulse * 0.02);
+      const angle = Math.atan2(dy, dx);
+      const magneticOffset = influence * 16;
+      const impactTargetX = baseX + (impactPoint.x - baseX) * impactInfluence * 0.22;
+      const impactTargetY = baseY + (impactPoint.y - baseY) * impactInfluence * 0.22;
+      const targetX = impactTargetX + Math.cos(angle) * magneticOffset;
+      const targetY = impactTargetY + Math.sin(angle) * magneticOffset;
+      const scale = sprite.userData.baseScale * (1 + influence * 0.16 + impactInfluence * 0.28 + pulse * 0.02);
 
+      sprite.position.x += (targetX - sprite.position.x) * 0.14;
+      sprite.position.y += (targetY - sprite.position.y) * 0.14;
       sprite.scale.set(scale, scale, 1);
-      sprite.material.opacity = 0.18 + influence * 0.68 + pulse * 0.03;
-      sprite.material.color.copy(baseColor).lerp(glowColor, influence * 0.9);
+      sprite.material.opacity = 0.18 + influence * 0.68 + impactInfluence * 0.24 + pulse * 0.03;
+      sprite.material.color.copy(baseColor).lerp(glowColor, Math.max(influence * 0.9, impactInfluence * 0.72));
     });
 
     renderer.render(scene, camera);
@@ -178,6 +215,7 @@ const mountWordsBackground = async (rotator, host) => {
   host.addEventListener('pointermove', onPointerMove, { passive: true });
   host.addEventListener('pointerleave', onPointerLeave);
   host.addEventListener('click', onClick);
+  rotator.addEventListener('twst:word-change', onWordChange);
   window.addEventListener('resize', updateSize);
 
   animate();
@@ -187,6 +225,7 @@ const mountWordsBackground = async (rotator, host) => {
     host.removeEventListener('pointermove', onPointerMove);
     host.removeEventListener('pointerleave', onPointerLeave);
     host.removeEventListener('click', onClick);
+    rotator.removeEventListener('twst:word-change', onWordChange);
     window.removeEventListener('resize', updateSize);
     sprites.forEach((sprite) => {
       sprite.material.map?.dispose?.();

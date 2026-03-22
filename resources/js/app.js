@@ -4,7 +4,7 @@ import { initHeroShader } from './features/hero';
 import { initSitePreloader } from './features/preloader';
 import { initRevealOnScroll } from './features/reveal';
 import { initShowcaseHeadlineMasks } from './features/showcase-headline';
-import { initShowcaseCarousels, initWordRotators } from './features/showcase';
+import { initShowcaseCarousels, initShowcaseParallax, initWordRotators } from './features/showcase';
 import { initThemeAndLanguage } from './features/theme';
 
 window.__twstThemeReady = false;
@@ -23,6 +23,7 @@ const boot = () => {
   safeInit('[TWST]', initThemeAndLanguage);
   safeInit('[TWST Hero]', initHeroShader);
   safeInit('[TWST Showcase]', initShowcaseCarousels);
+  safeInit('[TWST Showcase Parallax]', initShowcaseParallax);
   safeInit('[TWST Words]', initWordRotators);
   safeInit('[TWST Reveal]', initRevealOnScroll);
 };

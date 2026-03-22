@@ -1,4 +1,58 @@
 import { initWordsThreeBackgrounds } from './words-three-bg';
+import { prefersReducedMotion } from '../lib/media';
+
+export const initShowcaseParallax = () => {
+  if (prefersReducedMotion() || !window.matchMedia('(min-width: 1024px)').matches) {
+    return;
+  }
+
+  const sections = Array.from(document.querySelectorAll('.twst-hero-showcase'));
+
+  if (sections.length === 0) {
+    return;
+  }
+
+  let frameId = 0;
+
+  const update = () => {
+    frameId = 0;
+
+    sections.forEach((section) => {
+      const rect = section.getBoundingClientRect();
+      const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 1;
+      const progress = ((viewportHeight * 0.5) - (rect.top + rect.height * 0.5)) / viewportHeight;
+      const clamped = Math.max(-1, Math.min(1, progress));
+
+      const content = section.querySelector('[data-showcase-parallax-layer="content"]');
+      const media = section.querySelector('[data-showcase-parallax-layer="media"]');
+      const letters = section.querySelector('[data-words-three-bg="true"]');
+
+      if (content) {
+        content.style.transform = `translate3d(0, ${clamped * 18}px, 0)`;
+      }
+
+      if (media) {
+        media.style.transform = `translate3d(0, ${clamped * -28}px, 0)`;
+      }
+
+      if (letters) {
+        letters.style.transform = `translate3d(0, ${clamped * -42}px, 0)`;
+      }
+    });
+  };
+
+  const requestUpdate = () => {
+    if (frameId) {
+      return;
+    }
+
+    frameId = window.requestAnimationFrame(update);
+  };
+
+  window.addEventListener('scroll', requestUpdate, { passive: true });
+  window.addEventListener('resize', requestUpdate);
+  requestUpdate();
+};
 
 export const initShowcaseCarousels = () => {
   document.querySelectorAll('.twst-hero-showcase').forEach((section) => {
@@ -98,6 +152,7 @@ export const initWordRotators = () => {
 
   document.querySelectorAll('[data-words-rotator="true"]').forEach((rotator) => {
     const items = Array.from(rotator.querySelectorAll('[data-word-item="true"]'));
+    const flash = rotator.querySelector('[data-words-flash="true"]');
     const section = rotator.closest('.twst-hero-showcase');
     const autoplayEnabled = rotator.dataset.autoplay === 'true';
     const autoplaySpeed = Math.max(
@@ -119,6 +174,31 @@ export const initWordRotators = () => {
         item.classList.toggle('is-active', index === activeIndex);
         item.classList.toggle('is-before', index === previousIndex && previousIndex !== activeIndex);
       });
+
+      const activeItem = items[activeIndex];
+      if (activeItem) {
+        if (flash) {
+          flash.classList.remove('is-active');
+          window.requestAnimationFrame(() => {
+            flash.classList.add('is-active');
+          });
+        }
+
+        const rect = activeItem.getBoundingClientRect();
+        rotator.dispatchEvent(
+          new CustomEvent('twst:word-change', {
+            bubbles: true,
+            detail: {
+              index: activeIndex,
+              word: activeItem.textContent?.trim() || '',
+              x: rect.left + rect.width / 2,
+              y: rect.top + rect.height / 2,
+              width: rect.width,
+              height: rect.height,
+            },
+          }),
+        );
+      }
     };
 
     const clearRotation = () => {

@@ -81,7 +81,7 @@ const HeroShowcaseContent = ({ attributes, isEditor = false }) => {
 
       <div className="relative mx-auto flex w-full max-w-[1920px] flex-1">
         <div className="grid w-full gap-8 md:gap-10 lg:min-h-[calc(100vh-13rem)] lg:grid-cols-[1.02fr_0.98fr] lg:items-stretch">
-          <div className="flex h-full flex-col justify-center">
+          <div className="flex h-full flex-col justify-center" data-showcase-parallax-layer="content">
             <h2 className="twst-showcase-headline max-w-4xl text-balance text-4xl font-medium tracking-tight text-zinc-900 dark:text-zinc-100 md:text-7xl">
               {isEditor ? (
                 headline
@@ -111,7 +111,7 @@ const HeroShowcaseContent = ({ attributes, isEditor = false }) => {
             </div>
           </div>
 
-          <aside className="flex h-full flex-col bg-transparent p-0 md:min-h-full md:pt-2 lg:h-full">
+          <aside className="flex h-full flex-col bg-transparent p-0 md:min-h-full md:pt-2 lg:h-full" data-showcase-parallax-layer="media">
             {isWordsMode ? (
               <div
                 className="twst-words-rotator relative flex min-h-[14rem] items-center justify-center rounded-[1.75rem] bg-transparent text-zinc-100 md:h-full md:min-h-0 md:flex-1 lg:min-h-full"
@@ -122,6 +122,7 @@ const HeroShowcaseContent = ({ attributes, isEditor = false }) => {
                 {showWordsThreeBackground ? (
                   <div className="twst-words-three-bg absolute inset-0" data-words-three-bg={!isEditor ? 'true' : undefined} aria-hidden="true" />
                 ) : null}
+                <div className="twst-words-flash absolute inset-0" data-words-flash={!isEditor ? 'true' : undefined} aria-hidden="true" />
                 <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(249,115,91,0.12),transparent_55%)]" aria-hidden="true" />
                 {showWordBlob ? (
                   <div className="twst-word-blob absolute inset-0 flex items-center justify-center" aria-hidden="true">
