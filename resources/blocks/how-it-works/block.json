@@ -1,0 +1,53 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "twst/how-it-works",
+  "title": "TWST How It Works",
+  "category": "design",
+  "icon": "list-view",
+  "description": "Sticky process section with scroll-driven step and image transitions.",
+  "textdomain": "sage",
+  "supports": {
+    "anchor": true,
+    "html": false
+  },
+  "attributes": {
+    "headline": {
+      "type": "string",
+      "default": "How it works"
+    },
+    "eyebrow": {
+      "type": "string",
+      "default": "// PROCESS"
+    },
+    "steps": {
+      "type": "array",
+      "default": [
+        {
+          "title": "Subscribe",
+          "description": "Pick a plan that fits your workload and pay monthly, with no contracts and no minimum commitment.",
+          "imageUrl": "",
+          "imageAlt": ""
+        },
+        {
+          "title": "Request",
+          "description": "Send your work through Slack, email, or wherever your team already communicates.",
+          "imageUrl": "",
+          "imageAlt": ""
+        },
+        {
+          "title": "Ship",
+          "description": "Receive deliverables in short cycles, then refine with focused revisions.",
+          "imageUrl": "",
+          "imageAlt": ""
+        },
+        {
+          "title": "Repeat",
+          "description": "Submit the next request and keep momentum with the same process each month.",
+          "imageUrl": "",
+          "imageAlt": ""
+        }
+      ]
+    }
+  }
+}

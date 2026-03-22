@@ -57,23 +57,14 @@ const HeroShowcaseContent = ({ attributes, isEditor = false }) => {
       'Websites\nWordPress\nCustom Code\nPerformance\nSEO\nConversions\nAutomation\nE-commerce\nSpeed\nScalability',
   );
   const imagesOnly = Boolean(attributes.imagesOnly);
-  const lightModeColor = attributes.lightModeColor || '#18181b';
   const wordsBackgroundMode = attributes.wordsBackgroundMode ||
     (attributes.animateWordBlob === false ? 'none' : 'blob');
   const showWordBlob = wordsBackgroundMode === 'blob';
   const showWordsThreeBackground = wordsBackgroundMode === 'letters';
-  const sectionClassName = isEditor
-    ? 'twst-hero-showcase relative overflow-hidden px-6 py-12 md:px-8'
-    : 'twst-hero-showcase relative overflow-hidden px-6 pb-14 pt-24 md:flex md:min-h-screen md:items-center md:pb-20 md:pt-32';
   const mediaHeightClass = imagesOnly ? 'h-[18rem] md:h-[30rem]' : 'h-44 md:h-56';
 
   return (
-    <section
-      className={sectionClassName}
-      style={{
-        '--twst-showcase-light-color': lightModeColor,
-      }}
-    >
+    <>
       <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
         <div className="absolute left-1/2 top-24 h-72 w-72 -translate-x-[118%] rounded-full bg-orange-400/18 blur-3xl dark:bg-orange-500/18" />
         <div className="absolute right-0 top-0 h-[26rem] w-[26rem] translate-x-1/3 -translate-y-1/4 rounded-full bg-sky-400/18 blur-3xl dark:bg-sky-500/18" />
@@ -81,7 +72,7 @@ const HeroShowcaseContent = ({ attributes, isEditor = false }) => {
 
       <div className="relative mx-auto flex w-full max-w-[1920px] flex-1">
         <div className="grid w-full gap-8 md:gap-10 lg:min-h-[calc(100vh-13rem)] lg:grid-cols-[1.02fr_0.98fr] lg:items-stretch">
-          <div className="flex h-full flex-col justify-center" data-showcase-parallax-layer="content">
+          <div className="flex h-full flex-col justify-center">
             <h2 className="twst-showcase-headline max-w-4xl text-balance text-4xl font-medium tracking-tight text-zinc-900 dark:text-zinc-100 md:text-7xl">
               {isEditor ? (
                 headline
@@ -111,7 +102,7 @@ const HeroShowcaseContent = ({ attributes, isEditor = false }) => {
             </div>
           </div>
 
-          <aside className="flex h-full flex-col bg-transparent p-0 md:min-h-full md:pt-2 lg:h-full" data-showcase-parallax-layer="media">
+          <aside className="flex h-full flex-col bg-transparent p-0 md:min-h-full md:pt-2 lg:h-full">
             {isWordsMode ? (
               <div
                 className="twst-words-rotator relative flex min-h-[14rem] items-center justify-center rounded-[1.75rem] bg-transparent text-zinc-100 md:h-full md:min-h-0 md:flex-1 lg:min-h-full"
@@ -248,7 +239,7 @@ const HeroShowcaseContent = ({ attributes, isEditor = false }) => {
           ) : null}
         </div>
       </div>
-    </section>
+    </>
   );
 };
 
@@ -256,7 +247,10 @@ registerBlockType(metadata.name, {
   ...metadata,
   edit({ attributes, setAttributes }) {
     const blockProps = useBlockProps({
-      className: 'bg-zinc-100 dark:bg-zinc-950',
+      className: 'twst-hero-showcase relative overflow-hidden bg-zinc-100 px-6 py-12 dark:bg-zinc-950 md:px-8',
+      style: {
+        '--twst-showcase-light-color': attributes.lightModeColor || '#18181b',
+      },
     });
     const items = normalizeItems(attributes.items);
     const wordsBackgroundMode = attributes.wordsBackgroundMode ||
@@ -558,7 +552,10 @@ registerBlockType(metadata.name, {
   },
   save({ attributes }) {
     const blockProps = useBlockProps.save({
-      className: 'bg-zinc-100 dark:bg-zinc-950',
+      className: 'twst-hero-showcase relative overflow-hidden bg-zinc-100 px-6 pb-14 pt-24 dark:bg-zinc-950 md:flex md:h-screen md:min-h-screen md:items-center md:pb-20 md:pt-32',
+      style: {
+        '--twst-showcase-light-color': attributes.lightModeColor || '#18181b',
+      },
     });
 
     return (

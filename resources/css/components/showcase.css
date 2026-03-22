@@ -1,4 +1,19 @@
 @layer components {
+  .twst-hero-showcase {
+    position: relative;
+    z-index: 0;
+    isolation: isolate;
+  }
+
+  @media (min-width: 1024px) {
+    .twst-hero-showcase {
+      height: 100svh;
+      height: 100vh;
+      min-height: 100svh;
+      min-height: 100vh;
+    }
+  }
+
   .twst-showcase-cta-primary {
     display: inline-flex;
     align-items: center;
@@ -151,8 +166,6 @@
     overflow: visible;
   }
 
-  [data-showcase-parallax-layer="content"],
-  [data-showcase-parallax-layer="media"],
   .twst-words-three-bg {
     will-change: transform;
   }
@@ -209,6 +222,12 @@
     justify-content: center;
     z-index: 1;
     mask-image: linear-gradient(to bottom, transparent 0%, black 18%, black 82%, transparent 100%);
+  }
+
+  @media (min-width: 1024px) {
+    .twst-word-viewport {
+      margin-bottom: 150px;
+    }
   }
 
   .twst-word-item {

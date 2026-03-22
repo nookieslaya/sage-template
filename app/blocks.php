@@ -10,6 +10,7 @@ add_action('init', function () {
     $blocks = [
         'hero',
         'hero-showcase',
+        'how-it-works',
         'about',
         'services-grid',
         'case-studies',

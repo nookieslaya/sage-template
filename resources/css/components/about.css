@@ -1,5 +1,7 @@
 @layer components {
   .twst-about-shell {
+    position: relative;
+    z-index: 3;
     background: #f1f1f3;
   }
 
@@ -28,7 +30,9 @@
     flex-direction: column;
     justify-content: space-between;
     padding: 1.75rem;
-    transition: background-color 280ms cubic-bezier(0.22, 1, 0.36, 1), color 280ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition:
+      background-color 280ms cubic-bezier(0.22, 1, 0.36, 1),
+      color 280ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .twst-about-card__value {
@@ -46,7 +50,7 @@
 
   .twst-about-card__surface > .twst-about-card__value,
   .twst-about-card__surface > .twst-about-card__value--primary {
-    font-size: 40px;
+    font-size: 55px;
     line-height: 0.95;
     color: rgb(24 24 27);
   }
@@ -107,7 +111,8 @@
     .twst-about-card--stat:hover .twst-about-card__label-mask--white {
       animation:
         twst-about-label-fill 0.26s cubic-bezier(0.22, 1, 0.36, 1) forwards,
-        twst-about-label-exit 0.22s cubic-bezier(0.76, 0, 0.24, 1) forwards 0.38s;
+        twst-about-label-exit 0.22s cubic-bezier(0.76, 0, 0.24, 1) forwards
+          0.38s;
     }
 
     .twst-about-card--stat:hover .twst-about-card__label-mask--accent {

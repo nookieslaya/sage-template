@@ -85,14 +85,14 @@ const mountWordsBackground = async (rotator, host) => {
       const backgroundMaterial = new THREE.SpriteMaterial({
         map: getTexture(letter),
         transparent: true,
-        opacity: 0.07,
+        opacity: 0.11,
         depthWrite: false,
         color: new THREE.Color(0x3f3f46),
       });
       const foregroundMaterial = new THREE.SpriteMaterial({
         map: getTexture(letter),
         transparent: true,
-        opacity: 0.1,
+        opacity: 0.15,
         depthWrite: false,
         color: new THREE.Color(0x52525b),
       });
@@ -216,7 +216,7 @@ const mountWordsBackground = async (rotator, host) => {
       sprite.position.x += (parallaxX - sprite.position.x) * 0.06;
       sprite.position.y += (parallaxY - sprite.position.y) * 0.06;
       sprite.scale.set(scale, scale, 1);
-      sprite.material.opacity = 0.08 + pulse * 0.015;
+      sprite.material.opacity = 0.12 + pulse * 0.02;
       sprite.material.color.copy(baseColor);
     });
 
@@ -243,7 +243,7 @@ const mountWordsBackground = async (rotator, host) => {
       sprite.position.x += (targetX - sprite.position.x) * 0.14;
       sprite.position.y += (targetY - sprite.position.y) * 0.14;
       sprite.scale.set(scale, scale, 1);
-      sprite.material.opacity = 0.18 + influence * 0.68 + impactInfluence * 0.24 + pulse * 0.03;
+      sprite.material.opacity = 0.24 + influence * 0.62 + impactInfluence * 0.2 + pulse * 0.04;
       sprite.material.color.copy(baseColor).lerp(glowColor, Math.max(influence * 0.9, impactInfluence * 0.72));
     });
 

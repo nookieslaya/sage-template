@@ -1,10 +1,11 @@
 import.meta.glob(['../images/**', '../fonts/**']);
 
 import { initHeroShader } from './features/hero';
+import { initHowItWorks } from './features/how-it-works';
 import { initSitePreloader } from './features/preloader';
 import { initRevealOnScroll } from './features/reveal';
 import { initShowcaseHeadlineMasks } from './features/showcase-headline';
-import { initShowcaseCarousels, initShowcaseParallax, initWordRotators } from './features/showcase';
+import { initShowcaseCarousels, initWordRotators } from './features/showcase';
 import { initThemeAndLanguage } from './features/theme';
 
 window.__twstThemeReady = false;
@@ -22,8 +23,8 @@ const boot = () => {
   safeInit('[TWST Showcase Headline]', initShowcaseHeadlineMasks);
   safeInit('[TWST]', initThemeAndLanguage);
   safeInit('[TWST Hero]', initHeroShader);
+  safeInit('[TWST How It Works]', initHowItWorks);
   safeInit('[TWST Showcase]', initShowcaseCarousels);
-  safeInit('[TWST Showcase Parallax]', initShowcaseParallax);
   safeInit('[TWST Words]', initWordRotators);
   safeInit('[TWST Reveal]', initRevealOnScroll);
 };

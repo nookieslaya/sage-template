@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap');
 @import "tailwindcss";
+@import "./components/how-it-works.css";
 @custom-variant dark (&:where(.dark, .dark *));
 @source "../blocks/";
 @source "../js/";
