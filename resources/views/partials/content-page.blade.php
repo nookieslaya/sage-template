@@ -1,4 +1,4 @@
-<div class="twst-content">
+<div>
   @php(the_content())
 </div>
 

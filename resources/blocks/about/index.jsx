@@ -6,45 +6,101 @@ import {
   MediaUploadCheck,
   useBlockProps,
 } from '@wordpress/block-editor';
-import { Button, PanelBody, TextControl, TextareaControl } from '@wordpress/components';
+import { Button, PanelBody, TextControl } from '@wordpress/components';
 import metadata from './block.json';
-import { getLegacyLocalized } from '../shared';
+import { currentEditorLang, getLegacyLocalized } from '../shared';
+
+const getAboutText = (attributes, key, fallback = '') => {
+  const lang = currentEditorLang();
+  const primaryLocalizedKey = `${key}${lang === 'pl' ? 'Pl' : 'En'}`;
+  const secondaryLocalizedKey = `${key}${lang === 'pl' ? 'En' : 'Pl'}`;
+  const baseValue = attributes?.[key];
+  const primaryLocalizedValue = attributes?.[primaryLocalizedKey];
+  const secondaryLocalizedValue = attributes?.[secondaryLocalizedKey];
+
+  if (typeof baseValue === 'string') {
+    return baseValue.trim();
+  }
+
+  if (typeof primaryLocalizedValue === 'string') {
+    return primaryLocalizedValue.trim();
+  }
+
+  if (typeof secondaryLocalizedValue === 'string') {
+    return secondaryLocalizedValue.trim();
+  }
+
+  return (fallback || '').trim();
+};
 
 const AboutContent = ({ attributes }) => {
-  const eyebrow = getLegacyLocalized(attributes, 'eyebrow', 'ABOUT');
-  const headline = getLegacyLocalized(attributes, 'headline', 'Technology Partner for Modern Businesses');
-  const body = getLegacyLocalized(attributes, 'body', 'With over 10 years of experience in enterprise software development, I specialize in building scalable solutions for B2B companies.');
+  const eyebrow = getAboutText(attributes, 'eyebrow', 'ABOUT');
+  const headline = getAboutText(attributes, 'headline', 'Selected experience, shaped into measurable outcomes.');
+  const cards = [
+    {
+      value: (getLegacyLocalized(attributes, 'cardOneValue', '5+') || '').trim(),
+      label: (getLegacyLocalized(attributes, 'cardOneLabel', 'lat doswiadczenia') || '').trim(),
+      isPrimary: true,
+    },
+    {
+      value: (getLegacyLocalized(attributes, 'cardTwoValue', '25+') || '').trim(),
+      label: (getLegacyLocalized(attributes, 'cardTwoLabel', 'projektow') || '').trim(),
+    },
+    {
+      value: (getLegacyLocalized(attributes, 'cardThreeValue', '1') || '').trim(),
+      label: (getLegacyLocalized(attributes, 'cardThreeLabel', 'partner techniczny') || '').trim(),
+    },
+  ].filter((card) => card.value && card.label);
 
   return (
-    <section
-      id="about"
-      className="twst-about-section mx-auto max-w-7xl scroll-mt-32 px-6 py-20 md:py-24"
-      data-reveal-root
-    >
-      <header className="text-center twst-reveal-up" data-reveal-item data-reveal-delay="0">
-        <p className="text-sm font-semibold uppercase tracking-[0.24em] text-zinc-500 dark:text-zinc-400">{eyebrow}</p>
-        <h2 className="mt-4 text-balance text-4xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100 md:text-6xl">{headline}</h2>
-      </header>
-      <div className="mt-12 grid gap-10 md:grid-cols-2 md:items-center">
-        <figure className="twst-reveal-up overflow-hidden rounded-3xl" data-reveal-item data-reveal-delay="90">
+    <div className="twst-about-shell" data-reveal-root>
+      <div className="twst-about-section mx-auto max-w-[1920px] scroll-mt-32 px-6 py-20 md:py-24">
+      {(eyebrow || headline) && (
+        <header className="twst-reveal-up mb-10 md:mb-12" data-reveal-item data-reveal-delay="0">
+          {eyebrow ? <p className="text-sm font-semibold uppercase tracking-[0.24em] text-zinc-500">{eyebrow}</p> : null}
+          {headline ? <h2 className="mt-4 max-w-4xl text-balance text-4xl font-medium tracking-tight text-zinc-900 md:text-6xl">{headline}</h2> : null}
+        </header>
+      )}
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <figure className="twst-about-card twst-about-card--image twst-reveal-up overflow-hidden" data-reveal-item data-reveal-delay="90">
           {attributes.imageUrl ? (
-            <img className="h-full w-full rounded-3xl object-cover" src={attributes.imageUrl} alt={attributes.imageAlt || ''} />
+            <img className="h-full w-full object-cover" src={attributes.imageUrl} alt={attributes.imageAlt || ''} />
           ) : (
-            <div className="flex h-full min-h-80 items-center justify-center rounded-3xl border border-dashed border-zinc-300 bg-zinc-200 text-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
+            <div className="flex h-full min-h-[22rem] items-center justify-center border border-dashed border-zinc-300 text-zinc-500">
               {__('Add portrait image', 'sage')}
             </div>
           )}
         </figure>
-        <p className="twst-reveal-up text-pretty text-xl leading-relaxed text-zinc-500 dark:text-zinc-400 md:text-3xl" data-reveal-item data-reveal-delay="180">{body}</p>
+
+        {cards.map((card, index) => (
+          <article
+            key={`about-card-${index}`}
+            className="twst-about-card twst-about-card--stat twst-reveal-up"
+            data-reveal-item
+            data-reveal-delay={String(150 + index * 70)}
+          >
+            <div className="twst-about-card__surface">
+              <p className={`twst-about-card__value${card.isPrimary ? ' twst-about-card__value--primary' : ''}`}>{card.value}</p>
+              <div className="twst-about-card__footer">
+                <span className="twst-about-card__label-wrap">
+                  <span className="twst-about-card__label">{card.label}</span>
+                  <span className="twst-about-card__label-mask twst-about-card__label-mask--white" aria-hidden="true" />
+                  <span className="twst-about-card__label-mask twst-about-card__label-mask--accent" aria-hidden="true" />
+                </span>
+              </div>
+            </div>
+          </article>
+        ))}
       </div>
-    </section>
+      </div>
+    </div>
   );
 };
 
 registerBlockType(metadata.name, {
   ...metadata,
   edit({ attributes, setAttributes }) {
-    const blockProps = useBlockProps({ className: 'bg-zinc-100 dark:bg-zinc-950' });
+    const blockProps = useBlockProps();
 
     return (
       <>
@@ -52,18 +108,43 @@ registerBlockType(metadata.name, {
           <PanelBody title={__('Content', 'sage')} initialOpen>
             <TextControl
               label={__('Eyebrow', 'sage')}
-              value={getLegacyLocalized(attributes, 'eyebrow')}
+              value={getAboutText(attributes, 'eyebrow')}
               onChange={(eyebrow) => setAttributes({ eyebrow })}
             />
             <TextControl
               label={__('Headline', 'sage')}
-              value={getLegacyLocalized(attributes, 'headline')}
+              value={getAboutText(attributes, 'headline')}
               onChange={(headline) => setAttributes({ headline })}
             />
-            <TextareaControl
-              label={__('Body', 'sage')}
-              value={getLegacyLocalized(attributes, 'body')}
-              onChange={(body) => setAttributes({ body })}
+            <TextControl
+              label={__('Card 1 value', 'sage')}
+              value={getLegacyLocalized(attributes, 'cardOneValue')}
+              onChange={(cardOneValue) => setAttributes({ cardOneValue })}
+            />
+            <TextControl
+              label={__('Card 1 label', 'sage')}
+              value={getLegacyLocalized(attributes, 'cardOneLabel')}
+              onChange={(cardOneLabel) => setAttributes({ cardOneLabel })}
+            />
+            <TextControl
+              label={__('Card 2 value', 'sage')}
+              value={getLegacyLocalized(attributes, 'cardTwoValue')}
+              onChange={(cardTwoValue) => setAttributes({ cardTwoValue })}
+            />
+            <TextControl
+              label={__('Card 2 label', 'sage')}
+              value={getLegacyLocalized(attributes, 'cardTwoLabel')}
+              onChange={(cardTwoLabel) => setAttributes({ cardTwoLabel })}
+            />
+            <TextControl
+              label={__('Card 3 value', 'sage')}
+              value={getLegacyLocalized(attributes, 'cardThreeValue')}
+              onChange={(cardThreeValue) => setAttributes({ cardThreeValue })}
+            />
+            <TextControl
+              label={__('Card 3 label', 'sage')}
+              value={getLegacyLocalized(attributes, 'cardThreeLabel')}
+              onChange={(cardThreeLabel) => setAttributes({ cardThreeLabel })}
             />
             <TextControl
               label={__('Image alt', 'sage')}
@@ -72,7 +153,12 @@ registerBlockType(metadata.name, {
             />
             <MediaUploadCheck>
               <MediaUpload
-                onSelect={(media) => setAttributes({ imageUrl: media?.url || '' })}
+                onSelect={(media) =>
+                  setAttributes({
+                    imageUrl: media?.url || '',
+                    imageAlt: media?.alt || attributes.imageAlt,
+                  })
+                }
                 allowedTypes={['image']}
                 value={attributes.imageUrl}
                 render={({ open }) => (
@@ -85,17 +171,17 @@ registerBlockType(metadata.name, {
           </PanelBody>
         </InspectorControls>
 
-        <section {...blockProps}>
+        <section {...blockProps} id="about">
           <AboutContent attributes={attributes} />
         </section>
       </>
     );
   },
   save({ attributes }) {
-    const blockProps = useBlockProps.save({ className: 'bg-zinc-100 dark:bg-zinc-950' });
+    const blockProps = useBlockProps.save();
 
     return (
-      <section {...blockProps}>
+      <section {...blockProps} id="about">
         <AboutContent attributes={attributes} />
       </section>
     );

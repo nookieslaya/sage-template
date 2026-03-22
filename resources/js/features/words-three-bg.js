@@ -69,7 +69,8 @@ const mountWordsBackground = async (rotator, host) => {
     return textureCache.get(letter);
   };
 
-  const sprites = [];
+  const backgroundSprites = [];
+  const foregroundSprites = [];
   const cellSize = 15;
   const columns = Math.max(18, Math.ceil(width / cellSize));
   const rows = Math.max(18, Math.ceil(height / cellSize));
@@ -81,30 +82,53 @@ const mountWordsBackground = async (rotator, host) => {
   for (let row = 0; row < rows; row += 1) {
     for (let column = 0; column < columns; column += 1) {
       const letter = LETTERS[(row * columns + column) % LETTERS.length];
-      const material = new THREE.SpriteMaterial({
+      const backgroundMaterial = new THREE.SpriteMaterial({
         map: getTexture(letter),
         transparent: true,
-        opacity: 0.08,
+        opacity: 0.07,
         depthWrite: false,
-        color: new THREE.Color(0xcbd5e1),
+        color: new THREE.Color(0x3f3f46),
+      });
+      const foregroundMaterial = new THREE.SpriteMaterial({
+        map: getTexture(letter),
+        transparent: true,
+        opacity: 0.1,
+        depthWrite: false,
+        color: new THREE.Color(0x52525b),
       });
 
-      const sprite = new THREE.Sprite(material);
       const baseX = startX + column * stepX;
       const baseY = startY - row * stepY;
-      sprite.position.set(baseX, baseY, 0);
+      const backgroundSprite = new THREE.Sprite(backgroundMaterial);
+      backgroundSprite.position.set(baseX, baseY, -20);
 
-      const scale = 13.5;
-      sprite.scale.set(scale, scale, 1);
-      sprite.userData = {
-        baseScale: scale,
+      const foregroundSprite = new THREE.Sprite(foregroundMaterial);
+      foregroundSprite.position.set(baseX, baseY, 0);
+
+      const backgroundScale = 11.5;
+      const foregroundScale = 13.5;
+      backgroundSprite.scale.set(backgroundScale, backgroundScale, 1);
+      foregroundSprite.scale.set(foregroundScale, foregroundScale, 1);
+
+      backgroundSprite.userData = {
+        baseScale: backgroundScale,
         baseX,
         baseY,
         phase: Math.random() * Math.PI * 2,
+        depth: 'background',
+      };
+      foregroundSprite.userData = {
+        baseScale: foregroundScale,
+        baseX,
+        baseY,
+        phase: Math.random() * Math.PI * 2,
+        depth: 'foreground',
       };
 
-      sprites.push(sprite);
-      scene.add(sprite);
+      backgroundSprites.push(backgroundSprite);
+      foregroundSprites.push(foregroundSprite);
+      scene.add(backgroundSprite);
+      scene.add(foregroundSprite);
     }
   }
 
@@ -182,7 +206,21 @@ const mountWordsBackground = async (rotator, host) => {
     pointer.lerp(targetPointer, 0.12);
     impactStrength += (0 - impactStrength) * 0.07;
 
-    sprites.forEach((sprite) => {
+    backgroundSprites.forEach((sprite) => {
+      const { baseX, baseY } = sprite.userData;
+      const parallaxX = baseX + (pointer.x * 0.04);
+      const parallaxY = baseY + (pointer.y * 0.04);
+      const pulse = (Math.sin(time * 0.0011 + sprite.userData.phase) + 1) * 0.5;
+      const scale = sprite.userData.baseScale * (1 + pulse * 0.015);
+
+      sprite.position.x += (parallaxX - sprite.position.x) * 0.06;
+      sprite.position.y += (parallaxY - sprite.position.y) * 0.06;
+      sprite.scale.set(scale, scale, 1);
+      sprite.material.opacity = 0.08 + pulse * 0.015;
+      sprite.material.color.copy(baseColor);
+    });
+
+    foregroundSprites.forEach((sprite) => {
       const { baseX, baseY } = sprite.userData;
       const dx = baseX - pointer.x;
       const dy = baseY - pointer.y;
@@ -227,7 +265,7 @@ const mountWordsBackground = async (rotator, host) => {
     host.removeEventListener('click', onClick);
     rotator.removeEventListener('twst:word-change', onWordChange);
     window.removeEventListener('resize', updateSize);
-    sprites.forEach((sprite) => {
+    [...backgroundSprites, ...foregroundSprites].forEach((sprite) => {
       sprite.material.map?.dispose?.();
       sprite.material.dispose();
     });

@@ -152,7 +152,6 @@ export const initWordRotators = () => {
 
   document.querySelectorAll('[data-words-rotator="true"]').forEach((rotator) => {
     const items = Array.from(rotator.querySelectorAll('[data-word-item="true"]'));
-    const flash = rotator.querySelector('[data-words-flash="true"]');
     const section = rotator.closest('.twst-hero-showcase');
     const autoplayEnabled = rotator.dataset.autoplay === 'true';
     const autoplaySpeed = Math.max(
@@ -177,13 +176,6 @@ export const initWordRotators = () => {
 
       const activeItem = items[activeIndex];
       if (activeItem) {
-        if (flash) {
-          flash.classList.remove('is-active');
-          window.requestAnimationFrame(() => {
-            flash.classList.add('is-active');
-          });
-        }
-
         const rect = activeItem.getBoundingClientRect();
         rotator.dispatchEvent(
           new CustomEvent('twst:word-change', {

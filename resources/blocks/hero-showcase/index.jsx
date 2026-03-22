@@ -122,7 +122,6 @@ const HeroShowcaseContent = ({ attributes, isEditor = false }) => {
                 {showWordsThreeBackground ? (
                   <div className="twst-words-three-bg absolute inset-0" data-words-three-bg={!isEditor ? 'true' : undefined} aria-hidden="true" />
                 ) : null}
-                <div className="twst-words-flash absolute inset-0" data-words-flash={!isEditor ? 'true' : undefined} aria-hidden="true" />
                 <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(249,115,91,0.12),transparent_55%)]" aria-hidden="true" />
                 {showWordBlob ? (
                   <div className="twst-word-blob absolute inset-0 flex items-center justify-center" aria-hidden="true">
