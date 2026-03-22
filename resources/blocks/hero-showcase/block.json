@@ -30,6 +30,7 @@
     "secondaryUrl": { "type": "string", "default": "#work" },
     "showcaseMode": { "type": "string", "default": "images" },
     "lightModeColor": { "type": "string", "default": "#18181b" },
+    "wordsBackgroundMode": { "type": "string", "default": "blob" },
     "animateWordBlob": { "type": "boolean", "default": true },
     "wordsText": {
       "type": "string",

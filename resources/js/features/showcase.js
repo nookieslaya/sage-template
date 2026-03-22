@@ -1,3 +1,5 @@
+import { initWordsThreeBackgrounds } from './words-three-bg';
+
 export const initShowcaseCarousels = () => {
   document.querySelectorAll('.twst-hero-showcase').forEach((section) => {
     const track = section.querySelector('[data-showcase-track="true"]');
@@ -92,6 +94,8 @@ export const initShowcaseCarousels = () => {
 };
 
 export const initWordRotators = () => {
+  initWordsThreeBackgrounds();
+
   document.querySelectorAll('[data-words-rotator="true"]').forEach((rotator) => {
     const items = Array.from(rotator.querySelectorAll('[data-word-item="true"]'));
     const section = rotator.closest('.twst-hero-showcase');

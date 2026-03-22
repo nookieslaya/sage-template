@@ -151,6 +151,18 @@
     overflow: visible;
   }
 
+  .twst-words-three-bg {
+    z-index: 0;
+    opacity: 1;
+  }
+
+  .twst-words-three-bg canvas {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+    opacity: 1;
+  }
+
   .twst-word-blob {
     pointer-events: none;
     overflow: visible;

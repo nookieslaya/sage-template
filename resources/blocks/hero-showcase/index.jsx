@@ -58,7 +58,10 @@ const HeroShowcaseContent = ({ attributes, isEditor = false }) => {
   );
   const imagesOnly = Boolean(attributes.imagesOnly);
   const lightModeColor = attributes.lightModeColor || '#18181b';
-  const animateWordBlob = attributes.animateWordBlob !== false;
+  const wordsBackgroundMode = attributes.wordsBackgroundMode ||
+    (attributes.animateWordBlob === false ? 'none' : 'blob');
+  const showWordBlob = wordsBackgroundMode === 'blob';
+  const showWordsThreeBackground = wordsBackgroundMode === 'letters';
   const sectionClassName = isEditor
     ? 'twst-hero-showcase relative overflow-hidden px-6 py-12 md:px-8'
     : 'twst-hero-showcase relative overflow-hidden px-6 pb-14 pt-24 md:flex md:min-h-screen md:items-center md:pb-20 md:pt-32';
@@ -76,8 +79,8 @@ const HeroShowcaseContent = ({ attributes, isEditor = false }) => {
         <div className="absolute right-0 top-0 h-[26rem] w-[26rem] translate-x-1/3 -translate-y-1/4 rounded-full bg-sky-400/18 blur-3xl dark:bg-sky-500/18" />
       </div>
 
-      <div className="relative mx-auto w-full max-w-[1920px]">
-        <div className="grid gap-8 md:gap-10 lg:grid-cols-[1.02fr_0.98fr] lg:items-stretch">
+      <div className="relative mx-auto flex w-full max-w-[1920px] flex-1">
+        <div className="grid w-full gap-8 md:gap-10 lg:min-h-[calc(100vh-13rem)] lg:grid-cols-[1.02fr_0.98fr] lg:items-stretch">
           <div className="flex h-full flex-col justify-center">
             <h2 className="twst-showcase-headline max-w-4xl text-balance text-4xl font-medium tracking-tight text-zinc-900 dark:text-zinc-100 md:text-7xl">
               {isEditor ? (
@@ -108,16 +111,19 @@ const HeroShowcaseContent = ({ attributes, isEditor = false }) => {
             </div>
           </div>
 
-          <aside className="flex h-full flex-col bg-transparent p-0 md:pt-2">
+          <aside className="flex h-full flex-col bg-transparent p-0 md:min-h-full md:pt-2 lg:h-full">
             {isWordsMode ? (
               <div
-                className="twst-words-rotator relative flex min-h-[14rem] items-center justify-center rounded-[1.75rem] bg-transparent text-zinc-100 md:min-h-[30rem]"
+                className="twst-words-rotator relative flex min-h-[14rem] items-center justify-center rounded-[1.75rem] bg-transparent text-zinc-100 md:h-full md:min-h-0 md:flex-1 lg:min-h-full"
                 data-words-rotator={!isEditor ? 'true' : undefined}
                 data-autoplay={!isEditor && attributes.autoplay ? 'true' : undefined}
                 data-autoplay-speed={!isEditor ? String(Number(attributes.autoplaySpeed || 4500)) : undefined}
               >
+                {showWordsThreeBackground ? (
+                  <div className="twst-words-three-bg absolute inset-0" data-words-three-bg={!isEditor ? 'true' : undefined} aria-hidden="true" />
+                ) : null}
                 <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(249,115,91,0.12),transparent_55%)]" aria-hidden="true" />
-                {animateWordBlob ? (
+                {showWordBlob ? (
                   <div className="twst-word-blob absolute inset-0 flex items-center justify-center" aria-hidden="true">
                     <div className="twst-word-blob-inner relative h-[44rem] w-[250%] md:h-[80rem] md:w-[320%]">
                       <span className="twst-word-blob-shape twst-word-blob-shape--primary" />
@@ -253,6 +259,8 @@ registerBlockType(metadata.name, {
       className: 'bg-zinc-100 dark:bg-zinc-950',
     });
     const items = normalizeItems(attributes.items);
+    const wordsBackgroundMode = attributes.wordsBackgroundMode ||
+      (attributes.animateWordBlob === false ? 'none' : 'blob');
 
     const setItems = (nextItems) => {
       setAttributes({ items: nextItems });
@@ -367,10 +375,19 @@ registerBlockType(metadata.name, {
                     value={attributes.wordsText || ''}
                     onChange={(wordsText) => setAttributes({ wordsText })}
                   />
-                  <ToggleControl
-                    label={__('Animate blob behind words', 'sage')}
-                    checked={attributes.animateWordBlob !== false}
-                    onChange={(animateWordBlob) => setAttributes({ animateWordBlob })}
+                  <SelectControl
+                    label={__('Words background', 'sage')}
+                    value={wordsBackgroundMode}
+                    options={[
+                      { label: __('Blob', 'sage'), value: 'blob' },
+                      { label: __('Letters background', 'sage'), value: 'letters' },
+                      { label: __('None', 'sage'), value: 'none' },
+                    ]}
+                    onChange={(nextWordsBackgroundMode) =>
+                      setAttributes({
+                        wordsBackgroundMode: nextWordsBackgroundMode,
+                        animateWordBlob: nextWordsBackgroundMode === 'blob',
+                      })}
                   />
                 </>
               ) : null}
