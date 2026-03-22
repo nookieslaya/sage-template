@@ -15,15 +15,25 @@ const normalizeItems = (items = []) => items.map((item) => ({
 
 const ServicesContent = ({ attributes }) => {
   const headline = getLegacyLocalized(attributes, 'headline', 'Comprehensive Technology Solutions');
+  const items = normalizeItems(attributes.items);
 
   return (
-    <section className="mx-auto max-w-7xl scroll-mt-32 px-6 py-20 md:py-24" id="services">
-      <header className="text-center">
+    <section
+      className="mx-auto max-w-7xl scroll-mt-32 px-6 py-20 md:py-24"
+      id="services"
+      data-reveal-root
+    >
+      <header className="text-center twst-reveal-up" data-reveal-item data-reveal-delay="0">
         <h2 className="text-balance text-4xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100 md:text-6xl">{headline}</h2>
       </header>
       <div className="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-        {normalizeItems(attributes.items).map((item, index) => (
-          <article key={`service-${index}`} className="rounded-3xl border border-zinc-200 bg-zinc-50 p-8 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+        {items.map((item, index) => (
+          <article
+            key={`service-${index}`}
+            className="twst-reveal-up rounded-3xl border border-zinc-200 bg-zinc-50 p-8 shadow-sm dark:border-zinc-800 dark:bg-zinc-900"
+            data-reveal-item
+            data-reveal-delay={String(80 + index * 70)}
+          >
             <h3 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">{item.title}</h3>
             <p className="mt-4 text-lg leading-relaxed text-zinc-500 dark:text-zinc-400">{item.desc}</p>
           </article>

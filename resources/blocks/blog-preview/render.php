@@ -43,14 +43,15 @@ $query = new WP_Query([
     'ignore_sticky_posts' => true,
 ]);
 ?>
-<section id="blog" class="mx-auto max-w-7xl scroll-mt-32 px-6 py-20 md:py-24">
-  <header class="text-center">
+<section id="blog" class="mx-auto max-w-7xl scroll-mt-32 px-6 py-20 md:py-24" data-reveal-root>
+  <header class="text-center twst-reveal-up" data-reveal-item data-reveal-delay="0">
     <p class="text-sm font-semibold uppercase tracking-[0.24em] text-zinc-500 dark:text-zinc-400"><?php echo esc_html($eyebrow); ?></p>
     <h2 class="mt-4 text-balance text-4xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100 md:text-6xl"><?php echo esc_html($headline); ?></h2>
   </header>
 
   <?php if ($query->have_posts()) : ?>
     <div class="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <?php $card_index = 0; ?>
       <?php while ($query->have_posts()) : $query->the_post(); ?>
         <?php
           $word_count = str_word_count(wp_strip_all_tags((string) get_the_content()));
@@ -58,8 +59,9 @@ $query = new WP_Query([
           $read_time = $language === 'pl'
             ? sprintf('%d min czytania', $minutes)
             : sprintf('%d min read', $minutes);
+          $delay = 90 + ($card_index * 80);
         ?>
-        <article <?php post_class('twst-elevated-card overflow-hidden rounded-3xl border border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900'); ?>>
+        <article <?php post_class('twst-elevated-card twst-reveal-up overflow-hidden rounded-3xl border border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900'); ?> data-reveal-item data-reveal-delay="<?php echo esc_attr((string) $delay); ?>">
           <a href="<?php the_permalink(); ?>" class="block">
             <?php if (has_post_thumbnail()) : ?>
               <?php the_post_thumbnail('large', ['class' => 'h-64 w-full object-cover']); ?>
@@ -85,10 +87,11 @@ $query = new WP_Query([
             </a>
           </div>
         </article>
+        <?php $card_index++; ?>
       <?php endwhile; ?>
     </div>
 
-    <div class="mt-10 text-center">
+    <div class="mt-10 text-center twst-reveal-up" data-reveal-item data-reveal-delay="340">
       <a href="<?php echo esc_url($blog_url); ?>" class="twst-btn-accent"><?php echo esc_html($view_more_label); ?></a>
     </div>
   <?php else : ?>

@@ -16,13 +16,17 @@ const AboutContent = ({ attributes }) => {
   const body = getLegacyLocalized(attributes, 'body', 'With over 10 years of experience in enterprise software development, I specialize in building scalable solutions for B2B companies.');
 
   return (
-    <section id="about" className="mx-auto max-w-7xl scroll-mt-32 px-6 py-20 md:py-24">
-      <header className="text-center">
+    <section
+      id="about"
+      className="twst-about-section mx-auto max-w-7xl scroll-mt-32 px-6 py-20 md:py-24"
+      data-reveal-root
+    >
+      <header className="text-center twst-reveal-up" data-reveal-item data-reveal-delay="0">
         <p className="text-sm font-semibold uppercase tracking-[0.24em] text-zinc-500 dark:text-zinc-400">{eyebrow}</p>
         <h2 className="mt-4 text-balance text-4xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100 md:text-6xl">{headline}</h2>
       </header>
       <div className="mt-12 grid gap-10 md:grid-cols-2 md:items-center">
-        <figure className="overflow-hidden rounded-3xl">
+        <figure className="twst-reveal-up overflow-hidden rounded-3xl" data-reveal-item data-reveal-delay="90">
           {attributes.imageUrl ? (
             <img className="h-full w-full rounded-3xl object-cover" src={attributes.imageUrl} alt={attributes.imageAlt || ''} />
           ) : (
@@ -31,7 +35,7 @@ const AboutContent = ({ attributes }) => {
             </div>
           )}
         </figure>
-        <p className="text-pretty text-xl leading-relaxed text-zinc-500 dark:text-zinc-400 md:text-3xl">{body}</p>
+        <p className="twst-reveal-up text-pretty text-xl leading-relaxed text-zinc-500 dark:text-zinc-400 md:text-3xl" data-reveal-item data-reveal-delay="180">{body}</p>
       </div>
     </section>
   );

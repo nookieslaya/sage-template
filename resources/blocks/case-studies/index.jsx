@@ -38,8 +38,9 @@ const CaseStudiesContent = ({ attributes }) => {
     <section
       className="mx-auto max-w-7xl scroll-mt-32 px-6 py-20 md:py-24"
       id="work"
+      data-reveal-root
     >
-      <header className="text-center">
+      <header className="text-center twst-reveal-up" data-reveal-item data-reveal-delay="0">
         <p className="text-sm font-semibold uppercase tracking-[0.24em] text-zinc-500 dark:text-zinc-400">
           {eyebrow}
         </p>
@@ -58,7 +59,9 @@ const CaseStudiesContent = ({ attributes }) => {
           return (
             <article
               key={`case-study-${index}`}
-              className="twst-elevated-card overflow-hidden rounded-3xl border border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900"
+              className="twst-elevated-card twst-reveal-up overflow-hidden rounded-3xl border border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900"
+              data-reveal-item
+              data-reveal-delay={String(90 + index * 90)}
             >
               {item.imageUrl ? (
                 <img
