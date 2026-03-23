@@ -1,5 +1,6 @@
 let threeLoader = null;
 const wordsBgCleanups = new WeakMap();
+const wordsBgControllers = new WeakMap();
 
 const loadThree = async () => {
   if (!threeLoader) {
@@ -40,11 +41,12 @@ const createLetterTexture = (THREE, letter) => {
 };
 
 const clearWordsBackground = (rotator) => {
-  const cleanup = wordsBgCleanups.get(rotator);
-  if (typeof cleanup === 'function') {
-    cleanup();
+  const controller = wordsBgControllers.get(rotator);
+  if (controller && typeof controller.destroy === 'function') {
+    controller.destroy();
   }
   wordsBgCleanups.delete(rotator);
+  wordsBgControllers.delete(rotator);
 };
 
 const mountWordsBackground = async (rotator, host) => {
@@ -139,6 +141,7 @@ const mountWordsBackground = async (rotator, host) => {
   let frameId = 0;
   let isPinned = false;
   let isPointerActive = false;
+  let isActive = true;
   let impactStrength = 0;
   const impactPoint = new THREE.Vector2(0, 0);
   let impactRadius = 170;
@@ -202,7 +205,16 @@ const mountWordsBackground = async (rotator, host) => {
   };
 
   const animate = (time = 0) => {
+    if (!isActive) {
+      frameId = 0;
+      return;
+    }
+
     frameId = window.requestAnimationFrame(animate);
+    if (document.hidden) {
+      return;
+    }
+
     pointer.lerp(targetPointer, 0.12);
     impactStrength += (0 - impactStrength) * 0.07;
 
@@ -256,42 +268,104 @@ const mountWordsBackground = async (rotator, host) => {
   rotator.addEventListener('twst:word-change', onWordChange);
   window.addEventListener('resize', updateSize);
 
-  animate();
+  frameId = window.requestAnimationFrame(animate);
 
-  return () => {
-    window.cancelAnimationFrame(frameId);
-    host.removeEventListener('pointermove', onPointerMove);
-    host.removeEventListener('pointerleave', onPointerLeave);
-    host.removeEventListener('click', onClick);
-    rotator.removeEventListener('twst:word-change', onWordChange);
-    window.removeEventListener('resize', updateSize);
-    [...backgroundSprites, ...foregroundSprites].forEach((sprite) => {
-      sprite.material.map?.dispose?.();
-      sprite.material.dispose();
-    });
-    textureCache.clear();
-    renderer.dispose();
-    renderer.domElement.remove();
+  const setVisible = (visible) => {
+    const nextVisible = Boolean(visible);
+    if (isActive === nextVisible) {
+      return;
+    }
+
+    isActive = nextVisible;
+
+    if (isActive) {
+      if (!frameId) {
+        frameId = window.requestAnimationFrame(animate);
+      }
+    } else if (frameId) {
+      window.cancelAnimationFrame(frameId);
+      frameId = 0;
+    }
   };
+
+  return {
+    setVisible,
+    destroy: () => {
+      setVisible(false);
+      window.cancelAnimationFrame(frameId);
+      frameId = 0;
+      host.removeEventListener('pointermove', onPointerMove);
+      host.removeEventListener('pointerleave', onPointerLeave);
+      host.removeEventListener('click', onClick);
+      rotator.removeEventListener('twst:word-change', onWordChange);
+      window.removeEventListener('resize', updateSize);
+      [...backgroundSprites, ...foregroundSprites].forEach((sprite) => {
+        sprite.material.dispose();
+      });
+      textureCache.forEach((texture) => texture?.dispose?.());
+      textureCache.clear();
+      renderer.dispose();
+      renderer.domElement.remove();
+    },
+  };
+};
+
+const mountOrResumeWordsBackground = (rotator, host) => {
+  const existing = wordsBgControllers.get(rotator);
+  if (existing) {
+    existing.setVisible?.(true);
+    return;
+  }
+
+  mountWordsBackground(rotator, host)
+    .then((controller) => {
+      if (controller && typeof controller.destroy === 'function') {
+        wordsBgControllers.set(rotator, controller);
+        wordsBgCleanups.set(rotator, () => controller.destroy());
+      }
+    })
+    .catch((error) => {
+      console.error('[TWST Words BG] init failed', error);
+    });
+};
+
+const pauseWordsBackground = (rotator) => {
+  const controller = wordsBgControllers.get(rotator);
+  controller?.setVisible?.(false);
 };
 
 export const initWordsThreeBackgrounds = () => {
   document.querySelectorAll('[data-words-three-bg="true"]').forEach((host) => {
     const rotator = host.closest('[data-words-rotator="true"]');
-    if (!rotator || wordsBgCleanups.has(rotator)) {
+    if (!rotator) {
       return;
     }
 
-    clearWordsBackground(rotator);
+    if (!('IntersectionObserver' in window)) {
+      mountOrResumeWordsBackground(rotator, host);
+      return;
+    }
 
-    mountWordsBackground(rotator, host)
-      .then((cleanup) => {
-        if (typeof cleanup === 'function') {
-          wordsBgCleanups.set(rotator, cleanup);
-        }
-      })
-      .catch((error) => {
-        console.error('[TWST Words BG] init failed', error);
-      });
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.target !== host) {
+            return;
+          }
+
+          if (entry.isIntersecting) {
+            mountOrResumeWordsBackground(rotator, host);
+          } else {
+            pauseWordsBackground(rotator);
+          }
+        });
+      },
+      {
+        root: null,
+        threshold: 0.01,
+      },
+    );
+
+    observer.observe(host);
   });
 };

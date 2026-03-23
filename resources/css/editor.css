@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap');
 @import "tailwindcss";
 @import "./components/how-it-works.css";
+@import "./components/featured-work.css";
 @custom-variant dark (&:where(.dark, .dark *));
 @source "../blocks/";
 @source "../js/";
@@ -12,5 +13,47 @@
   .editor-styles-wrapper select,
   .editor-styles-wrapper textarea {
     font-family: 'Lato', sans-serif;
+  }
+}
+
+@layer components {
+  .twst-featured-work-editor-stack {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .twst-featured-work-editor-card {
+    border: 1px solid #d4d4d8;
+    padding: 0.85rem;
+    background: #fafafa;
+    display: grid;
+    gap: 0.7rem;
+  }
+
+  .twst-featured-work-editor-card__title {
+    margin: 0;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #52525b;
+    font-weight: 700;
+  }
+
+  .twst-featured-work-editor-field {
+    display: grid;
+    gap: 0.35rem;
+  }
+
+  .twst-featured-work-editor-label {
+    margin: 0;
+    font-size: 11px;
+    color: #3f3f46;
+    font-weight: 600;
+  }
+
+  .twst-featured-work-editor-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
   }
 }

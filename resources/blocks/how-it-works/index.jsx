@@ -87,6 +87,7 @@ const HowItWorksContent = ({ attributes, isEditor = false }) => {
                         key={`how-image-${index}`}
                         className={`twst-how-media ${index === activeIndex ? 'is-active' : ''}`}
                         data-how-image-item
+                        style={{ '--twst-how-image-index': index }}
                       >
                         <img src={step.imageUrl} alt={step.imageAlt || step.title} />
                       </figure>

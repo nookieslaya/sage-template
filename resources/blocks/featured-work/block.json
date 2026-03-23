@@ -1,0 +1,69 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "twst/featured-work",
+  "title": "TWST Featured Work",
+  "category": "design",
+  "icon": "images-alt2",
+  "description": "Sticky featured work section with clickable thumbnails and centered active project.",
+  "textdomain": "sage",
+  "supports": {
+    "anchor": true,
+    "html": false
+  },
+  "attributes": {
+    "headline": {
+      "type": "string",
+      "default": "Featured Work"
+    },
+    "description": {
+      "type": "string",
+      "default": "We build websites where every scroll, every transition, and every interaction feels intentional."
+    },
+    "hoverLabel": {
+      "type": "string",
+      "default": "View project"
+    },
+    "viewAllLabel": {
+      "type": "string",
+      "default": ""
+    },
+    "viewAllUrl": {
+      "type": "string",
+      "default": ""
+    },
+    "items": {
+      "type": "array",
+      "default": [
+        {
+          "title": "BodyArmor",
+          "meta": "[MARKETING SITE] - [SPORTS]",
+          "imageUrl": "",
+          "imageAlt": "",
+          "linkUrl": ""
+        },
+        {
+          "title": "Annimate",
+          "meta": "[WEB APP] - [SAAS] - [ANIMATIONS]",
+          "imageUrl": "",
+          "imageAlt": "",
+          "linkUrl": ""
+        },
+        {
+          "title": "Workspace",
+          "meta": "[LANDING] - [B2B]",
+          "imageUrl": "",
+          "imageAlt": "",
+          "linkUrl": ""
+        },
+        {
+          "title": "Healthline",
+          "meta": "[ECOMMERCE] - [SHOP]",
+          "imageUrl": "",
+          "imageAlt": "",
+          "linkUrl": ""
+        }
+      ]
+    }
+  }
+}

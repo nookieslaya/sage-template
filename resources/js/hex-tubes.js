@@ -77,6 +77,22 @@ class HexTubes {
     this.chains = this.createChains();
     this.bind();
     this.resize();
+    this.resume();
+  }
+
+  pause() {
+    if (this.raf) {
+      cancelAnimationFrame(this.raf);
+      this.raf = 0;
+    }
+  }
+
+  resume() {
+    if (this.raf) {
+      return;
+    }
+    this.last = performance.now();
+    this.lastRender = 0;
     this.raf = requestAnimationFrame(this.animate);
   }
 
@@ -118,7 +134,7 @@ class HexTubes {
   }
 
   destroy() {
-    cancelAnimationFrame(this.raf);
+    this.pause();
     this.interactionTarget.removeEventListener(
       'pointermove',
       this.handlePointerMove,
@@ -353,6 +369,8 @@ const createHexTubes = (canvas, options = {}) => {
   const app = new HexTubes(canvas, options);
   return {
     dispose: () => app.destroy(),
+    pause: () => app.pause(),
+    resume: () => app.resume(),
   };
 };
 

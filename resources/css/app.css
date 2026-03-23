@@ -6,11 +6,13 @@
 @import './components/buttons-and-links.css';
 @import './components/about.css';
 @import './components/how-it-works.css';
+@import './components/featured-work.css';
 @import './components/showcase-headline.css';
 @import './components/surfaces.css';
 @import './components/navigation.css';
 @import './components/hero.css';
 @import './components/showcase.css';
+@import './components/smooth-scroll.css';
 @import './components/motion.css';
 @import './components/reveal.css';
 

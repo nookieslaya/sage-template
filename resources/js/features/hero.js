@@ -1,6 +1,7 @@
 import { prefersReducedMotion } from '../lib/media';
 
 const heroAnimationCleanups = new WeakMap();
+const heroAnimationControllers = new WeakMap();
 const heroAnimationStates = new WeakMap();
 const HERO_INTERACTION_IDLE_MS = 1400;
 
@@ -33,14 +34,22 @@ const getHeroPerformanceMode = () => {
 };
 
 const clearHeroAnimation = (hero, canvasHost) => {
-  const cleanup = heroAnimationCleanups.get(hero);
-  if (typeof cleanup === 'function') {
-    cleanup();
+  const controller = heroAnimationControllers.get(hero);
+  if (controller && typeof controller.destroy === 'function') {
+    controller.destroy();
   }
 
   heroAnimationCleanups.delete(hero);
+  heroAnimationControllers.delete(hero);
   hero.classList.remove('is-shader', 'is-tubes');
   canvasHost.innerHTML = '';
+};
+
+const setHeroAnimationVisibility = (hero, isVisible) => {
+  const controller = heroAnimationControllers.get(hero);
+  if (controller && typeof controller.setVisible === 'function') {
+    controller.setVisible(Boolean(isVisible));
+  }
 };
 
 const getHeroAnimationState = (hero) => {
@@ -198,6 +207,7 @@ const mountShaderHero = async (hero, canvasHost, performanceMode = 'full') => {
   let lastRenderMs = 0;
   let interactionTimeout = 0;
   let isInteracting = false;
+  let isVisible = true;
 
   const getTargetFps = () => {
     if (performanceMode === 'lite') {
@@ -239,6 +249,11 @@ const mountShaderHero = async (hero, canvasHost, performanceMode = 'full') => {
   };
 
   const animate = (now = 0) => {
+    if (!isVisible) {
+      frameId = 0;
+      return;
+    }
+
     frameId = requestAnimationFrame(animate);
     if (document.hidden) {
       return;
@@ -260,19 +275,47 @@ const mountShaderHero = async (hero, canvasHost, performanceMode = 'full') => {
   hero.addEventListener('touchmove', onTouchMove, { passive: true });
   window.addEventListener('resize', setSize);
 
-  setSize();
-  animate();
+  const setVisible = (visible) => {
+    const nextVisible = Boolean(visible);
+    if (isVisible === nextVisible) {
+      return;
+    }
 
-  return () => {
-    cancelAnimationFrame(frameId);
-    window.clearTimeout(interactionTimeout);
-    hero.removeEventListener('mousemove', onMouseMove);
-    hero.removeEventListener('touchmove', onTouchMove);
-    window.removeEventListener('resize', setSize);
-    geometry.dispose();
-    material.dispose();
-    renderer.dispose();
-    renderer.domElement.remove();
+    isVisible = nextVisible;
+
+    if (isVisible) {
+      clock.start();
+      lastRenderMs = 0;
+      if (!frameId) {
+        frameId = requestAnimationFrame(animate);
+      }
+    } else {
+      clock.stop();
+      if (frameId) {
+        cancelAnimationFrame(frameId);
+        frameId = 0;
+      }
+    }
+  };
+
+  setSize();
+  frameId = requestAnimationFrame(animate);
+
+  return {
+    setVisible,
+    destroy: () => {
+      setVisible(false);
+      cancelAnimationFrame(frameId);
+      frameId = 0;
+      window.clearTimeout(interactionTimeout);
+      hero.removeEventListener('mousemove', onMouseMove);
+      hero.removeEventListener('touchmove', onTouchMove);
+      window.removeEventListener('resize', setSize);
+      geometry.dispose();
+      material.dispose();
+      renderer.dispose();
+      renderer.domElement.remove();
+    },
   };
 };
 
@@ -315,11 +358,20 @@ const mountTubesHero = async (hero, canvasHost, performanceMode = 'full') => {
     idleFps: isLiteMode ? 16 : 20,
   });
 
-  return () => {
-    if (app && typeof app.dispose === 'function') {
-      app.dispose();
-    }
-    canvas.remove();
+  return {
+    setVisible: (visible) => {
+      if (visible) {
+        app?.resume?.();
+      } else {
+        app?.pause?.();
+      }
+    },
+    destroy: () => {
+      if (app && typeof app.dispose === 'function') {
+        app.dispose();
+      }
+      canvas.remove();
+    },
   };
 };
 
@@ -338,20 +390,20 @@ const mountHeroAnimation = async (hero, expectedVersion = null) => {
 
   const type = (hero.dataset.heroAnimationType || 'shader').toLowerCase();
   const performanceMode = getHeroPerformanceMode();
-  let cleanup = null;
+  let controller = null;
 
   if (performanceMode === 'off') {
     return;
   }
 
   try {
-    cleanup =
+    controller =
       type === 'tubes'
         ? await mountTubesHero(hero, canvasHost, performanceMode)
         : await mountShaderHero(hero, canvasHost, performanceMode);
   } catch (error) {
     console.error('[TWST Hero] animation mount failed, falling back to shader', error);
-    cleanup = await mountShaderHero(hero, canvasHost, performanceMode);
+    controller = await mountShaderHero(hero, canvasHost, performanceMode);
   }
 
   const staleMount =
@@ -359,16 +411,17 @@ const mountHeroAnimation = async (hero, expectedVersion = null) => {
     (state.version !== expectedVersion || !state.visible);
 
   if (staleMount) {
-    if (typeof cleanup === 'function') {
-      cleanup();
+    if (controller && typeof controller.destroy === 'function') {
+      controller.destroy();
     }
     hero.classList.remove('is-shader', 'is-tubes');
     canvasHost.innerHTML = '';
     return;
   }
 
-  if (typeof cleanup === 'function') {
-    heroAnimationCleanups.set(hero, cleanup);
+  if (controller && typeof controller.destroy === 'function') {
+    heroAnimationControllers.set(hero, controller);
+    heroAnimationCleanups.set(hero, () => controller.destroy());
   }
 };
 
@@ -401,11 +454,15 @@ export const initHeroShader = () => {
           if (entry.isIntersecting) {
             state.visible = true;
             state.version += 1;
-            void mountHeroAnimation(hero, state.version);
+            if (heroAnimationControllers.has(hero)) {
+              setHeroAnimationVisibility(hero, true);
+            } else {
+              void mountHeroAnimation(hero, state.version);
+            }
           } else {
             state.visible = false;
             state.version += 1;
-            clearHeroAnimation(hero, canvasHost);
+            setHeroAnimationVisibility(hero, false);
           }
         });
       },
