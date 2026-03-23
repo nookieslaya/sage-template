@@ -15,29 +15,45 @@ const normalizeItems = (items = []) => items.map((item) => ({
 
 const ServicesContent = ({ attributes }) => {
   const headline = getLegacyLocalized(attributes, 'headline', 'Comprehensive Technology Solutions');
+  const description = getLegacyLocalized(attributes, 'description', '');
   const items = normalizeItems(attributes.items);
 
   return (
-    <section
-      className="mx-auto max-w-7xl scroll-mt-32 px-6 py-20 md:py-24"
-      id="services"
-      data-reveal-root
-    >
-      <header className="text-center twst-reveal-up" data-reveal-item data-reveal-delay="0">
-        <h2 className="text-balance text-4xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100 md:text-6xl">{headline}</h2>
-      </header>
-      <div className="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-        {items.map((item, index) => (
-          <article
-            key={`service-${index}`}
-            className="twst-reveal-up rounded-3xl border border-zinc-200 bg-zinc-50 p-8 shadow-sm dark:border-zinc-800 dark:bg-zinc-900"
-            data-reveal-item
-            data-reveal-delay={String(80 + index * 70)}
-          >
-            <h3 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">{item.title}</h3>
-            <p className="mt-4 text-lg leading-relaxed text-zinc-500 dark:text-zinc-400">{item.desc}</p>
-          </article>
-        ))}
+    <section className="twst-services-grid" id="services" data-reveal-root>
+      <div className="twst-services-grid__inner">
+        <div className="twst-services-grid__layout">
+          <header className="twst-services-grid__header twst-reveal-up" data-reveal-item data-reveal-delay="0">
+            {headline ? (
+              <h2 className="twst-services-grid__headline twst-showcase-headline" data-showcase-headline-trigger="inview">
+                <span className="twst-showcase-headline__base" data-showcase-headline-base>{headline}</span>
+                <span className="twst-showcase-headline__masks" data-showcase-headline-masks aria-hidden="true" />
+              </h2>
+            ) : null}
+            {description ? <p className="twst-services-grid__description">{description}</p> : null}
+          </header>
+
+          <div className="twst-services-grid__cards">
+            {items.map((item, index) => (
+              <article
+                key={`service-${index}`}
+                className="twst-services-grid__card twst-reveal-up"
+                data-reveal-item
+                data-reveal-delay={String(80 + index * 70)}
+              >
+                {item.title ? (
+                  <h3 className="twst-services-grid__card-title">
+                    <span className="twst-services-grid__card-title-wrap">
+                      <span className="twst-services-grid__card-title-text">{item.title}</span>
+                      <span className="twst-services-grid__card-title-mask twst-services-grid__card-title-mask--white" aria-hidden="true" />
+                      <span className="twst-services-grid__card-title-mask twst-services-grid__card-title-mask--accent" aria-hidden="true" />
+                    </span>
+                  </h3>
+                ) : null}
+                {item.desc ? <p className="twst-services-grid__card-desc">{item.desc}</p> : null}
+              </article>
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   );
@@ -46,7 +62,7 @@ const ServicesContent = ({ attributes }) => {
 registerBlockType(metadata.name, {
   ...metadata,
   edit({ attributes, setAttributes }) {
-    const blockProps = useBlockProps({ className: 'bg-zinc-100 dark:bg-zinc-950' });
+    const blockProps = useBlockProps();
     const items = normalizeItems(attributes.items);
 
     const setItems = (nextItems) => {
@@ -100,6 +116,11 @@ registerBlockType(metadata.name, {
               label={__('Headline', 'sage')}
               value={getLegacyLocalized(attributes, 'headline')}
               onChange={(headline) => setAttributes({ headline })}
+            />
+            <TextareaControl
+              label={__('Description', 'sage')}
+              value={getLegacyLocalized(attributes, 'description')}
+              onChange={(description) => setAttributes({ description })}
             />
 
             {items.map((item, index) => (
@@ -157,19 +178,19 @@ registerBlockType(metadata.name, {
           </PanelBody>
         </InspectorControls>
 
-        <section {...blockProps}>
+        <div {...blockProps}>
           <ServicesContent attributes={attributes} />
-        </section>
+        </div>
       </>
     );
   },
   save({ attributes }) {
-    const blockProps = useBlockProps.save({ className: 'bg-zinc-100 dark:bg-zinc-950' });
+    const blockProps = useBlockProps.save();
 
     return (
-      <section {...blockProps}>
+      <div {...blockProps}>
         <ServicesContent attributes={attributes} />
-      </section>
+      </div>
     );
   },
 });

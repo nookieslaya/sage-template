@@ -1,4 +1,4 @@
-<footer class="border-t border-zinc-200 bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-950">
+<footer class="twst-site-footer">
   @php
     $twstThemeSettings = function_exists('\App\twst_get_theme_options')
         ? \App\twst_get_theme_options()
@@ -30,23 +30,23 @@
     $footerCopyrightYear = wp_date('Y');
   @endphp
 
-  <div class="mx-auto max-w-7xl px-6 py-16 lg:py-20">
-    <div class="grid gap-14 md:grid-cols-3">
+  <div class="twst-site-footer__inner">
+    <div class="twst-site-footer__top">
       <section>
-        <div>{!! $footerLogoMarkup !!}</div>
-        <p class="mt-4 text-xl text-zinc-500 dark:text-zinc-400 lg:text-2xl">
+        <div class="twst-site-footer__brand">{!! $footerLogoMarkup !!}</div>
+        <p class="twst-site-footer__tagline">
           {{ esc_html($footerTagline) }}
         </p>
       </section>
 
       <nav aria-label="{{ __('Footer quick links', 'sage') }}">
-        <h3 class="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100 lg:text-3xl">
+        <h3 class="twst-site-footer__heading">
           {{ esc_html($footerQuickLinksLabel) }}
         </h3>
 
         {!! wp_nav_menu([
             'theme_location' => 'primary_navigation',
-            'menu_class' => 'twst-footer-menu mt-5 space-y-3 text-xl font-semibold text-zinc-500 dark:text-zinc-400 lg:text-2xl',
+            'menu_class' => 'twst-site-footer__links',
             'container' => false,
             'echo' => false,
             'fallback_cb' => 'wp_page_menu',
@@ -54,17 +54,17 @@
       </nav>
 
       <section>
-        <h3 class="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100 lg:text-3xl">
+        <h3 class="twst-site-footer__heading">
           {{ esc_html($footerConnectLabel) }}
         </h3>
-        <div class="mt-5 flex flex-row flex-wrap items-center gap-3">
+        <div class="twst-site-footer__socials">
           @foreach ($socialLinks as $social)
             @php
               $socialName = trim((string) ($social['name'] ?? ''));
               $socialIconUrl = (string) ($social['icon_url'] ?? '');
               $socialFallback = $socialName !== '' ? strtoupper(mb_substr($socialName, 0, 2)) : '?';
             @endphp
-            <a href="{{ esc_url($social['url']) }}" aria-label="{{ esc_attr($socialName ?: __('Social media', 'sage')) }}" class="twst-social-link inline-flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-zinc-200 text-sm font-semibold text-zinc-800 transition dark:bg-zinc-800 dark:text-zinc-200 lg:h-16 lg:w-16 lg:text-base">
+            <a href="{{ esc_url($social['url']) }}" aria-label="{{ esc_attr($socialName ?: __('Social media', 'sage')) }}" class="twst-site-footer__social-link twst-social-link">
               @if ($socialIconUrl !== '')
                 <img src="{{ esc_url($socialIconUrl) }}" alt="" class="twst-social-icon h-8 w-8 object-contain lg:h-10 lg:w-10" />
               @else
@@ -76,7 +76,12 @@
       </section>
     </div>
 
-    <div class="mt-14 border-t border-zinc-200 pt-8 text-center text-base text-zinc-500 dark:border-zinc-800 dark:text-zinc-400 lg:text-lg">
+    <div class="twst-site-footer__rdev">
+      <div class="twst-site-footer__rdev-bg twst-words-three-bg" data-words-three-bg="true" data-words-three-shape="rdev" aria-hidden="true"></div>
+      <span class="twst-site-footer__rdev-word">rdev.</span>
+    </div>
+
+    <div class="twst-site-footer__bottom">
       {{ esc_html(sprintf('© %s %s. %s', $footerCopyrightYear, $siteName, $footerCopyrightSuffix)) }}
     </div>
   </div>

@@ -6,31 +6,50 @@ import metadata from './block.json';
 import { getLegacyLocalized } from '../shared';
 
 const BlogPreviewContent = ({ attributes }) => {
-  const eyebrow = getLegacyLocalized(attributes, 'eyebrow', 'BLOG');
   const headline = getLegacyLocalized(attributes, 'headline', 'Latest Insights');
   const postLinkLabel = getLegacyLocalized(attributes, 'postLinkLabel', 'Read more');
   const viewMoreLabel = getLegacyLocalized(attributes, 'viewMoreLabel', 'View more');
 
   return (
-    <section className="mx-auto max-w-7xl scroll-mt-32 px-6 py-20 md:py-24" id="blog" data-reveal-root>
-      <header className="text-center twst-reveal-up" data-reveal-item data-reveal-delay="0">
-        <p className="text-sm font-semibold uppercase tracking-[0.24em] text-zinc-500 dark:text-zinc-400">{eyebrow}</p>
-        <h2 className="mt-4 text-balance text-4xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100 md:text-6xl">{headline}</h2>
-      </header>
-      <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+    <section className="twst-blog-preview" id="blog" data-reveal-root>
+      <div className="twst-blog-preview__inner">
+        <header className="twst-blog-preview__header twst-reveal-up" data-reveal-item data-reveal-delay="0">
+          {headline ? (
+            <h2 className="twst-blog-preview__headline twst-showcase-headline" data-showcase-headline-trigger="inview">
+              <span className="twst-showcase-headline__base" data-showcase-headline-base>{headline}</span>
+              <span className="twst-showcase-headline__masks" data-showcase-headline-masks aria-hidden="true" />
+            </h2>
+          ) : null}
+        </header>
+
+        <div className="twst-blog-preview__grid">
         {[1, 2, 3].map((index) => (
           <article
             key={`placeholder-${index}`}
-            className="twst-reveal-up rounded-3xl border border-dashed border-zinc-300 bg-zinc-50 p-8 text-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-400"
+            className="twst-blog-preview__card twst-reveal-up"
             data-reveal-item
             data-reveal-delay={String(90 + (index - 1) * 80)}
           >
-            {__('Latest post #', 'sage')}{index}{__(' will render on frontend', 'sage')}
-            <div className="mt-3 text-sm">{postLinkLabel}</div>
+            <div className="twst-blog-preview__image twst-blog-preview__image--placeholder">
+              {__('Latest post #', 'sage')}{index}
+            </div>
+            <div className="twst-blog-preview__body">
+              <p className="twst-blog-preview__meta">{__('will render on frontend', 'sage')}</p>
+              <h3 className="twst-blog-preview__title">
+                <span className="twst-blog-preview__title-wrap">{__('Post title', 'sage')}</span>
+              </h3>
+              <span className="twst-showcase-cta-secondary twst-blog-preview__read">{postLinkLabel}</span>
+            </div>
           </article>
         ))}
+        </div>
+
+        {viewMoreLabel ? (
+          <div className="twst-blog-preview__cta twst-reveal-up" data-reveal-item data-reveal-delay="340">
+            <span className="twst-showcase-cta-primary twst-blog-preview__cta-btn">{viewMoreLabel}</span>
+          </div>
+        ) : null}
       </div>
-      <div className="mt-10 text-center twst-reveal-up" data-reveal-item data-reveal-delay="340"><span className="twst-btn-accent">{viewMoreLabel}</span></div>
     </section>
   );
 };
@@ -38,7 +57,7 @@ const BlogPreviewContent = ({ attributes }) => {
 registerBlockType(metadata.name, {
   ...metadata,
   edit({ attributes, setAttributes }) {
-    const blockProps = useBlockProps({ className: 'bg-zinc-100 dark:bg-zinc-950' });
+    const blockProps = useBlockProps();
 
     return (
       <>
@@ -74,7 +93,7 @@ registerBlockType(metadata.name, {
     );
   },
   save({ attributes }) {
-    const blockProps = useBlockProps.save({ className: 'bg-zinc-100 dark:bg-zinc-950' });
+    const blockProps = useBlockProps.save();
     return (
       <section {...blockProps}>
         <BlogPreviewContent attributes={attributes} />

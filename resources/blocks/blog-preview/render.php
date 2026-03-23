@@ -25,7 +25,6 @@ $localized = static function (string $singleKey, string $fallback = '') use ($at
     return (string) ($legacy_en ?: $legacy_pl ?: $fallback);
 };
 
-$eyebrow = $localized('eyebrow', 'BLOG');
 $headline = $localized('headline', 'Latest Insights');
 $post_link_label = $localized('postLinkLabel', 'Read more');
 $view_more_label = $localized('viewMoreLabel', 'View more');
@@ -43,14 +42,19 @@ $query = new WP_Query([
     'ignore_sticky_posts' => true,
 ]);
 ?>
-<section id="blog" class="mx-auto max-w-7xl scroll-mt-32 px-6 py-20 md:py-24" data-reveal-root>
-  <header class="text-center twst-reveal-up" data-reveal-item data-reveal-delay="0">
-    <p class="text-sm font-semibold uppercase tracking-[0.24em] text-zinc-500 dark:text-zinc-400"><?php echo esc_html($eyebrow); ?></p>
-    <h2 class="mt-4 text-balance text-4xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100 md:text-6xl"><?php echo esc_html($headline); ?></h2>
-  </header>
+<section id="blog" class="twst-blog-preview" data-reveal-root>
+  <div class="twst-blog-preview__inner">
+    <header class="twst-blog-preview__header twst-reveal-up" data-reveal-item data-reveal-delay="0">
+      <?php if ($headline !== '') : ?>
+        <h2 class="twst-blog-preview__headline twst-showcase-headline" data-showcase-headline-trigger="inview">
+          <span class="twst-showcase-headline__base" data-showcase-headline-base><?php echo esc_html($headline); ?></span>
+          <span class="twst-showcase-headline__masks" data-showcase-headline-masks aria-hidden="true"></span>
+        </h2>
+      <?php endif; ?>
+    </header>
 
-  <?php if ($query->have_posts()) : ?>
-    <div class="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+    <?php if ($query->have_posts()) : ?>
+      <div class="twst-blog-preview__grid">
       <?php $card_index = 0; ?>
       <?php while ($query->have_posts()) : $query->the_post(); ?>
         <?php
@@ -61,41 +65,40 @@ $query = new WP_Query([
             : sprintf('%d min read', $minutes);
           $delay = 90 + ($card_index * 80);
         ?>
-        <article <?php post_class('twst-elevated-card twst-reveal-up overflow-hidden rounded-3xl border border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900'); ?> data-reveal-item data-reveal-delay="<?php echo esc_attr((string) $delay); ?>">
-          <a href="<?php the_permalink(); ?>" class="block">
+        <article <?php post_class('twst-blog-preview__card twst-reveal-up'); ?> data-reveal-item data-reveal-delay="<?php echo esc_attr((string) $delay); ?>">
+          <a href="<?php the_permalink(); ?>" class="twst-blog-preview__image-link">
             <?php if (has_post_thumbnail()) : ?>
-              <?php the_post_thumbnail('large', ['class' => 'h-64 w-full object-cover']); ?>
+              <?php the_post_thumbnail('large', ['class' => 'twst-blog-preview__image']); ?>
             <?php else : ?>
-              <div class="flex h-64 items-center justify-center bg-zinc-200 text-zinc-500 dark:bg-zinc-900 dark:text-zinc-400"><?php esc_html_e('Post image', 'sage'); ?></div>
+              <div class="twst-blog-preview__image twst-blog-preview__image--placeholder"><?php esc_html_e('Post image', 'sage'); ?></div>
             <?php endif; ?>
           </a>
 
-          <div class="p-8">
-            <p class="text-lg text-zinc-500 dark:text-zinc-400"><?php echo esc_html(get_the_date()); ?> · <?php echo esc_html($read_time); ?></p>
-            <h3 class="mt-4 text-4xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
-              <a href="<?php the_permalink(); ?>" class="twst-link-accent no-underline transition" style="text-decoration:none;"><?php the_title(); ?></a>
-            </h3>
-            <p class="mt-4 text-xl leading-relaxed text-zinc-500 dark:text-zinc-400"><?php echo esc_html(get_the_excerpt()); ?></p>
-            <a class="twst-arrow-link twst-link-accent mt-6 inline-flex items-center text-lg font-semibold no-underline" href="<?php the_permalink(); ?>">
-              <span><?php echo esc_html($post_link_label); ?></span>
-              <span class="twst-arrow" aria-hidden="true">
-                <svg viewBox="0 0 16 16" fill="none">
-                  <path d="M2 8h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
-                  <path d="M8 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
+          <div class="twst-blog-preview__body">
+            <p class="twst-blog-preview__meta"><?php echo esc_html(get_the_date()); ?> · <?php echo esc_html($read_time); ?></p>
+            <h3 class="twst-blog-preview__title">
+              <span class="twst-blog-preview__title-wrap">
+                <a href="<?php the_permalink(); ?>" class="twst-blog-preview__title-link"><?php the_title(); ?></a>
               </span>
+            </h3>
+            <p class="twst-blog-preview__excerpt"><?php echo esc_html(get_the_excerpt()); ?></p>
+            <a class="twst-showcase-cta-secondary twst-blog-preview__read" href="<?php the_permalink(); ?>">
+              <?php echo esc_html($post_link_label); ?>
             </a>
           </div>
         </article>
         <?php $card_index++; ?>
       <?php endwhile; ?>
-    </div>
+      </div>
 
-    <div class="mt-10 text-center twst-reveal-up" data-reveal-item data-reveal-delay="340">
-      <a href="<?php echo esc_url($blog_url); ?>" class="twst-btn-accent"><?php echo esc_html($view_more_label); ?></a>
-    </div>
-  <?php else : ?>
-    <p class="mt-10 text-center text-zinc-500 dark:text-zinc-400"><?php esc_html_e('No posts found yet.', 'sage'); ?></p>
-  <?php endif; ?>
+      <?php if ($view_more_label !== '') : ?>
+        <div class="twst-blog-preview__cta twst-reveal-up" data-reveal-item data-reveal-delay="340">
+          <a href="<?php echo esc_url($blog_url); ?>" class="twst-showcase-cta-primary twst-blog-preview__cta-btn"><?php echo esc_html($view_more_label); ?></a>
+        </div>
+      <?php endif; ?>
+    <?php else : ?>
+      <p class="twst-blog-preview__empty"><?php esc_html_e('No posts found yet.', 'sage'); ?></p>
+    <?php endif; ?>
+  </div>
 </section>
 <?php wp_reset_postdata(); ?>

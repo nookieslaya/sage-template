@@ -13,28 +13,48 @@ const ContactContent = ({ attributes }) => {
   const headline = getLegacyLocalized(attributes, 'headline', 'Ready to build your next product?');
   const description = getLegacyLocalized(attributes, 'description', 'Tell me about your goals and timeline. I will reply with a practical implementation plan.');
   const ctaLabel = getLegacyLocalized(attributes, 'ctaLabel', 'Start a Project');
+  const email = String(attributes.email || '').trim();
+  const phone = String(attributes.phone || '').trim();
 
   return (
-    <section className="mx-auto max-w-7xl scroll-mt-32 px-6 py-20 md:py-24" id="contact" data-reveal-root>
-      <div className="twst-contact-panel rounded-3xl p-10 text-zinc-900 dark:text-zinc-100 md:p-16">
-        <h2 className="twst-reveal-up text-balance text-4xl font-semibold tracking-tight md:text-6xl" data-reveal-item data-reveal-delay="0">{headline}</h2>
-        <p className="twst-reveal-up mt-6 max-w-3xl text-xl leading-relaxed opacity-80" data-reveal-item data-reveal-delay="110">{description}</p>
-        <div className="twst-reveal-up mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between" data-reveal-item data-reveal-delay="220">
-          <a className="twst-hero-btn-primary w-fit" href={attributes.ctaUrl || '#'}>{ctaLabel}</a>
-          <div className="text-sm opacity-80">
-            <p>{attributes.email || ''}</p>
-            <p>{attributes.phone || ''}</p>
+    <div className="twst-contact__inner">
+      <div className="twst-contact__panel">
+        {headline ? (
+          <h2 className="twst-contact__headline twst-showcase-headline twst-reveal-up" data-showcase-headline-trigger="inview" data-reveal-item data-reveal-delay="0">
+            <span className="twst-showcase-headline__base" data-showcase-headline-base>{headline}</span>
+            <span className="twst-showcase-headline__masks" data-showcase-headline-masks aria-hidden="true" />
+          </h2>
+        ) : null}
+
+        {description ? (
+          <p className="twst-contact__description twst-reveal-up" data-reveal-item data-reveal-delay="110">
+            {description}
+          </p>
+        ) : null}
+
+        <div className="twst-contact__bottom twst-reveal-up" data-reveal-item data-reveal-delay="220">
+          {ctaLabel ? (
+            <a className="twst-showcase-cta-primary twst-contact__cta" href={attributes.ctaUrl || '#'}>{ctaLabel}</a>
+          ) : null}
+
+          <div className="twst-contact__meta">
+            {email ? <p>{email}</p> : null}
+            {phone ? <p>{phone}</p> : null}
           </div>
         </div>
       </div>
-    </section>
+    </div>
   );
 };
 
 registerBlockType(metadata.name, {
   ...metadata,
   edit({ attributes, setAttributes }) {
-    const blockProps = useBlockProps({ className: 'bg-zinc-100 dark:bg-zinc-950' });
+    const blockProps = useBlockProps({
+      className: 'twst-contact',
+      id: 'contact',
+      'data-reveal-root': true,
+    });
 
     return (
       <>
@@ -80,7 +100,11 @@ registerBlockType(metadata.name, {
     );
   },
   save({ attributes }) {
-    const blockProps = useBlockProps.save({ className: 'bg-zinc-100 dark:bg-zinc-950' });
+    const blockProps = useBlockProps.save({
+      className: 'twst-contact',
+      id: 'contact',
+      'data-reveal-root': true,
+    });
 
     return (
       <section {...blockProps}>

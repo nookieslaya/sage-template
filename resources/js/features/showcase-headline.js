@@ -7,6 +7,41 @@ export const initShowcaseHeadlineMasks = () => {
     return;
   }
 
+  const scheduleHeroTitleComplete = (headline) => {
+    const section = headline.closest('.twst-hero-showcase');
+
+    if (!section) {
+      return;
+    }
+
+    const duration = Number.parseInt(section.dataset.showcaseTitleDuration || '0', 10) || 0;
+    const previousTimer = showcaseHeadlineTimers.get(section);
+
+    if (previousTimer) {
+      window.clearTimeout(previousTimer);
+    }
+
+    const timer = window.setTimeout(() => {
+      section.dispatchEvent(
+        new CustomEvent('twst:showcase-title-complete', {
+          bubbles: true,
+        }),
+      );
+    }, duration + 80);
+
+    showcaseHeadlineTimers.set(section, timer);
+  };
+
+  const startHeadlineAnimation = (headline) => {
+    if (headline.dataset.showcaseHeadlineAnimated === 'true') {
+      return;
+    }
+
+    headline.dataset.showcaseHeadlineAnimated = 'true';
+    headline.classList.add('is-showcase-animated');
+    scheduleHeroTitleComplete(headline);
+  };
+
   const buildMasks = (headline) => {
     const base = headline.querySelector('[data-showcase-headline-base]');
     const masks = headline.querySelector('[data-showcase-headline-masks]');
@@ -25,6 +60,9 @@ export const initShowcaseHeadlineMasks = () => {
     if (!base.dataset.originalText) {
       base.dataset.originalText = normalizedText;
     }
+
+    headline.setAttribute('aria-label', normalizedText);
+    base.setAttribute('aria-hidden', 'true');
 
     base.textContent = '';
     masks.innerHTML = '';
@@ -72,23 +110,6 @@ export const initShowcaseHeadlineMasks = () => {
     const section = headline.closest('.twst-hero-showcase');
     if (section) {
       section.dataset.showcaseTitleDuration = String(animationDurationMs);
-
-      const previousTimer = showcaseHeadlineTimers.get(section);
-      if (previousTimer) {
-        window.clearTimeout(previousTimer);
-      }
-
-      if (document.documentElement.classList.contains('twst-preload-complete')) {
-        const timer = window.setTimeout(() => {
-          section.dispatchEvent(
-            new CustomEvent('twst:showcase-title-complete', {
-              bubbles: true,
-            }),
-          );
-        }, animationDurationMs + 80);
-
-        showcaseHeadlineTimers.set(section, timer);
-      }
     }
 
     base.textContent = '';
@@ -132,41 +153,63 @@ export const initShowcaseHeadlineMasks = () => {
         masks.appendChild(mask);
       });
     });
+
+    if (headline.dataset.showcaseHeadlineAnimated === 'true') {
+      scheduleHeroTitleComplete(headline);
+    }
   };
 
   headlines.forEach((headline) => {
     buildMasks(headline);
   });
 
-  document.addEventListener(
-    'twst:preload-complete',
-    () => {
-      headlines.forEach((headline) => {
-        const section = headline.closest('.twst-hero-showcase');
-        const duration = Number.parseInt(section?.dataset.showcaseTitleDuration || '0', 10) || 0;
+  const preloadHeadlines = [];
+  const inViewHeadlines = [];
 
-        if (!section) {
-          return;
-        }
+  headlines.forEach((headline) => {
+    const trigger = String(headline.dataset.showcaseHeadlineTrigger || 'preload').toLowerCase();
 
-        const previousTimer = showcaseHeadlineTimers.get(section);
-        if (previousTimer) {
-          window.clearTimeout(previousTimer);
-        }
+    if (trigger === 'inview') {
+      inViewHeadlines.push(headline);
+      return;
+    }
 
-        const timer = window.setTimeout(() => {
-          section.dispatchEvent(
-            new CustomEvent('twst:showcase-title-complete', {
-              bubbles: true,
-            }),
-          );
-        }, duration + 80);
+    preloadHeadlines.push(headline);
+  });
 
-        showcaseHeadlineTimers.set(section, timer);
-      });
-    },
-    { once: true },
-  );
+  if (inViewHeadlines.length > 0) {
+    const observer = new IntersectionObserver(
+      (entries, currentObserver) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) {
+            return;
+          }
+
+          startHeadlineAnimation(entry.target);
+          currentObserver.unobserve(entry.target);
+        });
+      },
+      {
+        root: null,
+        threshold: 0.45,
+        rootMargin: '0px 0px -8% 0px',
+      },
+    );
+
+    inViewHeadlines.forEach((headline) => observer.observe(headline));
+  }
+
+  if (preloadHeadlines.length > 0) {
+    const startPreloadHeadlines = () => {
+      preloadHeadlines.forEach((headline) => startHeadlineAnimation(headline));
+    };
+
+    if (document.documentElement.classList.contains('twst-preload-complete')) {
+      startPreloadHeadlines();
+    } else {
+      document.addEventListener('twst:preload-complete', startPreloadHeadlines, { once: true });
+    }
+  }
 
   let resizeFrame = 0;
   window.addEventListener('resize', () => {

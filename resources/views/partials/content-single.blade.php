@@ -22,33 +22,33 @@
         $singleMetaParts[] = esc_html(get_the_author());
     }
   @endphp
-  <a href="{{ get_permalink(get_option('page_for_posts')) ?: home_url('/') }}" class="twst-arrow-link twst-arrow-link--back inline-flex items-center text-sm font-semibold uppercase tracking-[0.2em] no-underline transition">
+  <a href="{{ get_permalink(get_option('page_for_posts')) ?: home_url('/') }}" class="twst-arrow-link twst-arrow-link--back twst-blog-single__back inline-flex items-center no-underline transition">
     <span class="twst-arrow" aria-hidden="true">←</span>
     <span class="ml-2">{{ esc_html($backToBlogLabel) }}</span>
   </a>
 
-  <header class="mt-6">
-    <h1 class="p-name text-balance text-4xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100 md:text-6xl">
+  <header class="twst-blog-single__header">
+    <h1 class="p-name twst-blog-single__title">
       {!! $title !!}
     </h1>
 
-    <p class="mt-4 text-lg text-zinc-500 dark:text-zinc-400">
+    <p class="twst-blog-single__meta">
       {!! implode(' <span aria-hidden="true">·</span> ', $singleMetaParts) !!}
     </p>
   </header>
 
   @if (has_post_thumbnail())
-    <figure class="mt-8 overflow-hidden rounded-3xl border border-zinc-200 dark:border-zinc-800">
-      {!! get_the_post_thumbnail(get_the_ID(), 'full', ['class' => 'h-auto w-full object-cover']) !!}
+    <figure class="twst-blog-single__cover">
+      {!! get_the_post_thumbnail(get_the_ID(), 'full', ['class' => 'twst-blog-single__cover-image']) !!}
     </figure>
   @endif
 
-  <div class="e-content twst-content mt-10 max-w-none">
+  <div class="e-content twst-content twst-blog-single__content">
     @php(the_content())
   </div>
 
   @if (! empty($pagination))
-    <footer class="mt-10">
+    <footer class="twst-blog-single__footer">
       <nav class="page-nav" aria-label="Page">
         {!! $pagination !!}
       </nav>

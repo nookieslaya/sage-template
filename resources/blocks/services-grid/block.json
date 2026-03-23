@@ -13,6 +13,7 @@
   },
   "attributes": {
     "headline": { "type": "string", "default": "Comprehensive Technology Solutions" },
+    "description": { "type": "string", "default": "" },
     "items": {
       "type": "array",
       "default": [
@@ -25,6 +26,8 @@
       ]
     },
     "headlineEn": { "type": "string" },
-    "headlinePl": { "type": "string" }
+    "headlinePl": { "type": "string" },
+    "descriptionEn": { "type": "string" },
+    "descriptionPl": { "type": "string" }
   }
 }

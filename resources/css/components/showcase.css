@@ -18,7 +18,6 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 3.5rem;
     padding: 0.8rem 1.2rem;
     background: #f9735b;
     color: #09090b !important;
@@ -26,7 +25,9 @@
     font-weight: 700;
     line-height: 1;
     text-decoration: none !important;
-    transition: background-color 180ms ease, transform 180ms ease;
+    transition:
+      background-color 180ms ease,
+      transform 180ms ease;
   }
 
   .twst-showcase-cta-primary:hover {
@@ -46,7 +47,7 @@
     justify-content: center;
     min-height: 3.5rem;
     padding: 0.95rem 0;
-    color:#fff;
+    color: #fff;
     font-size: 1rem;
     font-weight: 700;
     line-height: 1;
@@ -99,7 +100,7 @@
 
   .dark .twst-showcase-cta-secondary:hover,
   .dark .twst-showcase-cta-secondary:focus-visible {
-    color: #ffffff!important;
+    color: #ffffff !important;
   }
 
   .dark .twst-showcase-cta-secondary::before {
@@ -133,7 +134,10 @@
     border: 0;
     border-radius: 999px;
     background: rgba(161, 161, 170, 0.45);
-    transition: width 180ms ease, background-color 180ms ease, transform 180ms ease;
+    transition:
+      width 180ms ease,
+      background-color 180ms ease,
+      transform 180ms ease;
   }
 
   .twst-showcase-dot.is-active {
@@ -143,7 +147,11 @@
 
   .twst-showcase-dot:hover {
     transform: translateY(-1px);
-    background: color-mix(in srgb, var(--twst-showcase-light-color, #f9735b) 68%, transparent);
+    background: color-mix(
+      in srgb,
+      var(--twst-showcase-light-color, #f9735b) 68%,
+      transparent
+    );
   }
 
   .dark .twst-showcase-dot {
@@ -198,10 +206,26 @@
     inset: 0;
     border-radius: 54% 46% 63% 37% / 36% 60% 40% 64%;
     background:
-      radial-gradient(circle at 37% 42%, rgba(249, 115, 22, 0.46), transparent 20%),
-      radial-gradient(circle at 61% 39%, rgba(132, 204, 22, 0.38), transparent 22%),
-      radial-gradient(circle at 54% 60%, rgba(250, 204, 21, 0.2), transparent 16%),
-      radial-gradient(circle at 45% 55%, rgba(249, 115, 22, 0.12), transparent 44%);
+      radial-gradient(
+        circle at 37% 42%,
+        rgba(249, 115, 22, 0.46),
+        transparent 20%
+      ),
+      radial-gradient(
+        circle at 61% 39%,
+        rgba(132, 204, 22, 0.38),
+        transparent 22%
+      ),
+      radial-gradient(
+        circle at 54% 60%,
+        rgba(250, 204, 21, 0.2),
+        transparent 16%
+      ),
+      radial-gradient(
+        circle at 45% 55%,
+        rgba(249, 115, 22, 0.12),
+        transparent 44%
+      );
     animation: twst-word-blob-morph 9s ease-in-out infinite alternate;
     transform-origin: center;
     mix-blend-mode: multiply;
@@ -221,7 +245,13 @@
     align-items: center;
     justify-content: center;
     z-index: 1;
-    mask-image: linear-gradient(to bottom, transparent 0%, black 18%, black 82%, transparent 100%);
+    mask-image: linear-gradient(
+      to bottom,
+      transparent 0%,
+      black 18%,
+      black 82%,
+      transparent 100%
+    );
   }
 
   @media (min-width: 1024px) {
@@ -404,10 +434,25 @@
   .dark .twst-word-blob-shape {
     mix-blend-mode: screen;
     background:
-      radial-gradient(circle at 41% 46%, rgba(251, 146, 60, 0.3), transparent 24%),
-      radial-gradient(circle at 58% 45%, rgba(163, 230, 53, 0.22), transparent 24%),
-      radial-gradient(circle at 50% 62%, rgba(250, 204, 21, 0.12), transparent 18%),
-      radial-gradient(circle at 50% 50%, rgba(251, 146, 60, 0.1), transparent 48%);
+      radial-gradient(
+        circle at 41% 46%,
+        rgba(251, 146, 60, 0.3),
+        transparent 24%
+      ),
+      radial-gradient(
+        circle at 58% 45%,
+        rgba(163, 230, 53, 0.22),
+        transparent 24%
+      ),
+      radial-gradient(
+        circle at 50% 62%,
+        rgba(250, 204, 21, 0.12),
+        transparent 18%
+      ),
+      radial-gradient(
+        circle at 50% 50%,
+        rgba(251, 146, 60, 0.1),
+        transparent 48%
+      );
   }
-
 }

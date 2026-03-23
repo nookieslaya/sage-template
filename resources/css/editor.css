@@ -2,6 +2,10 @@
 @import "tailwindcss";
 @import "./components/how-it-works.css";
 @import "./components/featured-work.css";
+@import "./components/services-grid.css";
+@import "./components/blog-preview.css";
+@import "./components/contact.css";
+@import "./components/footer.css";
 @custom-variant dark (&:where(.dark, .dark *));
 @source "../blocks/";
 @source "../js/";

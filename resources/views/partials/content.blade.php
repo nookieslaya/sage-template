@@ -1,45 +1,40 @@
 @php
-  $postClasses = implode(' ', get_post_class('overflow-hidden rounded-3xl border border-zinc-200 bg-zinc-50 shadow-sm dark:border-zinc-800 dark:bg-zinc-900'));
+  $postClasses = implode(' ', get_post_class('twst-blog-preview__card'));
   $readMoreLabel = function_exists('\App\twst_get_translated_string')
       ? \App\twst_get_translated_string('read_more')
       : 'Read more';
+  $minReadLabel = function_exists('\App\twst_get_translated_string')
+      ? \App\twst_get_translated_string('min_read')
+      : 'min read';
 @endphp
 <article class="{{ esc_attr($postClasses) }}">
-  <a href="{{ get_permalink() }}" class="block">
+  <a href="{{ get_permalink() }}" class="twst-blog-preview__image-link">
     @if (has_post_thumbnail())
-      {!! get_the_post_thumbnail(get_the_ID(), 'large', ['class' => 'h-64 w-full object-cover']) !!}
+      {!! get_the_post_thumbnail(get_the_ID(), 'large', ['class' => 'twst-blog-preview__image']) !!}
     @else
-      <div class="flex h-64 items-center justify-center bg-zinc-200 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-300">
+      <div class="twst-blog-preview__image twst-blog-preview__image--placeholder">
         {{ __('Post image', 'sage') }}
       </div>
     @endif
   </a>
 
-  <div class="p-8">
-    <p class="text-lg text-zinc-500 dark:text-zinc-400">
+  <div class="twst-blog-preview__body">
+    <p class="twst-blog-preview__meta">
       <time datetime="{{ get_post_time('c', true) }}">{{ get_the_date() }}</time>
       ·
-      {{ ceil(str_word_count(strip_tags(get_the_content())) / 180) }} min read
+      {{ ceil(str_word_count(strip_tags(get_the_content())) / 180) }} {{ $minReadLabel }}
     </p>
 
-    <h2 class="mt-4 text-4xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
-      <a href="{{ get_permalink() }}" class="twst-link-accent no-underline transition" style="text-decoration:none;">
-        {!! $title !!}
-      </a>
+    <h2 class="twst-blog-preview__title">
+      <span class="twst-blog-preview__title-wrap">
+        <a href="{{ get_permalink() }}" class="twst-blog-preview__title-link">{!! $title !!}</a>
+      </span>
     </h2>
 
-    <div class="mt-4 text-xl leading-relaxed text-zinc-500 dark:text-zinc-400">
+    <div class="twst-blog-preview__excerpt">
       @php(the_excerpt())
     </div>
 
-    <a href="{{ get_permalink() }}" class="twst-arrow-link twst-link-accent mt-6 inline-flex items-center text-lg font-semibold no-underline">
-      <span>{{ esc_html($readMoreLabel) }}</span>
-      <span class="twst-arrow" aria-hidden="true">
-        <svg viewBox="0 0 16 16" fill="none">
-          <path d="M2 8h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
-          <path d="M8 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
-        </svg>
-      </span>
-    </a>
+    <a href="{{ get_permalink() }}" class="twst-showcase-cta-secondary twst-blog-preview__read">{{ esc_html($readMoreLabel) }}</a>
   </div>
 </article>

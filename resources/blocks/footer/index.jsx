@@ -22,32 +22,38 @@ const FooterContent = ({ attributes }) => {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-zinc-200 bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-950">
-      <div className="mx-auto grid max-w-7xl gap-12 px-6 py-16 md:grid-cols-3">
-        <section>
-          <h3 className="text-4xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">{attributes.brand || ''}</h3>
-          <p className="mt-4 text-xl text-zinc-500 dark:text-zinc-400">{tagline}</p>
-        </section>
-        <nav aria-label="Footer links">
-          <h4 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">{__('Quick Links', 'sage')}</h4>
-          <ul className="mt-4 space-y-3 text-xl text-zinc-500 dark:text-zinc-400">
+    <footer className="twst-site-footer">
+      <div className="twst-site-footer__inner">
+        <div className="twst-site-footer__top">
+          <section>
+            <h3 className="twst-site-footer__brand">{attributes.brand || ''}</h3>
+            <p className="twst-site-footer__tagline">{tagline}</p>
+          </section>
+          <nav aria-label="Footer links">
+            <h4 className="twst-site-footer__heading">{__('Quick Links', 'sage')}</h4>
+            <ul className="twst-site-footer__links">
             {normalizeLinks(attributes.links).map((link, index) => (
               <li key={`quick-link-${index}`}>
-                <a className="transition hover:text-zinc-900 dark:hover:text-zinc-100" href={link.url}>{link.label}</a>
+                <a href={link.url}>{link.label}</a>
               </li>
             ))}
-          </ul>
-        </nav>
-        <section>
-          <h4 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">{__('Connect', 'sage')}</h4>
-          <div className="mt-4 flex flex-wrap gap-3">
-            {(attributes.socials || []).map((social, index) => (
-              <a key={`social-${index}`} className="inline-flex rounded-xl bg-zinc-200 px-4 py-3 text-sm font-semibold text-zinc-800 transition hover:bg-zinc-300 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700" href={social.url || '#'}>{social.label || ''}</a>
-            ))}
-          </div>
-        </section>
+            </ul>
+          </nav>
+          <section>
+            <h4 className="twst-site-footer__heading">{__('Connect', 'sage')}</h4>
+            <div className="twst-site-footer__socials">
+              {(attributes.socials || []).map((social, index) => (
+                <a key={`social-${index}`} className="twst-site-footer__social-link" href={social.url || '#'}>{social.label || ''}</a>
+              ))}
+            </div>
+          </section>
+        </div>
+        <div className="twst-site-footer__rdev">
+          <div className="twst-site-footer__rdev-bg twst-words-three-bg" data-words-three-bg="true" data-words-three-shape="rdev" aria-hidden="true" />
+          <span className="twst-site-footer__rdev-word">rdev.</span>
+        </div>
+        <div className="twst-site-footer__bottom">© {year} {attributes.brand || ''}. {copyright}</div>
       </div>
-      <div className="border-t border-zinc-200 px-6 py-8 text-center text-lg text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">© {year} {attributes.brand || ''}. {copyright}</div>
     </footer>
   );
 };
@@ -56,7 +62,7 @@ registerBlockType(metadata.name, {
   ...metadata,
   edit({ attributes, setAttributes }) {
     const [jsonError, setJsonError] = useState('');
-    const blockProps = useBlockProps({ className: 'bg-zinc-100 dark:bg-zinc-950' });
+    const blockProps = useBlockProps();
 
     return (
       <>
@@ -116,7 +122,7 @@ registerBlockType(metadata.name, {
     );
   },
   save({ attributes }) {
-    const blockProps = useBlockProps.save({ className: 'bg-zinc-100 dark:bg-zinc-950' });
+    const blockProps = useBlockProps.save();
 
     return (
       <div {...blockProps}>

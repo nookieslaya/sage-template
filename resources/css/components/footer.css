@@ -1,0 +1,184 @@
+@layer components {
+  .twst-site-footer {
+    background: #07080b;
+    color: #d6dae4;
+  }
+
+  .twst-site-footer__inner {
+    width: 100%;
+    max-width: 1920px;
+    margin-inline: auto;
+    padding-inline: clamp(1.2rem, 3vw, 3.75rem);
+    padding-top: clamp(3.2rem, 7vw, 5.2rem);
+    padding-bottom: clamp(1.35rem, 3.2vw, 2rem);
+  }
+
+  .twst-site-footer__top {
+    display: grid;
+    gap: clamp(1.4rem, 3vw, 2.4rem);
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr) minmax(0, 0.8fr);
+    align-items: start;
+  }
+
+  .twst-site-footer__brand {
+    color: #f5f5f7;
+    font-size: clamp(1.7rem, 3.3vw, 3rem);
+    font-weight: 500;
+    line-height: 0.98;
+    letter-spacing: -0.03em;
+  }
+
+  .twst-site-footer__brand :is(a, span) {
+    color: inherit !important;
+    text-decoration: none !important;
+  }
+
+  .twst-site-footer__brand img {
+    max-height: 3.5rem;
+    width: auto;
+    object-fit: contain;
+  }
+
+  .twst-site-footer__tagline {
+    margin: 0.8rem 0 0;
+    color: #9ea4b2;
+    font-size: clamp(1rem, 1.15vw, 1.2rem);
+    line-height: 1.55;
+    max-width: 30rem;
+  }
+
+  .twst-site-footer__heading {
+    margin: 0;
+    color: #f3f4f6;
+    font-size: clamp(1rem, 1.5vw, 1.35rem);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+
+  .twst-site-footer__links {
+    margin: 0.8rem 0 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .twst-site-footer__links li {
+    margin: 0;
+    list-style: none;
+  }
+
+  .twst-site-footer__links a {
+    color: #ff744e !important;
+    text-decoration: none !important;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    transition: color 180ms ease;
+  }
+
+  .twst-site-footer__links a:hover,
+  .twst-site-footer__links .current-menu-item > a,
+  .twst-site-footer__links .current_page_item > a {
+    color: #ff9c82 !important;
+  }
+
+  .twst-site-footer__socials {
+    margin-top: 0.8rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .twst-site-footer__social-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.45rem;
+    padding: 0.45rem 0.7rem;
+    border: 1px solid #2b303d;
+    background: #0d1017;
+    color: #d4d8e2;
+    text-decoration: none !important;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: border-color 180ms ease, color 180ms ease;
+  }
+
+  .twst-site-footer__social-link:hover,
+  .twst-site-footer__social-link:focus-visible {
+    border-color: #ff4d17;
+    color: #ffffff;
+  }
+
+  .twst-site-footer__bottom {
+    margin-top: clamp(1.3rem, 3.2vw, 2rem);
+    padding-top: clamp(0.9rem, 2.3vw, 1.4rem);
+    color: #858c9b;
+    font-size: clamp(0.83rem, 1vw, 0.95rem);
+  }
+
+  .twst-site-footer__rdev {
+    position: relative;
+    margin-top: clamp(1.1rem, 2.4vw, 1.9rem);
+    min-height: clamp(15rem, 32vw, 26rem);
+    padding-block: clamp(1.25rem, 2.8vw, 2.6rem);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    cursor: pointer;
+  }
+
+  .twst-site-footer__rdev-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: #07080b;
+  }
+
+  .twst-site-footer__rdev-word {
+    position: relative;
+    z-index: 1;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    border: 0;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 1023px) {
+    .twst-site-footer__top {
+      grid-template-columns: 1fr;
+      gap: 1.2rem;
+    }
+    .twst-site-footer__rdev {
+      min-height: clamp(10rem, 34vw, 14rem);
+      padding-block: clamp(0.8rem, 3vw, 1.4rem);
+    }
+  }
+
+  @media (max-width: 639px) {
+    .twst-site-footer__rdev {
+      min-height: clamp(8.4rem, 40vw, 11.2rem);
+      padding-block: clamp(0.55rem, 2.8vw, 1rem);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .twst-site-footer__rdev {
+      margin-top: clamp(2.2rem, 4vw, 3.6rem);
+      margin-bottom: clamp(2rem, 3.6vw, 3.2rem);
+      min-height: clamp(18rem, 36vw, 30rem);
+      padding-block: clamp(3.4rem, 6.6vw, 6rem);
+    }
+  }
+}
