@@ -6,10 +6,16 @@ import {
   MediaUploadCheck,
   useBlockProps,
 } from '@wordpress/block-editor';
-import { Button, PanelBody, TextControl, TextareaControl } from '@wordpress/components';
+import {
+  Button,
+  PanelBody,
+  SelectControl,
+  TextControl,
+  TextareaControl,
+} from '@wordpress/components';
 import metadata from './block.json';
 
-const normalizeSteps = (steps = []) =>
+const normalizeSteps = (steps = [], { requireImage = false } = {}) =>
   steps
     .map((step) => ({
       title: String(step?.title || '').trim(),
@@ -17,16 +23,19 @@ const normalizeSteps = (steps = []) =>
       imageUrl: String(step?.imageUrl || '').trim(),
       imageAlt: String(step?.imageAlt || '').trim(),
     }))
-    .filter((step) => step.title && step.description && step.imageUrl);
+    .filter((step) => step.title && step.description && (!requireImage || step.imageUrl));
 
 const formatStepNumber = (index) => String(index + 1).padStart(2, '0');
+const formatStepSecondDigit = (index) => formatStepNumber(index).slice(-1);
 
 const HowItWorksContent = ({ attributes, isEditor = false }) => {
   const headline = String(attributes.headline || '').trim();
   const eyebrow = String(attributes.eyebrow || '').trim();
-  const steps = normalizeSteps(attributes.steps);
+  const visualMode = attributes.visualMode === 'numbers' ? 'numbers' : 'images';
+  const steps = normalizeSteps(attributes.steps, { requireImage: visualMode === 'images' });
   const hasAnyHeader = Boolean(headline || eyebrow);
   const activeIndex = 0;
+  const rootClassName = `twst-how-it-works twst-how-it-works--${visualMode}`;
   const revealRootProps = !isEditor ? { 'data-reveal-root': true } : {};
   const headerRevealProps = !isEditor
     ? { className: 'twst-how-it-works__header twst-reveal-up', 'data-reveal-item': true, 'data-reveal-delay': '0' }
@@ -40,7 +49,7 @@ const HowItWorksContent = ({ attributes, isEditor = false }) => {
 
   return (
     <div
-      className="twst-how-it-works"
+      className={rootClassName}
       data-how-it-works={isEditor ? undefined : 'true'}
       style={{ '--twst-how-step-count': String(Math.max(steps.length, 1)) }}
       {...revealRootProps}
@@ -73,23 +82,34 @@ const HowItWorksContent = ({ attributes, isEditor = false }) => {
                         </h3>
                       </div>
                       <div className="twst-how-step__description">{step.description}</div>
-                      <figure className="twst-how-step__media">
-                        <img src={step.imageUrl} alt={step.imageAlt || step.title} />
-                      </figure>
+                      {visualMode === 'images' && step.imageUrl ? (
+                        <figure className="twst-how-step__media">
+                          <img src={step.imageUrl} alt={step.imageAlt || step.title} />
+                        </figure>
+                      ) : null}
                     </article>
                   ))}
                 </div>
 
                 <div {...rightRevealProps}>
                   <div className="twst-how-media-stack">
+                    {visualMode === 'numbers' ? (
+                      <span className="twst-how-media-counter__fixed" aria-hidden="true">0</span>
+                    ) : null}
                     {steps.map((step, index) => (
                       <figure
                         key={`how-image-${index}`}
-                        className={`twst-how-media ${index === activeIndex ? 'is-active' : ''}`}
+                        className={`twst-how-media ${index === activeIndex ? 'is-active' : ''} ${visualMode === 'numbers' ? 'twst-how-media--number' : ''}`}
                         data-how-image-item
                         style={{ '--twst-how-image-index': index }}
                       >
-                        <img src={step.imageUrl} alt={step.imageAlt || step.title} />
+                        {visualMode === 'images' ? (
+                          <img src={step.imageUrl} alt={step.imageAlt || step.title} />
+                        ) : (
+                          <div className="twst-how-media-counter" aria-hidden="true">
+                            <span className="twst-how-media-counter__digit">{formatStepSecondDigit(index)}</span>
+                          </div>
+                        )}
                       </figure>
                     ))}
                   </div>
@@ -173,6 +193,15 @@ registerBlockType(metadata.name, {
               value={attributes.eyebrow || ''}
               onChange={(eyebrow) => setAttributes({ eyebrow })}
             />
+            <SelectControl
+              label={__('Right-side visual', 'sage')}
+              value={attributes.visualMode || 'images'}
+              options={[
+                { label: __('Images', 'sage'), value: 'images' },
+                { label: __('Step numbers (01, 02...)', 'sage'), value: 'numbers' },
+              ]}
+              onChange={(visualMode) => setAttributes({ visualMode })}
+            />
 
             {steps.map((step, index) => (
               <div key={`how-step-control-${index}`} className="mt-6 rounded border border-zinc-300 p-4">
@@ -192,35 +221,39 @@ registerBlockType(metadata.name, {
                   onChange={(value) => updateStep(index, 'description', value)}
                 />
 
-                <TextControl
-                  label={__('Image alt', 'sage')}
-                  value={step.imageAlt || ''}
-                  onChange={(value) => updateStep(index, 'imageAlt', value)}
-                />
+                {(attributes.visualMode || 'images') === 'images' ? (
+                  <>
+                    <TextControl
+                      label={__('Image alt', 'sage')}
+                      value={step.imageAlt || ''}
+                      onChange={(value) => updateStep(index, 'imageAlt', value)}
+                    />
 
-                <MediaUploadCheck>
-                  <MediaUpload
-                    onSelect={(media) =>
-                      updateStepFields(index, {
-                        imageUrl: media?.url || '',
-                        imageAlt: media?.alt || step.imageAlt || '',
-                      })}
-                    allowedTypes={['image']}
-                    value={step.imageUrl}
-                    render={({ open }) => (
-                      <div className="mt-2 flex flex-wrap gap-2">
-                        <Button variant="secondary" onClick={open}>
-                          {step.imageUrl ? __('Replace image', 'sage') : __('Select image', 'sage')}
-                        </Button>
-                        {step.imageUrl ? (
-                          <Button variant="secondary" isDestructive onClick={() => updateStep(index, 'imageUrl', '')}>
-                            {__('Remove image', 'sage')}
-                          </Button>
-                        ) : null}
-                      </div>
-                    )}
-                  />
-                </MediaUploadCheck>
+                    <MediaUploadCheck>
+                      <MediaUpload
+                        onSelect={(media) =>
+                          updateStepFields(index, {
+                            imageUrl: media?.url || '',
+                            imageAlt: media?.alt || step.imageAlt || '',
+                          })}
+                        allowedTypes={['image']}
+                        value={step.imageUrl}
+                        render={({ open }) => (
+                          <div className="mt-2 flex flex-wrap gap-2">
+                            <Button variant="secondary" onClick={open}>
+                              {step.imageUrl ? __('Replace image', 'sage') : __('Select image', 'sage')}
+                            </Button>
+                            {step.imageUrl ? (
+                              <Button variant="secondary" isDestructive onClick={() => updateStep(index, 'imageUrl', '')}>
+                                {__('Remove image', 'sage')}
+                              </Button>
+                            ) : null}
+                          </div>
+                        )}
+                      />
+                    </MediaUploadCheck>
+                  </>
+                ) : null}
 
                 <div className="mt-3 flex flex-wrap gap-2">
                   <Button
