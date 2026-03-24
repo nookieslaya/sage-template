@@ -1,4 +1,10 @@
 @layer components {
+  #service,
+  #services {
+    width: 100%;
+    max-width: none;
+  }
+
   .twst-services-grid {
     background: #e9e9eb;
     scroll-margin-top: 8rem;

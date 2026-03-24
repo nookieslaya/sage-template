@@ -62,6 +62,9 @@ const HeroShowcaseContent = ({ attributes, isEditor = false }) => {
   const showWordBlob = wordsBackgroundMode === 'blob';
   const showWordsThreeBackground = wordsBackgroundMode === 'letters';
   const mediaHeightClass = imagesOnly ? 'h-[18rem] md:h-[30rem]' : 'h-44 md:h-56';
+  const headlineMaxWidth = Number(attributes.headlineMaxWidthCh || 18);
+  const headlineLineHeight = Number(attributes.headlineLineHeight || 1.28);
+  const descriptionMaxWidth = Number(attributes.descriptionMaxWidthCh || 42);
 
   return (
     <>
@@ -72,7 +75,13 @@ const HeroShowcaseContent = ({ attributes, isEditor = false }) => {
       <div className="relative mx-auto flex w-full max-w-[1920px] flex-1">
         <div className="grid w-full gap-8 md:gap-10 lg:min-h-[calc(100vh-13rem)] lg:grid-cols-[1.02fr_0.98fr] lg:items-stretch">
           <div className="flex h-full flex-col justify-center">
-            <h2 className="twst-showcase-headline max-w-4xl text-balance text-4xl font-medium tracking-tight leading-[1.2] text-zinc-900 dark:text-zinc-100 md:text-7xl">
+            <h2
+              className="twst-showcase-headline whitespace-pre-line text-balance text-4xl font-medium tracking-tight leading-[1.24] text-zinc-900 dark:text-zinc-100 md:text-7xl"
+              style={{
+                maxWidth: `${headlineMaxWidth}ch`,
+                lineHeight: headlineLineHeight,
+              }}
+            >
               {isEditor ? (
                 headline
               ) : (
@@ -82,7 +91,10 @@ const HeroShowcaseContent = ({ attributes, isEditor = false }) => {
                 </>
               )}
             </h2>
-            <p className="mt-4 max-w-2xl text-sm leading-relaxed text-zinc-600 dark:text-zinc-400 md:mt-6 md:text-xl">
+            <p
+              className="mt-4 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400 md:mt-6 md:text-xl"
+              style={{ maxWidth: `${descriptionMaxWidth}ch` }}
+            >
               {description}
             </p>
 
@@ -307,8 +319,9 @@ registerBlockType(metadata.name, {
                 value={getLegacyLocalized(attributes, 'eyebrow')}
                 onChange={(eyebrow) => setAttributes({ eyebrow })}
               />
-              <TextControl
+              <TextareaControl
                 label={__('Headline', 'sage')}
+                help={__('Use Enter to force a new line in the title.', 'sage')}
                 value={getLegacyLocalized(attributes, 'headline')}
                 onChange={(headline) => setAttributes({ headline })}
               />
@@ -316,6 +329,33 @@ registerBlockType(metadata.name, {
                 label={__('Description', 'sage')}
                 value={getLegacyLocalized(attributes, 'description')}
                 onChange={(description) => setAttributes({ description })}
+              />
+              <RangeControl
+                label={__('Headline width (ch)', 'sage')}
+                value={Number(attributes.headlineMaxWidthCh || 18)}
+                onChange={(headlineMaxWidthCh) =>
+                  setAttributes({ headlineMaxWidthCh: Number(headlineMaxWidthCh || 18) })}
+                min={12}
+                max={40}
+                step={1}
+              />
+              <RangeControl
+                label={__('Headline line-height', 'sage')}
+                value={Number(attributes.headlineLineHeight || 1.28)}
+                onChange={(headlineLineHeight) =>
+                  setAttributes({ headlineLineHeight: Number(headlineLineHeight || 1.28) })}
+                min={1.05}
+                max={1.6}
+                step={0.01}
+              />
+              <RangeControl
+                label={__('Description width (ch)', 'sage')}
+                value={Number(attributes.descriptionMaxWidthCh || 42)}
+                onChange={(descriptionMaxWidthCh) =>
+                  setAttributes({ descriptionMaxWidthCh: Number(descriptionMaxWidthCh || 42) })}
+                min={24}
+                max={80}
+                step={1}
               />
               <TextControl
                 label={__('Primary CTA label', 'sage')}

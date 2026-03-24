@@ -12,6 +12,7 @@
   .twst-showcase-headline__base {
     color: inherit;
     opacity: 1;
+    white-space: pre-line;
   }
 
   .twst-showcase-headline__line {

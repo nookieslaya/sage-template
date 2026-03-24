@@ -24,6 +24,9 @@
       "type": "string",
       "default": "Use this block when you want the page to open with a stronger story: a bold message on the left and a compact visual showcase on the right."
     },
+    "headlineMaxWidthCh": { "type": "number", "default": 18 },
+    "headlineLineHeight": { "type": "number", "default": 1.28 },
+    "descriptionMaxWidthCh": { "type": "number", "default": 42 },
     "primaryLabel": { "type": "string", "default": "Start a Project" },
     "primaryUrl": { "type": "string", "default": "#contact" },
     "secondaryLabel": { "type": "string", "default": "See My Work" },

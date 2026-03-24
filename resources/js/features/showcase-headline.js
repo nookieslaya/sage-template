@@ -51,14 +51,15 @@ export const initShowcaseHeadlineMasks = () => {
     }
 
     const originalText = base.dataset.originalText || base.textContent || '';
-    const normalizedText = originalText.replace(/\s+/g, ' ').trim();
+    const normalizedOriginal = originalText.replace(/\r\n?/g, '\n').trim();
+    const normalizedText = normalizedOriginal.replace(/\s+/g, ' ').trim();
 
     if (normalizedText === '') {
       return;
     }
 
     if (!base.dataset.originalText) {
-      base.dataset.originalText = normalizedText;
+      base.dataset.originalText = normalizedOriginal;
     }
 
     headline.setAttribute('aria-label', normalizedText);
@@ -67,37 +68,51 @@ export const initShowcaseHeadlineMasks = () => {
     base.textContent = '';
     masks.innerHTML = '';
 
-    const words = normalizedText.split(' ');
-    const fragments = [];
-
-    words.forEach((word, index) => {
-      const span = document.createElement('span');
-      span.className = 'twst-showcase-headline__word';
-      span.textContent = word;
-      base.appendChild(span);
-      fragments.push(span);
-
-      if (index < words.length - 1) {
-        const space = document.createTextNode(' ');
-        base.appendChild(space);
-      }
-    });
+    const manualLines = normalizedOriginal
+      .split('\n')
+      .map((line) => line.trim())
+      .filter(Boolean);
 
     const lines = [];
 
-    fragments.forEach((fragment) => {
-      const top = Math.round(fragment.offsetTop);
-      const currentLine = lines[lines.length - 1];
-
-      if (!currentLine || currentLine.top !== top) {
+    if (manualLines.length > 1) {
+      manualLines.forEach((lineText, index) => {
         lines.push({
-          top,
-          words: [fragment.textContent || ''],
+          top: index,
+          words: lineText.split(/\s+/).filter(Boolean),
         });
-      } else {
-        currentLine.words.push(fragment.textContent || '');
-      }
-    });
+      });
+    } else {
+      const words = normalizedText.split(' ');
+      const fragments = [];
+
+      words.forEach((word, index) => {
+        const span = document.createElement('span');
+        span.className = 'twst-showcase-headline__word';
+        span.textContent = word;
+        base.appendChild(span);
+        fragments.push(span);
+
+        if (index < words.length - 1) {
+          const space = document.createTextNode(' ');
+          base.appendChild(space);
+        }
+      });
+
+      fragments.forEach((fragment) => {
+        const top = Math.round(fragment.offsetTop);
+        const currentLine = lines[lines.length - 1];
+
+        if (!currentLine || currentLine.top !== top) {
+          lines.push({
+            top,
+            words: [fragment.textContent || ''],
+          });
+        } else {
+          currentLine.words.push(fragment.textContent || '');
+        }
+      });
+    }
 
     const animationDurationMs = lines.reduce((maxDuration, line, index) => {
       const lineDelay = index * 140;
