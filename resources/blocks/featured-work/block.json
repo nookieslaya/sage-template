@@ -38,6 +38,7 @@
         {
           "title": "BodyArmor",
           "meta": "[MARKETING SITE] - [SPORTS]",
+          "imageId": 0,
           "imageUrl": "",
           "imageAlt": "",
           "linkUrl": ""
@@ -45,6 +46,7 @@
         {
           "title": "Annimate",
           "meta": "[WEB APP] - [SAAS] - [ANIMATIONS]",
+          "imageId": 0,
           "imageUrl": "",
           "imageAlt": "",
           "linkUrl": ""
@@ -52,6 +54,7 @@
         {
           "title": "Workspace",
           "meta": "[LANDING] - [B2B]",
+          "imageId": 0,
           "imageUrl": "",
           "imageAlt": "",
           "linkUrl": ""
@@ -59,6 +62,7 @@
         {
           "title": "Healthline",
           "meta": "[ECOMMERCE] - [SHOP]",
+          "imageId": 0,
           "imageUrl": "",
           "imageAlt": "",
           "linkUrl": ""

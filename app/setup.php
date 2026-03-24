@@ -341,6 +341,7 @@ function twst_get_theme_options(): array
         'footer_logo_url' => '',
         'footer_logo_text' => '',
         'footer_logo_text_size' => 48,
+        'footer_copyright_text' => '',
         'hide_language_switcher' => 0,
         'hide_theme_toggle' => 0,
         'hide_post_author' => 0,
@@ -468,6 +469,7 @@ function twst_sanitize_theme_settings($input): array
         'footer_logo_url' => esc_url_raw($input['footer_logo_url'] ?? ''),
         'footer_logo_text' => twst_sanitize_logo_text($input['footer_logo_text'] ?? ''),
         'footer_logo_text_size' => max(20, min(120, (int) ($input['footer_logo_text_size'] ?? 48))),
+        'footer_copyright_text' => sanitize_text_field($input['footer_copyright_text'] ?? ''),
         'hide_language_switcher' => empty($input['hide_language_switcher']) ? 0 : 1,
         'hide_theme_toggle' => empty($input['hide_theme_toggle']) ? 0 : 1,
         'hide_post_author' => empty($input['hide_post_author']) ? 0 : 1,
@@ -1026,6 +1028,20 @@ add_action('admin_init', function () {
             'option_name' => 'twst_theme_settings',
             'field_key' => 'hide_language_switcher',
             'label' => __('Hide language switcher in the header.', 'sage'),
+        ]
+    );
+
+    add_settings_field(
+        'footer_copyright_text',
+        __('Footer copyright text', 'sage'),
+        __NAMESPACE__.'\\twst_render_text_field',
+        'twst-theme-settings',
+        'twst_theme_main_section',
+        [
+            'option_name' => 'twst_theme_settings',
+            'field_key' => 'footer_copyright_text',
+            'label' => __('Example: © 2026 rdev. Wszelkie prawa zastrzeżone.', 'sage'),
+            'placeholder' => '© 2026 rdev. Wszelkie prawa zastrzeżone.',
         ]
     );
 

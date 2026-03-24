@@ -12,6 +12,7 @@ export const initFeaturedWork = () => {
     const slides = Array.from(section.querySelectorAll('[data-fw-slide]'));
     const steps = Array.from(section.querySelectorAll('[data-fw-step]'));
     const cursorSurfaces = Array.from(section.querySelectorAll('[data-fw-cursor-surface="true"]'));
+    const scrollContainer = section.querySelector('.twst-featured-work__scroll');
 
     if (thumbs.length === 0 || slides.length === 0) {
       return;
@@ -23,6 +24,35 @@ export const initFeaturedWork = () => {
     let stepObserver = null;
     let lockedIndex = null;
     let lockTimer = 0;
+
+    const scrollToStoryStep = (index) => {
+      const step = steps[index];
+      if (!step) {
+        return;
+      }
+
+      const rect = step.getBoundingClientRect();
+      const viewportOffsetRatio = index === maxIndex ? 0.3 : 0.44;
+      const desiredTop = window.scrollY + rect.top - window.innerHeight * viewportOffsetRatio;
+
+      if (!scrollContainer) {
+        window.scrollTo({
+          top: Math.max(desiredTop, 0),
+          behavior: 'smooth',
+        });
+        return;
+      }
+
+      const containerTop = window.scrollY + scrollContainer.getBoundingClientRect().top;
+      const maxPinnedTop = containerTop + scrollContainer.offsetHeight - window.innerHeight - 2;
+      const releaseSafeTop = index === maxIndex ? maxPinnedTop - 8 : maxPinnedTop;
+      const nextTop = clamp(desiredTop, containerTop, releaseSafeTop);
+
+      window.scrollTo({
+        top: Math.max(nextTop, 0),
+        behavior: 'smooth',
+      });
+    };
 
     const setActive = (index) => {
       const bounded = clamp(index, 0, maxIndex);
@@ -104,7 +134,7 @@ export const initFeaturedWork = () => {
           lockTimer = 0;
         }, 900);
 
-        steps[index]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        scrollToStoryStep(index);
       });
 
       thumb.addEventListener('keydown', (event) => {
@@ -123,7 +153,7 @@ export const initFeaturedWork = () => {
               lockedIndex = null;
               lockTimer = 0;
             }, 900);
-            steps[next]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            scrollToStoryStep(next);
           }
         }
 
@@ -139,7 +169,7 @@ export const initFeaturedWork = () => {
               lockedIndex = null;
               lockTimer = 0;
             }, 900);
-            steps[prev]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            scrollToStoryStep(prev);
           }
         }
       });

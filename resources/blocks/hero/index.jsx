@@ -51,8 +51,8 @@ const HeroContent = ({ attributes, isEditor = false }) => {
     ? 'relative z-10 mx-auto flex min-h-[620px] w-full max-w-[1920px] items-center py-20 text-center'
     : 'relative z-10 mx-auto flex h-screen w-full max-w-[1920px] items-center pt-20 text-center md:pt-24';
   const headlineClassName = isEditor
-    ? 'mx-auto max-w-4xl text-balance text-4xl font-semibold tracking-tight text-zinc-100 lg:text-6xl'
-    : 'mx-auto max-w-5xl text-balance text-4xl font-semibold tracking-tight text-zinc-100 md:text-7xl';
+    ? 'mx-auto max-w-4xl text-balance text-4xl font-semibold tracking-tight leading-[1.2] text-zinc-100 lg:text-6xl'
+    : 'mx-auto max-w-5xl text-balance text-4xl font-semibold tracking-tight leading-[1.2] text-zinc-100 md:text-7xl';
   const descriptionClassName = isEditor
     ? 'mx-auto mt-8 max-w-3xl text-pretty text-lg leading-relaxed text-zinc-300 lg:text-xl'
     : 'mx-auto mt-8 max-w-4xl text-pretty text-lg leading-relaxed text-zinc-300 md:text-2xl';
@@ -132,7 +132,7 @@ registerBlockType(metadata.name, {
   ...metadata,
   edit({ attributes, setAttributes }) {
     const blockProps = useBlockProps({
-      className: 'bg-zinc-950',
+      className: 'bg-[#141314]',
     });
 
     return (
@@ -260,7 +260,7 @@ registerBlockType(metadata.name, {
   },
   save({ attributes }) {
     const blockProps = useBlockProps.save({
-      className: 'bg-zinc-950',
+      className: 'bg-[#141314]',
     });
 
     return (

@@ -264,7 +264,7 @@
   }
 
   .twst-featured-work[data-featured-work="true"] .twst-featured-work__scroll {
-    min-height: calc(100svh + (var(--twst-featured-count, 1) - 1) * 52svh);
+    min-height: calc(100svh + var(--twst-featured-count, 1) * 52svh + 42svh);
   }
 
   .twst-featured-work[data-featured-work="true"] .twst-featured-work__sticky {

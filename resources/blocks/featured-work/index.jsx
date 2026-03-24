@@ -14,6 +14,7 @@ const normalizeItems = (items = [], { isEditor = false } = {}) => {
   const normalized = items.map((item) => ({
     title: String(item?.title || '').trim(),
     meta: String(item?.meta || '').trim(),
+    imageId: Number(item?.imageId) || 0,
     imageUrl: String(item?.imageUrl || '').trim(),
     imageAlt: String(item?.imageAlt || '').trim(),
     linkUrl: String(item?.linkUrl || '').trim(),
@@ -219,6 +220,7 @@ registerBlockType(metadata.name, {
         {
           title: '',
           meta: '',
+          imageId: 0,
           imageUrl: '',
           imageAlt: '',
           linkUrl: '',
@@ -317,18 +319,28 @@ registerBlockType(metadata.name, {
                     <MediaUpload
                       onSelect={(media) =>
                         updateItemFields(index, {
-                          imageUrl: media?.url || '',
-                          imageAlt: media?.alt || item.imageAlt || '',
+                          imageId: Number(media?.id) || 0,
+                          imageUrl: String(media?.url || media?.sizes?.full?.url || ''),
+                          imageAlt: String(media?.alt || item.imageAlt || ''),
                         })}
                       allowedTypes={['image']}
-                      value={item.imageUrl}
+                      value={item.imageId || 0}
                       render={({ open }) => (
                         <div className="twst-featured-work-editor-actions">
                           <Button variant="secondary" onClick={open}>
                             {item.imageUrl ? __('Replace image', 'sage') : __('Select image', 'sage')}
                           </Button>
                           {item.imageUrl ? (
-                            <Button variant="secondary" isDestructive onClick={() => updateItem(index, 'imageUrl', '')}>
+                            <Button
+                              variant="secondary"
+                              isDestructive
+                              onClick={() =>
+                                updateItemFields(index, {
+                                  imageId: 0,
+                                  imageUrl: '',
+                                  imageAlt: '',
+                                })}
+                            >
                               {__('Remove image', 'sage')}
                             </Button>
                           ) : null}

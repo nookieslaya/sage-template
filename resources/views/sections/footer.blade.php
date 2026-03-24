@@ -3,6 +3,7 @@
     $twstThemeSettings = function_exists('\App\twst_get_theme_options')
         ? \App\twst_get_theme_options()
         : [];
+    $customFooterCopyright = trim((string) ($twstThemeSettings['footer_copyright_text'] ?? ''));
     $footerLogoMarkup = function_exists('\App\twst_get_logo_markup')
         ? \App\twst_get_logo_markup('footer', $siteName, [
             'image_class' => 'h-14 w-auto object-contain',
@@ -28,6 +29,9 @@
         ? \App\twst_get_translated_string('footer_connect')
         : 'Connect';
     $footerCopyrightYear = wp_date('Y');
+    $footerCopyrightLine = $customFooterCopyright !== ''
+        ? $customFooterCopyright
+        : sprintf('© %s %s. %s', $footerCopyrightYear, $siteName, $footerCopyrightSuffix);
   @endphp
 
   <div class="twst-site-footer__inner">
@@ -82,7 +86,7 @@
     </div>
 
     <div class="twst-site-footer__bottom">
-      {{ esc_html(sprintf('© %s %s. %s', $footerCopyrightYear, $siteName, $footerCopyrightSuffix)) }}
+      {{ esc_html($footerCopyrightLine) }}
     </div>
   </div>
 </footer>

@@ -89,8 +89,8 @@
             ]) !!}
         </nav>
 
-        <div class="mt-4 flex items-center justify-between border-t border-zinc-200 pt-4 dark:border-zinc-800">
-            @if (!$hideLanguageSwitcher && !empty($pll_languages))
+        @if (!$hideLanguageSwitcher && !empty($pll_languages))
+            <div class="mt-4 flex items-center border-t border-zinc-200 pt-4 dark:border-zinc-800">
                 <div class="twst-lang-switcher" role="group" aria-label="Language switcher mobile">
                     @foreach ($pll_languages as $lang)
                         <a href="{{ esc_url($lang['url']) }}"
@@ -99,18 +99,7 @@
                         </a>
                     @endforeach
                 </div>
-            @endif
-
-            @if (!$hideThemeToggle)
-                <button type="button"
-                    class="inline-flex h-11 w-11 items-center justify-center rounded-full border border-zinc-300 text-zinc-700 transition hover:bg-zinc-200 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-800"
-                    aria-label="{{ __('Toggle dark mode', 'sage') }}" data-theme-toggle>
-                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                        <circle cx="12" cy="12" r="7.5" stroke="currentColor" stroke-width="1.8" />
-                        <path d="M12 4.5a7.5 7.5 0 0 1 0 15V4.5Z" fill="currentColor" />
-                    </svg>
-                </button>
-            @endif
-        </div>
+            </div>
+        @endif
     </div>
 </header>

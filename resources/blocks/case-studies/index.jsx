@@ -117,7 +117,7 @@ registerBlockType(metadata.name, {
   ...metadata,
   edit({ attributes, setAttributes }) {
     const blockProps = useBlockProps({
-      className: 'bg-zinc-100 dark:bg-zinc-950',
+      className: 'bg-zinc-100 dark:bg-[#141314]',
     });
     const items = normalizeItems(attributes.items);
 
@@ -308,7 +308,7 @@ registerBlockType(metadata.name, {
   },
   save({ attributes }) {
     const blockProps = useBlockProps.save({
-      className: 'bg-zinc-100 dark:bg-zinc-950',
+      className: 'bg-zinc-100 dark:bg-[#141314]',
     });
 
     return (
