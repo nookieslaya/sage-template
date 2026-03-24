@@ -342,7 +342,8 @@ function twst_get_theme_options(): array
         'footer_logo_text' => '',
         'footer_logo_text_size' => 48,
         'hide_language_switcher' => 0,
-        'hide_post_author' => 1,
+        'hide_theme_toggle' => 0,
+        'hide_post_author' => 0,
     ];
 
     $options = get_option('twst_theme_settings', []);
@@ -468,6 +469,7 @@ function twst_sanitize_theme_settings($input): array
         'footer_logo_text' => twst_sanitize_logo_text($input['footer_logo_text'] ?? ''),
         'footer_logo_text_size' => max(20, min(120, (int) ($input['footer_logo_text_size'] ?? 48))),
         'hide_language_switcher' => empty($input['hide_language_switcher']) ? 0 : 1,
+        'hide_theme_toggle' => empty($input['hide_theme_toggle']) ? 0 : 1,
         'hide_post_author' => empty($input['hide_post_author']) ? 0 : 1,
     ];
 }
@@ -547,6 +549,11 @@ function twst_render_checkbox_field(array $args): void
     $value = is_array($values) ? (int) ($values[$field_key] ?? 0) : 0;
     ?>
     <label for="<?php echo esc_attr($field_key); ?>">
+      <input
+        type="hidden"
+        name="<?php echo esc_attr($option_name); ?>[<?php echo esc_attr($field_key); ?>]"
+        value="0"
+      />
       <input
         type="checkbox"
         id="<?php echo esc_attr($field_key); ?>"
@@ -1019,6 +1026,19 @@ add_action('admin_init', function () {
             'option_name' => 'twst_theme_settings',
             'field_key' => 'hide_language_switcher',
             'label' => __('Hide language switcher in the header.', 'sage'),
+        ]
+    );
+
+    add_settings_field(
+        'hide_theme_toggle',
+        __('Dark / light switch', 'sage'),
+        __NAMESPACE__.'\\twst_render_checkbox_field',
+        'twst-theme-settings',
+        'twst_theme_main_section',
+        [
+            'option_name' => 'twst_theme_settings',
+            'field_key' => 'hide_theme_toggle',
+            'label' => __('Hide dark/light mode switch in the header.', 'sage'),
         ]
     );
 
